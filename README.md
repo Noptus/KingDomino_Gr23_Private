@@ -9,7 +9,7 @@ Thomas Binay
 Raphaël Caillon
 
 Date Limite : 
-Inconnue
+Début Janvier
 
 Fonctionnalités acquises :
 Générer les dominos dans un String[][]
