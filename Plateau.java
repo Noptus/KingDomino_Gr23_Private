@@ -3,31 +3,24 @@ import java.util.ArrayList;
 public class Plateau 
 {
 	
-	// pour tester les fonctions
-	public static void main(String args[]){
-		
-		createPlateau();
-		printTableau();
-		System.out.println("Score : "+ getScore() );
-
-	}
+	//CONSTANTES (POUR PLUS DE CLARTE DANS LE CODE)
 	
 	
-	//on définit ces constantes qui correspondent à la nature des cases (pour plus de clarté dans le code)
-	public static final int VIDE 	 = 0;
-	public static final int MONTAGNE = 1;
-	public static final int PLAINE   = 2;
-	public static final int RUINE    = 3;
-	public static final int FORET    = 4;
-	public static final int LAC      = 5;
-	public static final int CHAMP    = 6;
+	//on d�finit une case vide, sans dominos dessus
+	public static final int VIDE = 0;
 	
-	public static int[][] plateau;
 	
-	// Crée le tableau, pour test
-	public static void createPlateau()
+	//ATTRIBUTS (PRIVES, ACCESSIBLES UNIQUEMENT DEPUIS CETTE CLASSE)
+	
+	
+	//matrice d'entiers qui stockera les cases du plateau avec son contenu
+	private int[][] plateau;
+	
+	
+	// CONSTRUCTEUR
+	public Plateau()
 	{
-		//on crée un tableau de taille 9x9 (ou 13x13 pour le mode spécial, à rajouter plus tard en passant un paramètre lors de la création de la classe)
+		//on creee un tableau de taille 9x9
 		plateau = new int[9][9];
 		
 		//plateau de test pour tester le calcul de score
@@ -42,29 +35,35 @@ public class Plateau
 		plateau[0][8] = 01;  plateau[1][8] = 00; plateau[2][8] = 00;  plateau[3][8] = 00;  plateau[4][8] = 00; plateau[5][8] = 00; plateau[6][8] = 00; plateau[7][8] = 00; plateau[8][8] = 00;
 	}
 	
+	
+	// METHODES PUBLIQUES
+	
+	
 	// retourne la nature de la case
-	public static int getNature(int x, int y)
+	public int getNature(int x, int y)
 	{
 		//la nature de la case correspond aux unités
 		return plateau[x][y] % 10;
 	}
 	
+	
 	// retourne le nb de couronnes sur cette case
-	public static int getCouronne(int x, int y)
+	public int getCouronne(int x, int y)
 	{
 		//le nombre de couronne correpond aux dizaines
 		return plateau[x][y] / 10;
 	}
 	
-	// le tableau entre en static, en ressort brillament le score en int
-	public static int getScore()
+	
+	// retourne le score du plateau
+	public int getScore()
 	{
 		int score = 0;
 		
-		//liste qui stocke l'ensemble des cases qui ont été comptées (pour ne pas les recompter 2 fois quand on inspecte la case suivante)
+		//liste qui stocke l'ensemble des cases qui ont ete comptees (pour ne pas les recompter 2 fois quand on inspecte la case suivante)
 		ArrayList<int[]> globallyCounted = new ArrayList<int[]>();
 		
-		//liste qui stocke les cases voisines qui sont semblables à celle inspectée actuellement
+		//liste qui stocke les cases voisines qui sont semblables a celle inspectee actuellement
 		ArrayList<int[]> currentlyCounted = new ArrayList<int[]>();
 		
 		//on cherche pour chaque case les cases voisines semblables
@@ -75,10 +74,10 @@ public class Plateau
 				//on compte uniquement si la case n'est pas vide
 				if(getNature(x, y) != VIDE)
 				{
-					//on vide l'historique des cases voisines à la précédente
+					//on vide l'historique des cases voisines a la precedente
 					currentlyCounted.clear();
 					
-					//on compte les cases voisines semblables à celle à la position (x, y)
+					//on compte les cases voisines semblables a� celle a la position (x, y)
 					count(globallyCounted, currentlyCounted, getNature(x, y), x, y);
 					
 					//on compte les couronnes en parcourant la liste des cases voisines semblables
@@ -88,10 +87,10 @@ public class Plateau
 						couronnes += getCouronne(position[0], position[1]);
 					}
 					
-					//les cases correspondent à la taille de la liste des cases voisines semblables
+					//les cases correspondent a� la taille de la liste des cases voisines semblables
 					int cases = currentlyCounted.size();
 					
-					//le score est calculé commme le produit des couronnes et des cases
+					//le score est calcule commme le produit des couronnes et des cases
 					score += couronnes * cases;
 				}
 			}
@@ -100,18 +99,37 @@ public class Plateau
 		return score;
 	}
 	
-	//méthode privée (qui ne peut être appelé en dehors de la classe) qui sert au calcul du score
-	private static void count(ArrayList<int[]> globallyCounted, ArrayList<int[]> currentlyCounted, int nature, int x, int y)
+
+	//affiche le plateau
+	public void print() 
 	{
-		//hors du plateau -> on s'arrête là
+		for(int x = 0 ; x < 9 ; x++) 
+		{
+			for(int  y = 0 ; y < 9 ; y++) 
+			{
+				System.out.print(getCouronne(x,y));
+				System.out.print(getNature(x,y));
+				System.out.print("|");
+			}
+			System.out.println("");
+		}
+	}
+	
+	
+	//METHODES PRIVEES, QUI SERVENT UNIQUEMENT A D'AUTRES METHODES DE CETTE CLASSE
+	
+	//sert au calcul du score
+	private void count(ArrayList<int[]> globallyCounted, ArrayList<int[]> currentlyCounted, int nature, int x, int y)
+	{
+		//hors du plateau -> on s'arrete la�
 		if(x < 0 || y < 0 || x > 8 || y > 8)
 			return;
 		
-		//pas la même nature -> on s'arrête là
+		//pas la meme nature -> on s'arrete la
 		if(getNature(x, y) != nature)
 			return;
 		
-		//on vérifie si la case a été comptée auparavant -> on s'arrête là
+		//on verifie si la case a ete comptee auparavant -> on s'arrete la�
 		int[] currentPos = {x, y};
 		for(int[] pos : globallyCounted)
 		{
@@ -119,7 +137,7 @@ public class Plateau
 				return;
 		}
 		
-		//on ajoute la case à l'historique des cases comptées 
+		//on ajoute la case a� l'historique des cases comptees 
 		globallyCounted.add(currentPos);
 		currentlyCounted.add(currentPos);
 		
@@ -128,22 +146,6 @@ public class Plateau
 		count(globallyCounted, currentlyCounted, nature, x, y - 1); 
 		count(globallyCounted, currentlyCounted, nature, x + 1, y);
 		count(globallyCounted, currentlyCounted, nature, x, y + 1);
-	}
-
-	// does what it says, for tests
-	private static void printTableau() {
-		
-		for ( int x=0 ; x<9 ; x++) {
-			for ( int y=0 ; y<9 ; y++) {
-				System.out.print(getCouronne(x,y));
-				System.out.print(getNature(x,y));
-				System.out.print("|");
-			}
-			System.out.println("");
-		}
-		
-		
-
 	}
 	
 }
