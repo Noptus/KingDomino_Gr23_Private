@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -9,7 +10,11 @@ public class Test_Chamber extends KingDomino_Tools{
 
 		
 		public static void main(String args[]){
-
+			
+			//teste la fonction de calcul du score
+			Plateau plateau = new Plateau();
+			System.out.println("score du plateau de test : " + plateau.getScore());
+			
 			// Message d'intro, choix nb joueurs
 			int NJ = Intro();
 			
@@ -27,8 +32,6 @@ public class Test_Chamber extends KingDomino_Tools{
 			// Savoir l'ordre initial
 			List Ordre = DefOrderInit(NJ);
 		}
-
-		
 		
 				// Methodes avant le début de la partie
 		
@@ -272,7 +275,10 @@ public class Test_Chamber extends KingDomino_Tools{
 			}
 		}
 		
-		
+		private static int getScore(int[][] plateau)
+		{
+			return 0;
+		}
 
 
 				// TOOLS
