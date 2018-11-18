@@ -77,7 +77,7 @@ public class MenuCouleurs extends JDialog
 		{
 			try
 			{
-				chateaux.put(couleur, ImageIO.read(new File(couleur + ".png")));
+				chateaux.put(couleur, ImageIO.read(new File("images//" + couleur + ".png")));
 			}
 			catch(IOException e)
 			{

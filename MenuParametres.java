@@ -38,7 +38,7 @@ public class MenuParametres extends JDialog
 		//on remplit la fenetre
 		
 		//logo du jeu
-		JLabel labImage = new JLabel(new ImageIcon("kingdomino.jpg"));
+		JLabel labImage = new JLabel(new ImageIcon("images//kingdomino.jpg"));
 		
 		//liste deroutante pour choisir nb de joueurs
 		JPanel panNbJoueurs = new JPanel();
