@@ -1,3 +1,4 @@
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -7,7 +8,7 @@ public class Partie
 {
 	
 	//ATTRIBUTS (PRIVES, ACCESSIBLES UNIQUEMENT DEPUIS CETTE CLASSE)
-	private int nbJoueurs;
+	Parametres p;
 	private List<String> couleurs;
 	private List<Integer> ordre;
 	private Dominos dominos;
@@ -15,21 +16,20 @@ public class Partie
 
 	
 	//CONSTRUCTEUR
-	public Partie()
-	{
-		nbJoueurs = intro();
-		
-		couleurs = colorChoice();
+	public Partie(Parametres p, List<String> couleurs)
+	{		
+		this.p = p;
+		this.couleurs = couleurs;
 		
 		ordre = defOrderInit();
 		
-		dominos = new Dominos(12 * nbJoueurs);
+		dominos = new Dominos(12 * p.nbTotal);
 		
 		//on affiche les dominos pour tester
 		dominos.print();
 		
-		plateaux = new Plateau[nbJoueurs];
-		for(int i = 0; i < nbJoueurs; i++)
+		plateaux = new Plateau[p.nbTotal];
+		for(int i = 0; i <p.nbTotal; i++)
 		{
 			plateaux[i] = new Plateau();
 			
@@ -46,7 +46,7 @@ public class Partie
 	//deroulement de la partie, la ou tout se passera
 	public void jouer()
 	{
-		//TANT QUE LA PARTIE N'EST PAS FINIE (dans la classe plateau: verifer plateau du joueur, si un est complet, c'est fini)
+		//TANT QUE LA PARTIE N'EST PAS FINIE
 		
 			//piocher 4 dominos (a faire dans la classe dominos: supprimer les dominos pioches et les retourner ici)
 			
@@ -64,113 +64,6 @@ public class Partie
 	
 	//METHODES PRIVEES, QUI SERVENT UNIQUEMENT A D'AUTRES METHODES DE CETTE CLASSE
 	
-	//methode pour connaitre le nombre de joueur
-	private int intro() 
-	{
-		
-		System.out.println(" [ Bienvenue dans Domi'Nations 1.0 ! ]");
-		System.out.println("   Combien y aura t-il de joueurs ?");
-		
-		boolean isValid = false ;
-		
-		int nb = 0;
-		while ( ! isValid) 
-		{
-			try 
-			{
-				Scanner reader = new Scanner(System.in);
-				nb = reader.nextInt(); 
-				
-				if (nb < 2 || nb > 4) 
-				{
-					System.out.println(" Cette valeur n'est pas valide !");
-					System.out.println(" Veuillez entrer un entier entre 2 et 4.");	
-					isValid = false;
-				}
-				else 
-				{	
-					isValid = true; 
-				}
-			} 
-			catch(Exception E) 
-			{
-				System.out.println(" Ceci n'est pas un entier !");
-				System.out.println(" Veuillez entrer un entier entre 2 et 4.");
-				isValid = false;
-			}
-		}
-		
-		System.out.println("Il y aura "+ nb +" joueurs");
-		return nb;
-	}
-	
-	// Methode pour répartir les couleurs
-	private List<String> colorChoice () 
-	{
-		
-		 List<String> couleursRestantes = new LinkedList<String>();
-		 couleursRestantes.add("bleu");
-		 couleursRestantes.add("jaune");
-		 couleursRestantes.add("rose");
-		 couleursRestantes.add("vert");
-		 List<String> couleursChoisies = new LinkedList<String>();
-
-		 
-		 // pour chaque joueur
-		 for(int i = 0; i < nbJoueurs; i++) 
-		 {
-			 
-			 System.out.println("Joueur "+ (i+1) +", ces couleurs sont disponibles :");
-
-			 // afficher toutes les couleurs encore disponibles
-			 for(int j = 0; j < couleursRestantes.size(); j++) 
-			 {
-				 System.out.println((j+1) + " - " + couleursRestantes.get(j));
-			 }
-			 
-			 boolean isValid = false;
-			 while( ! isValid ) 
-			 {
-				 try 
-				 {
-					 Scanner reader = new Scanner(System.in);
-					 int choixCouleur = reader.nextInt(); 
-					 
-					 if(choixCouleur < 1 || choixCouleur > couleursRestantes.size() ) 
-					 {
-						 System.out.println("Cette valeur n'est pas valide !");
-						 System.out.println("Veuillez entrer un int valide.");
-						 isValid = false;
-						 
-					 } 
-					 else 
-					 {
-						 
-						 couleursChoisies.add(  couleursRestantes.get( choixCouleur-1 )  );
-						 couleursRestantes.remove(choixCouleur-1);
-						 isValid = true;
-					 }
-					 
-				 }
-				 catch(Exception e) 
-				 {
-					 System.out.println("Ce n'est pas un int !");
-					 System.out.println("Veuillez entrer un int valide.");
-					 
-				 } // Fin try catch
-			 } // Fin while isValid	 
-		 } // Fin for chaque joueur
-
-		 System.out.println("Couleurs choisies :");
-		 for(int j = 0; j < couleursChoisies.size(); j++) 
-		 {
-			 System.out.println("Joueur "+(j+1)+" : "+ couleursChoisies.get(j) );
-		 }
-		 
-		 
-		 return couleursChoisies;
-	}
-	
 	
 	// Methode pour savoir qui commence
 	private List<Integer> defOrderInit() 
@@ -179,17 +72,17 @@ public class Partie
 		System.out.println("Ordre pour la première manche :");
 		List<Integer> orderInit = new LinkedList<Integer>();
 		
-		if (nbJoueurs != 2 ) 
+		if (p.nbTotal != 2 ) 
 		{
 			
-			for(int i = 1; i <= nbJoueurs; i++) 
+			for(int i = 1; i <= p.nbTotal; i++) 
 			{    
 				orderInit.add(i);	
 			}
-
-			shuffleList(orderInit);
+			Collections.shuffle(orderInit);
+			//shuffleList(orderInit);
 	
-			for(int i = 0; i < nbJoueurs; i++) 
+			for(int i = 0; i < p.nbTotal; i++) 
 			{
 				System.out.println("Joueur "+(orderInit.get(i))+" : Place = "+(i+1) );
 			}
@@ -204,7 +97,8 @@ public class Partie
 			orderInit.add(2);
 			orderInit.add(1);
 
-			shuffleList(orderInit);
+			Collections.shuffle(orderInit);
+			//shuffleList(orderInit);
 
 			for(int i = 0; i < 4; i++) 
 			{

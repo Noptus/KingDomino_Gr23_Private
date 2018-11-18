@@ -7,8 +7,16 @@ public class Jeu
 	{
 		do
 		{
+			//on affiche les menus
+			MenuParametres menuParametres = new MenuParametres();
+			if(menuParametres.display() == false) //l'utilisateur a quitte le menu, on ferme le programme
+				return;
+			MenuCouleurs menuCouleurs = new MenuCouleurs(menuParametres.getNbJoueurs(), menuParametres.getNbIA());
+			if(menuCouleurs.display() == false) //l'utilisateur a quitte le menu, on ferme le programme
+				return;
+			
 			//on cree une nouvelle partie
-			Partie partie = new Partie();
+			Partie partie = new Partie(menuParametres.getParametres(), menuCouleurs.getCouleurs());
 			
 			//on joue la partie
 			partie.jouer();

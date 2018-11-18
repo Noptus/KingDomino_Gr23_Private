@@ -42,7 +42,7 @@ public class Plateau
 	// retourne la nature de la case
 	public int getNature(int x, int y)
 	{
-		//la nature de la case correspond aux unités
+		//la nature de la case correspond aux unites
 		return plateau[x][y] % 10;
 	}
 	
