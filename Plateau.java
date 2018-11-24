@@ -148,4 +148,38 @@ public class Plateau
 		count(globallyCounted, currentlyCounted, nature, x, y + 1);
 	}
 	
+	public boolean placer(int x, int y, int x2, int y2, int[] domino)
+	{
+		//+ est contenu dans le plateau + ne depasse les 5x5
+		if(isAvailable(x, y) && isAvailable(x2, y2) && (isCompatible(x, y, domino[1]) || isCompatible(x2, y2, domino[3])))
+		{
+			plateau[x][y] = domino[0] * 10 + domino[1];
+			plateau[x2][y2] = domino[2] * 10 + domino[3];
+			return true;
+		}
+		return false;
+			
+	}
+	
+	private boolean isAvailable(int x, int y)
+	{
+		return getNature(x, y) == VIDE;
+	}
+	
+	private boolean isCompatible(int x, int y, int nature)
+	{
+		boolean isCompatible = false;
+		if((x == 6 && y == 5) || (x == 4 && y == 5) || (x == 5 && y == 4) || (x == 5 && y == 6))
+			isCompatible = true;
+		if(getNature(x-1, y) == nature)
+			isCompatible = true;
+		if(getNature(x+1, y) == nature)
+			isCompatible = true;
+		if(getNature(x, y-1) == nature)
+			isCompatible = true;
+		if(getNature(x, y+1) == nature)
+			isCompatible = true;
+		return isCompatible;
+	}
+	
 }

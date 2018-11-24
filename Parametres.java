@@ -12,6 +12,7 @@ public class Parametres
 	
 	public Parametres(int nbJoueurs, int nbIA, boolean modeDynastie, boolean modeEmpireMilieu, boolean modeHarmonie, boolean modeGrandDuel)
 	{
+		
 		this.nbJoueurs = nbJoueurs;
 		this.nbIA = nbIA;
 		this.nbTotal = nbJoueurs + nbIA;

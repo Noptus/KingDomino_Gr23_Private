@@ -22,16 +22,23 @@ public class Dominos
 	//liste d'entiers qui stocke tous nos dominos
 	public List<int[]> dominos = new ArrayList<>();
 	
-	// Retourne un domino au hasard et l'enlève de la liste
-	public int[] GetAndDelete_Domino() {
+	// Retourne le nb de dominos au hasard et les supprime de la liste
+	public int[][] GetAndDelete_Dominos(int nb) {
 		
-		Random rand = new Random();
-		int n = rand.nextInt( dominos.size() ) ;
+		int [][] choisis = new int[nb][5];
+		for(int i = 0; i < nb; i++)
+		{
+			Random rand = new Random();
+			System.out.println(dominos.size());
+			int n = rand.nextInt( dominos.size() ) ;
+			
+			int[] Choisi = dominos.get(n);
+			dominos.remove(n);
+			
+			choisis[i] = Choisi;
+		}
 		
-		int[] Choisi = dominos.get(n);
-		dominos.remove(n);
-		
-		return Choisi;
+		return choisis;
 	}
 	
 	//CONSTRUCTEUR (prend nb en argument, ce qui correspond au nb de dominos a jouer pour cette partie)
