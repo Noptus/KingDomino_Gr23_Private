@@ -4,110 +4,117 @@ import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
-public class Partie 
-{
-	
-	//ATTRIBUTS (PRIVES, ACCESSIBLES UNIQUEMENT DEPUIS CETTE CLASSE)
+public class Partie {
+
+	// ATTRIBUTS (PRIVES, ACCESSIBLES UNIQUEMENT DEPUIS CETTE CLASSE)
 	Parametres p;
 	private List<String> couleurs;
 	private List<Integer> ordre;
 	private Dominos dominos;
 	private Plateau[] plateaux;
 
-	
-	//CONSTRUCTEUR
-	public Partie(Parametres p, List<String> couleurs)
-	{		
+	public int[][] domino_manche;
+	public int[][] domino_manche_plus_1;
+
+	// CONSTRUCTEUR
+	public Partie(Parametres p, List<String> couleurs) {
+		// On initialise les paramètres, les couleurs, l'ordre pour commencer
 		this.p = p;
 		this.couleurs = couleurs;
 		ordre = defOrderInit();
-		
+
+		// On mets de côté le nombre de dominos
 		dominos = new Dominos(12 * p.nbTotal);
 		// test
 		dominos.print();
-		
+
+		// On crée le grand plateau
 		plateaux = new Plateau[p.nbTotal];
-		for(int i = 0; i <p.nbTotal; i++)
-		{
+		for (int i = 0; i < p.nbTotal; i++) {
+			// On le remplit
 			plateaux[i] = new Plateau();
-			System.out.println("");
-			//on affiche le plateau pour tester
+			// test
 			plateaux[i].print();
 		}
-		
-		
-		// Pour chacune des 12 manches
-        for(int i=1 ; i < 12 ; i++){
-        	
-        	Manche manche = new Manche();
-        	
-        }		
-        
-		
-		
-		
 
+		// Pour chacune des 12 manches
+		for (int i = 1; i <= 12; i++) {
+			
+			domino_manche = domino_manche_plus_1;
+			PickDominos(p.nbTotal);
 		
+		}
+
 	}
-	
-	
-	//METHODES PUBLIQUES
-	
-	
-	//deroulement de la partie, la ou tout se passera
-	public void jouer()
-	{
-		
-		
-        
+
+	// METHODES PUBLIQUES
+
+	// deroulement de la partie, la ou tout se passera
+	public void jouer() {
+
 	}
-	
-	
-	//METHODES PRIVEES, QUI SERVENT UNIQUEMENT A D'AUTRES METHODES DE CETTE CLASSE
-	
-	
+
+	private int[][] PickDominos(int n) {
+
+		switch (n) {
+		case 2:
+			domino_manche[0] = dominos.GetAndDelete_Domino();
+			domino_manche[1] = dominos.GetAndDelete_Domino();
+			domino_manche[2] = dominos.GetAndDelete_Domino();
+			domino_manche[3] = dominos.GetAndDelete_Domino();
+			break;
+		case 3:
+			domino_manche[0] = dominos.GetAndDelete_Domino();
+			domino_manche[1] = dominos.GetAndDelete_Domino();
+			domino_manche[2] = dominos.GetAndDelete_Domino();
+			break;
+		default:
+			domino_manche[0] = dominos.GetAndDelete_Domino();
+			domino_manche[1] = dominos.GetAndDelete_Domino();
+			domino_manche[2] = dominos.GetAndDelete_Domino();
+			domino_manche[3] = dominos.GetAndDelete_Domino();
+			break;
+		}
+		return domino_manche;
+
+	}
+
+	// METHODES PRIVEES, QUI SERVENT UNIQUEMENT A D'AUTRES METHODES DE CETTE CLASSE
+
 	// Methode pour savoir qui commence
-	private List<Integer> defOrderInit() 
-	{
-		
+	private List<Integer> defOrderInit() {
+
 		System.out.println("Ordre pour la première manche :");
 		List<Integer> orderInit = new LinkedList<Integer>();
-		
-		if (p.nbTotal != 2 ) 
-		{
-			
-			for(int i = 1; i <= p.nbTotal; i++) 
-			{    
-				orderInit.add(i);	
+
+		if (p.nbTotal != 2) {
+
+			for (int i = 1; i <= p.nbTotal; i++) {
+				orderInit.add(i);
 			}
 			Collections.shuffle(orderInit);
-			//shuffleList(orderInit);
-	
-			for(int i = 0; i < p.nbTotal; i++) 
-			{
-				System.out.println("Joueur "+(orderInit.get(i))+" : Place = "+(i+1) );
+			// shuffleList(orderInit);
+
+			for (int i = 0; i < p.nbTotal; i++) {
+				System.out.println("Joueur " + (orderInit.get(i)) + " : Place = " + (i + 1));
 			}
-			
+
 			return orderInit;
-			
-		} 
-		else 
-		{
+
+		} else {
 			orderInit.add(1);
 			orderInit.add(2);
 			orderInit.add(2);
 			orderInit.add(1);
 
 			Collections.shuffle(orderInit);
-			//shuffleList(orderInit);
+			// shuffleList(orderInit);
 
-			for(int i = 0; i < 4; i++) 
-			{
-				System.out.println("Joueur "+(orderInit.get(i))+" : Place = "+(i+1) );
+			for (int i = 0; i < 4; i++) {
+				System.out.println("Joueur " + (orderInit.get(i)) + " : Place = " + (i + 1));
 			}
 			return orderInit;
 		}
 	}
 
-	
 }
