@@ -58,7 +58,6 @@ public class Partie
 	public void jouer()
 	{
 		
-		
         
 	}
 	
