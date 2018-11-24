@@ -34,6 +34,7 @@ public class Partie {
 			// On le remplit
 			plateaux[i] = new Plateau();
 			// test
+			System.out.println();
 			plateaux[i].print();
 		}
 
@@ -41,8 +42,13 @@ public class Partie {
 		for (int i = 1; i <= 12; i++) {
 			
 			domino_manche = domino_manche_plus_1;
-			PickDominos(p.nbTotal);
-		
+			domino_manche_plus_1 = PickDominos(p.nbTotal);
+			
+			System.out.println("manche "+i);
+			System.out.println(domino_manche);
+			System.out.println("");
+			System.out.println(domino_manche_plus_1);
+			System.out.println();
 		}
 
 	}
@@ -78,6 +84,16 @@ public class Partie {
 		return domino_manche;
 
 	}
+	
+	private void printPickedDominos(int[][] D) {
+		
+		for(int i =0; i<=D.length;i++) {
+			System.out.println("Domino "+i+" : "+D[i]);
+		}
+		
+	}
+	
+	
 
 	// METHODES PRIVEES, QUI SERVENT UNIQUEMENT A D'AUTRES METHODES DE CETTE CLASSE
 
