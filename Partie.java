@@ -38,18 +38,7 @@ public class Partie {
 			plateaux[i].print();
 		}
 
-		// Pour chacune des 12 manches
-		for (int i = 1; i <= 12; i++) {
-			
-			domino_manche = domino_manche_plus_1;
-			domino_manche_plus_1 = PickDominos(p.nbTotal);
-			
-			System.out.println("manche "+i);
-			System.out.println(domino_manche);
-			System.out.println("");
-			System.out.println(domino_manche_plus_1);
-			System.out.println();
-		}
+		
 
 	}
 
@@ -58,6 +47,19 @@ public class Partie {
 	// deroulement de la partie, la ou tout se passera
 	public void jouer() {
 
+		// Pour chacune des 12 manches
+				for (int i = 1; i <= 12; i++) {
+					
+					domino_manche = domino_manche_plus_1;
+					domino_manche_plus_1 = PickDominos(p.nbTotal);
+					
+					System.out.println("manche "+i);
+					System.out.println(domino_manche);
+					System.out.println("");
+					System.out.println(domino_manche_plus_1);
+					System.out.println();
+				}
+				
 	}
 
 	private int[][] PickDominos(int n) {
