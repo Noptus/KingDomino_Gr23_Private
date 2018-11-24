@@ -6,13 +6,13 @@ public class Parametres
 	//tous les attributs sont publics pour y acceder partout
 	public int nbJoueurs, nbIA, nbTotal;
 	public boolean modeDynastie, modeEmpireMilieu, modeHarmonie, modeGrandDuel; 
+	public int nbDominoParJoueur;
 	
 	public Parametres()
 	{}
 	
 	public Parametres(int nbJoueurs, int nbIA, boolean modeDynastie, boolean modeEmpireMilieu, boolean modeHarmonie, boolean modeGrandDuel)
 	{
-		
 		this.nbJoueurs = nbJoueurs;
 		this.nbIA = nbIA;
 		this.nbTotal = nbJoueurs + nbIA;
@@ -20,5 +20,9 @@ public class Parametres
 		this.modeEmpireMilieu = modeEmpireMilieu;
 		this.modeHarmonie = modeHarmonie;
 		this.modeGrandDuel = modeGrandDuel;
+		if(this.nbTotal == 2)
+			this.nbDominoParJoueur = 2;
+		else
+			this.nbDominoParJoueur = 1;
 	}
 }

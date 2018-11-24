@@ -1,15 +1,13 @@
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
 import java.util.Scanner;
 
 public class Partie {
 
 	// ATTRIBUTS (PRIVES, ACCESSIBLES UNIQUEMENT DEPUIS CETTE CLASSE)
 	private Parametres p;
-	private List<String> couleurs;
-	private List<Integer> ordre;
+	private ArrayList<String> couleurs;
+	private ArrayList<Integer> ordre;
 	private Dominos dominos;
 	private Plateau[] plateaux;
 
@@ -17,20 +15,20 @@ public class Partie {
 	private Pioche domino_manche_plus_1;
 
 	// CONSTRUCTEUR
-	public Partie(Parametres p, List<String> couleurs) {
+	public Partie(Parametres p, ArrayList<String> couleurs) {
 		
-		// On initialise les paramètres, les couleurs, l'ordre pour commencer
+		// On initialise les parametres, les couleurs, l'ordre pour commencer
 		this.p = p;
 		this.couleurs = couleurs;
 		ordre = defOrderInit();
 
-		// On mets de côté le nombre de dominos
+		// On cree les dominos
 		dominos = new Dominos(12 * p.nbTotal);
 		// test
 		dominos.print();
 
 		
-		// On crée le grand plateau
+		// On cree le grand plateau
 		plateaux = new Plateau[p.nbTotal];
 		for (int i = 0; i < p.nbTotal; i++) {
 			// On le remplit
@@ -47,43 +45,68 @@ public class Partie {
 	// deroulement de la partie, la ou tout se passera
 	public void jouer() {
 		
-		domino_manche_plus_1 = new Pioche(dominos.GetAndDelete_Dominos(p.nbTotal));
+		//on cree la pioche du premier tour et on indique l'appartenance des dominos suivant l'odre des joueurs genere precedemment
+		domino_manche_plus_1 = new Pioche(dominos.GetAndDelete_Dominos(p.nbTotal*p.nbDominoParJoueur), (ArrayList<Integer>)ordre.clone());
+		
 		// Pour chacune des 12 manches
 		for (int i = 1; i <= 12; i++) {
 			
+			//on intervertit les pioches
 			domino_manche = domino_manche_plus_1;
-			if(i != 12)
-				domino_manche_plus_1 = new Pioche(dominos.GetAndDelete_Dominos(p.nbTotal));
+			if(i != 12) //on cree la pioche du tour suivant
+				domino_manche_plus_1 = new Pioche(dominos.GetAndDelete_Dominos(p.nbTotal*p.nbDominoParJoueur));
 				
-			// domino_manche_plus_1 = PickDominos(p.nbTotal);
 			System.out.println("manche " + i);
+			
+			//on affiche les 2 pioches (pour le debug)
+			System.out.println("pioche tour actuel : ");
 			domino_manche.print();
 			if(i != 12)
-				domino_manche_plus_1.print();
+			{
+				System.out.println("pioche tour suivant : ");
+				domino_manche_plus_1.print();	
+			}
 			
+			//on fait jouer les joueurs suivant l'ordre de jeu
 			for(int joueur : ordre)
 			{
-				plateaux[joueur].print();
-				//afficher son premier domino
+				//indique quel joueur joue
+				System.out.println("joueur " + joueur);
+
+				//afficher le plateau du joueur
+				System.out.println("plateau du joueur : ");
+				plateaux[joueur-1].print();
+				
+				//afficher le domino que le joueur doit placer
+				domino_manche.printDomino(joueur);
 				
 				//tester si possible de le placer
-				//si possible, doit le placer
-				//sinon, afficher message erreur et continue
+				//sinon, afficher message erreur et continuer
 				
 				Scanner sc = new Scanner(System.in);
-				System.out.println("joueur " + joueur);
+	
 				do
 				{
-					
 					System.out.println("x? y? x2? y2?");
-					
-					
 				}
-				while(plateaux[joueur].placer(sc.nextInt(), sc.nextInt(), sc.nextInt(), sc.nextInt(), domino_manche.getDomino(joueur)) == false);
-				//ou si le joueur peut placer le domino
-				//le joueur choisit son domino
-				//mettre a jour ordre tour suivant
+				while(plateaux[joueur-1].placer(sc.nextInt(), sc.nextInt(), sc.nextInt(), sc.nextInt(), domino_manche.getDomino(joueur)) == false);
+				
+				//on supprimer son domino de la pioche du tour actuel
+				domino_manche.deleteDomino(joueur);
+				
+				//le joueur choisit son domino dans la pioche du tour suivant
+				System.out.println("pioche tour suivant :");
+				domino_manche_plus_1.print();
+				do
+				{
+					System.out.println("indice du domino a choisir ?");
+				}
+				while(domino_manche_plus_1.choisir(sc.nextInt(), joueur) == false);
+				
 			}
+			
+			//mettre a jour ordre tour suivant
+			ordre = domino_manche_plus_1.getOrdre();
 		}
 		
 	}
@@ -94,10 +117,10 @@ public class Partie {
 	// METHODES PRIVEES, QUI SERVENT UNIQUEMENT A D'AUTRES METHODES DE CETTE CLASSE
 
 	// Methode pour savoir qui commence
-	private List<Integer> defOrderInit() {
+	private ArrayList<Integer> defOrderInit() {
 
 		System.out.println("Ordre pour la première manche :");
-		List<Integer> orderInit = new LinkedList<Integer>();
+		ArrayList<Integer> orderInit = new ArrayList<Integer>();
 
 		if (p.nbTotal != 2) {
 
