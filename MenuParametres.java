@@ -27,7 +27,7 @@ public class MenuParametres extends JDialog {
 	public MenuParametres() {
 		// on intialise la fenetre
 		super((JFrame) null, " KingDomino", true); // appel du constructeur de la classe mere
-		this.setSize(800, 800); // taille de la fentre
+		this.setSize(400, 400); // taille de la fentre
 		this.setLocationRelativeTo(null); // centre au milieu de l'ecrann
 		this.setResizable(false); // pas redimmensionnable
 		this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE); // quand on clique sur la croix, quitte la fenetre
@@ -162,6 +162,13 @@ public class MenuParametres extends JDialog {
 			JOptionPane message = new JOptionPane();
 			// affiche un message d'erreur pour avertir l'utilisateur
 			message.showMessageDialog(null, "le nombre de joueurs doit etre compris entre 2 et 4",
+					"impossible de lancer la partie", JOptionPane.INFORMATION_MESSAGE);
+			return false;
+		}
+		if(total != 2 && getModeDynastie() == true){
+			JOptionPane message = new JOptionPane();
+			// affiche un message d'erreur pour avertir l'utilisateur
+			message.showMessageDialog(null, "le mode dynastie ne peut etre jouer qu'a 2",
 					"impossible de lancer la partie", JOptionPane.INFORMATION_MESSAGE);
 			return false;
 		}
