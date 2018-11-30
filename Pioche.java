@@ -10,24 +10,27 @@ public class Pioche
 	public Pioche(int[][] dominos)
 	{
 		this.dominos = new ArrayList<int[]>();
+		
 		this.appartenances = new ArrayList<Integer>();
 		
-		//on stocke les numeros des dominos pour les ordonner suivant leur ordre croissant
+		//on stocke les numeros des dominos dans une liste a part 
+		// IMPORTANT : l'indice des elements de cette liste correspond a celle de la liste dominos 
 		ArrayList<Integer> numeroDominos = new ArrayList<Integer>();
 		
 		for(int i = 0; i < dominos.length; i++)
 		{
-			numeroDominos.add(dominos[i][4]);
+			numeroDominos.add(new Integer(dominos[i][4]));
 			appartenances.add(0);
 		}
 		
-		//on ajout les dominos dans l'ordre croissant
-		while(numeroDominos.size() > 0)
+		//on recuperer l'indice du numero du domino le plus petit, et on ajoute le dominos correspondant
+		for(int i = 0; i < dominos.length; i++)
 		{
 			int indexMin = numeroDominos.indexOf(Collections.min(numeroDominos));
 			this.dominos.add(dominos[indexMin]);
-			numeroDominos.remove(indexMin);
+			numeroDominos.set(indexMin, new Integer(50)); //on lui attribue une valeur superieure a 48 pour qu'il ne soit plus le plus petit
 		}
+
 	}
 		
 		public Pioche(int[][] dominos, ArrayList<Integer> appartenances)

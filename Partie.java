@@ -23,7 +23,7 @@ public class Partie {
 		ordre = defOrderInit();
 
 		// On cree les dominos
-		dominos = new Dominos(12 * p.nbTotal);
+		dominos = new Dominos(12 * p.nbTotal * p.nbDominoParJoueur);
 		// test
 		dominos.print();
 
@@ -80,19 +80,25 @@ public class Partie {
 				//afficher le domino que le joueur doit placer
 				domino_manche.printDomino(joueur);
 				
-				//tester si possible de le placer
-				//sinon, afficher message erreur et continuer
-				
 				Scanner sc = new Scanner(System.in);
-	
-				do
-				{
-					System.out.println("x? y? x2? y2?");
-				}
-				while(plateaux[joueur-1].placer(sc.nextInt(), sc.nextInt(), sc.nextInt(), sc.nextInt(), domino_manche.getDomino(joueur)) == false);
 				
-				//on supprimer son domino de la pioche du tour actuel
-				domino_manche.deleteDomino(joueur);
+				//tester si possible de le placer
+				if(!plateaux[joueur-1].isPossible(domino_manche.getDomino(joueur)))
+				{
+					System.out.println("Tu ne peux pas jouer ce domino !");
+				}
+				else
+				{			
+					//le joueur place son domino sur son terrain
+					do
+					{
+						System.out.println("x? y? x2? y2?");
+					}
+					while(plateaux[joueur-1].placer(sc.nextInt(), sc.nextInt(), sc.nextInt(), sc.nextInt(), domino_manche.getDomino(joueur)) == false);
+					
+					//on supprimer son domino de la pioche du tour actuel
+					domino_manche.deleteDomino(joueur);
+				}
 				
 				//le joueur choisit son domino dans la pioche du tour suivant
 				System.out.println("pioche tour suivant :");

@@ -19,11 +19,11 @@ public class Plateau {
 
 		// plateau de test pour tester le calcul de score
 		plateau[0][0] = 00;  plateau[1][0] = 00; plateau[2][0] = 00;  plateau[3][0] = 00;  plateau[4][0] = 00; plateau[5][0] = 00; plateau[6][0] = 00; plateau[7][0] = 00; plateau[8][0] = 00;
-		plateau[0][1] = 00;  plateau[1][1] = 01; plateau[2][1] = 00;  plateau[3][1] = 00;  plateau[4][1] = 00; plateau[5][1] = 00; plateau[6][1] = 00; plateau[7][1] = 00; plateau[8][1] = 00;
-		plateau[0][2] = 00;  plateau[1][2] = 03; plateau[2][2] = 01;  plateau[3][2] = 00;  plateau[4][2] = 00; plateau[5][2] = 00; plateau[6][2] = 00; plateau[7][2] = 00; plateau[8][2] = 00;
-		plateau[0][3] = 00;  plateau[1][3] = 01; plateau[2][3] = 00;  plateau[3][3] = 00;  plateau[4][3] = 01; plateau[5][3] = 00; plateau[6][3] = 00; plateau[7][3] = 00; plateau[8][3] = 00;
-		plateau[0][4] = 00;  plateau[1][4] = 00; plateau[2][4] = 00;  plateau[3][4] = 01;  plateau[4][4] = 07; plateau[5][4] = 01; plateau[6][4] = 00; plateau[7][4] = 00; plateau[8][4] = 00;
-		plateau[0][5] = 00;  plateau[1][5] = 00; plateau[2][5] = 00;  plateau[3][5] = 00;  plateau[4][5] = 01; plateau[5][5] = 00; plateau[6][5] = 00; plateau[7][5] = 00; plateau[8][5] = 00;
+		plateau[0][1] = 00;  plateau[1][1] = 00; plateau[2][1] = 00;  plateau[3][1] = 00;  plateau[4][1] = 00; plateau[5][1] = 00; plateau[6][1] = 00; plateau[7][1] = 00; plateau[8][1] = 00;
+		plateau[0][2] = 00;  plateau[1][2] = 00; plateau[2][2] = 00;  plateau[3][2] = 00;  plateau[4][2] = 00; plateau[5][2] = 00; plateau[6][2] = 00; plateau[7][2] = 00; plateau[8][2] = 00;
+		plateau[0][3] = 00;  plateau[1][3] = 00; plateau[2][3] = 00;  plateau[3][3] = 00;  plateau[4][3] = 00; plateau[5][3] = 00; plateau[6][3] = 00; plateau[7][3] = 00; plateau[8][3] = 00;
+		plateau[0][4] = 00;  plateau[1][4] = 00; plateau[2][4] = 00;  plateau[3][4] = 00;  plateau[4][4] = 07; plateau[5][4] = 00; plateau[6][4] = 00; plateau[7][4] = 00; plateau[8][4] = 00;
+		plateau[0][5] = 00;  plateau[1][5] = 00; plateau[2][5] = 00;  plateau[3][5] = 00;  plateau[4][5] = 00; plateau[5][5] = 00; plateau[6][5] = 00; plateau[7][5] = 00; plateau[8][5] = 00;
 		plateau[0][6] = 00;  plateau[1][6] = 00; plateau[2][6] = 00;  plateau[3][6] = 00;  plateau[4][6] = 00; plateau[5][6] = 00; plateau[6][6] = 00; plateau[7][6] = 00; plateau[8][6] = 00;
 		plateau[0][7] = 00;  plateau[1][7] = 00; plateau[2][7] = 00;  plateau[3][7] = 00;  plateau[4][7] = 00; plateau[5][7] = 00; plateau[6][7] = 00; plateau[7][7] = 00; plateau[8][7] = 00;
 		plateau[0][8] = 00;  plateau[1][8] = 00; plateau[2][8] = 00;  plateau[3][8] = 00;  plateau[4][8] = 00; plateau[5][8] = 00; plateau[6][8] = 00; plateau[7][8] = 00; plateau[8][8] = 00;
@@ -242,8 +242,10 @@ public class Plateau {
 
 	// affiche le plateau
 	public void print() {
-		for (int x = 0; x <= 8; x++) {
-			for (int y = 0; y <= 8; y++) {
+		System.out.println("  |0 |1 |2 |3 |4 |5 |6 | 7| 8");
+		for (int y = 0; y <= 8; y++) {
+			System.out.print(y + " |");
+			for (int x = 0; x <= 8; x++) {
 				System.out.print(getCouronne(x, y));
 				System.out.print(getNature(x, y));
 				System.out.print("|");
@@ -300,7 +302,7 @@ public class Plateau {
 
 	private boolean isCompatible(int x, int y, int nature) {
 		boolean isCompatible = false;
-		if ((x == 6 && y == 5) || (x == 4 && y == 5) || (x == 5 && y == 4) || (x == 5 && y == 6))
+		if ((x == 3 && y == 4) || (x == 5 && y == 4) || (x == 4 && y == 5) || (x == 4 && y == 3))
 			isCompatible = true;
 		if (getNature(x - 1, y) == nature)
 			isCompatible = true;

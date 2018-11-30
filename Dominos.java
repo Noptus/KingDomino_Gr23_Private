@@ -29,7 +29,6 @@ public class Dominos
 		for(int i = 0; i < nb; i++)
 		{
 			Random rand = new Random();
-			System.out.println(dominos.size());
 			int n = rand.nextInt( dominos.size() ) ;
 			
 			int[] Choisi = dominos.get(n);
@@ -37,7 +36,6 @@ public class Dominos
 			
 			choisis[i] = Choisi;
 		}
-		
 		return choisis;
 	}
 	
