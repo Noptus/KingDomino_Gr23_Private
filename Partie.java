@@ -23,7 +23,7 @@ public class Partie {
 		ordre = defOrderInit();
 
 		// On cree les dominos
-		dominos = new Dominos(12 * p.nbTotal * p.nbDominoParJoueur);
+		dominos = new Dominos(12 * p.nbTotal);
 		// test
 		dominos.print();
 

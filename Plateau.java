@@ -246,12 +246,13 @@ public class Plateau {
 		for (int y = 0; y <= 8; y++) {
 			System.out.print(y + " |");
 			for (int x = 0; x <= 8; x++) {
-				System.out.print(getCouronne(x, y));
-				System.out.print(getNature(x, y));
-				System.out.print("|");
-			}
+					System.out.print(getCouronne(x, y));
+					System.out.print(getNature(x, y));
+					System.out.print("|");
+				}
 			System.out.println("");
 		}
+		System.out.println("Score: " + getScore());
 	}
 
 	// METHODES PRIVEES, QUI SERVENT UNIQUEMENT A D'AUTRES METHODES DE CETTE CLASSE
