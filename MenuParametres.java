@@ -22,7 +22,10 @@ public class MenuParametres extends JDialog {
 	private JComboBox nbJoueurs, nbIA;
 	private JCheckBox dynastie, empireMilieu, harmonie, grandDuel;
 	private boolean jouer = false;
-
+	private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+	private int H = (int) screenSize.getHeight()/100;
+	private int W = (int) screenSize.getWidth()/100;
+	
 	// CONSTRUCTEUR
 	public MenuParametres() {
 		// on intialise la fenetre
