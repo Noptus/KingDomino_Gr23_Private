@@ -40,7 +40,11 @@ public class Pioche
 		}
 		
 
-	
+	public int getSize()
+	{
+		return dominos.size();
+	}
+		
 	//affiche tous les dominos de la pioche
 	public void print()
 	{
@@ -62,6 +66,16 @@ public class Pioche
 	{
 		int indexJoueur = appartenances.indexOf(joueur);
 		return dominos.get(indexJoueur);
+	}
+	
+	public int[] getDominoByIndex(int index)
+	{
+		return dominos.get(index);
+	}
+	
+	public int getJoueurByIndex(int index)
+	{
+		return appartenances.get(index);
 	}
 	
 	//supprime le domino suivant a jouer du joueur (appeler cette fonction une fois qu'il l'a place sur son terrain)

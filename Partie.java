@@ -27,7 +27,9 @@ public class Partie {
 		dominos = new Dominos(12 * p.nbTotal);
 		// test
 		dominos.print();
-
+		
+		//on cree la pioche du premier tour et on indique l'appartenance des dominos suivant l'odre des joueurs genere precedemment		
+		domino_manche_plus_1 = new Pioche(dominos.GetAndDelete_Dominos(p.nbTotal*p.nbDominoParJoueur), (ArrayList<Integer>)ordre.clone());
 		
 		// On cree le grand plateau
 		plateaux = new Plateau[p.nbTotal];
@@ -38,8 +40,6 @@ public class Partie {
 			// test
 			System.out.println();
 			plateaux[i].print();
-			fenetres[i] = new Fenetre(plateaux[i]);
-			fenetres[i].setVisible(false);
 		}
 
 	}
@@ -49,9 +49,6 @@ public class Partie {
 	// deroulement de la partie, la ou tout se passera
 	public void jouer() {
 		
-		//on cree la pioche du premier tour et on indique l'appartenance des dominos suivant l'odre des joueurs genere precedemment
-		domino_manche_plus_1 = new Pioche(dominos.GetAndDelete_Dominos(p.nbTotal*p.nbDominoParJoueur), (ArrayList<Integer>)ordre.clone());
-		
 		// Pour chacune des 12 manches
 		for (int i = 1; i <= 12; i++) {
 			
@@ -59,7 +56,13 @@ public class Partie {
 			domino_manche = domino_manche_plus_1;
 			if(i != 12) //on cree la pioche du tour suivant
 				domino_manche_plus_1 = new Pioche(dominos.GetAndDelete_Dominos(p.nbTotal*p.nbDominoParJoueur));
-				
+			
+			for(int joueur = 0; joueur < p.nbTotal; joueur++)
+			{
+				fenetres[i] = new Fenetre(plateaux[joueur], domino_manche, domino_manche_plus_1, joueur+1);
+				fenetres[i].setVisible(false);
+			}
+			
 			System.out.println("manche " + i);
 			
 			//on affiche les 2 pioches (pour le debug)
