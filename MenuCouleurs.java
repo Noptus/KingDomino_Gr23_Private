@@ -35,7 +35,9 @@ public class MenuCouleurs extends JDialog
 
 	//stocke les textures des chateaux pour les afficher a cote de la couleur choisie par le joueur
 	private HashMap<String, Image> chateaux = new HashMap<String, Image>();
-	private String[] choixCouleurs = {"bleu", "jaune", "rose", "vert"};
+	
+	//correspondance entre les couleurs en chaine de caracteres et leur numero d' images
+	private HashMap<String, Integer> correspondanceCouleurs = new HashMap<String, Integer>();
 	
 	
 	//CLASSE INTERNE
@@ -72,12 +74,18 @@ public class MenuCouleurs extends JDialog
 		this.setResizable(false);
 		this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		
+		
+		correspondanceCouleurs.put("bleu", 17);
+		correspondanceCouleurs.put("jaune", 27);
+		correspondanceCouleurs.put("rose", 37);
+		correspondanceCouleurs.put("vert", 47);
+		
 		//on charge les textures des chateaux
-		for(String couleur : choixCouleurs)
+		for(String couleur : correspondanceCouleurs.keySet())
 		{
 			try
 			{
-				chateaux.put(couleur, ImageIO.read(new File("images//" + couleur + ".png")));
+				chateaux.put(couleur, ImageIO.read(new File("images//" + correspondanceCouleurs.get(couleur) + ".png")));
 			}
 			catch(IOException e)
 			{
@@ -176,12 +184,12 @@ public class MenuCouleurs extends JDialog
 	}
 	
 	//methode pour recuperer les couleurs choisies par les joueurs
-	public ArrayList<String> getCouleurs()
+	public ArrayList<Integer> getCouleurs()
 	{
-		ArrayList<String> couleursChoisies = new ArrayList<String>();
+		ArrayList<Integer> couleursChoisies = new ArrayList<Integer>();
 		for(int i = 0; i < couleurs.size(); i++)
 		{
-			couleursChoisies.add(couleurs.get(i).getSelectedItem().toString());
+			couleursChoisies.add(correspondanceCouleurs.get(couleurs.get(i).getSelectedItem().toString()));
 		}
 		return couleursChoisies;
 	}

@@ -6,6 +6,7 @@ public class Plateau {
 
 	// on définit une case vide, sans dominos dessus
 	public static final int VIDE = 0;
+	public static final int CHATEAU = 7;
 
 	// ATTRIBUTS (PRIVES, ACCESSIBLES UNIQUEMENT DEPUIS CETTE CLASSE)
 
@@ -13,7 +14,7 @@ public class Plateau {
 	private int[][] plateau;
 
 	// CONSTRUCTEUR
-	public Plateau() {
+	public Plateau(int ch) {
 		// on creee un tableau de taille 9x9
 		plateau = new int[9][9];
 
@@ -22,7 +23,7 @@ public class Plateau {
 		plateau[0][1] = 00;  plateau[1][1] = 00; plateau[2][1] = 00;  plateau[3][1] = 00;  plateau[4][1] = 00; plateau[5][1] = 00; plateau[6][1] = 00; plateau[7][1] = 00; plateau[8][1] = 00;
 		plateau[0][2] = 00;  plateau[1][2] = 00; plateau[2][2] = 00;  plateau[3][2] = 00;  plateau[4][2] = 00; plateau[5][2] = 00; plateau[6][2] = 00; plateau[7][2] = 00; plateau[8][2] = 00;
 		plateau[0][3] = 00;  plateau[1][3] = 00; plateau[2][3] = 00;  plateau[3][3] = 00;  plateau[4][3] = 00; plateau[5][3] = 00; plateau[6][3] = 00; plateau[7][3] = 00; plateau[8][3] = 00;
-		plateau[0][4] = 00;  plateau[1][4] = 00; plateau[2][4] = 00;  plateau[3][4] = 00;  plateau[4][4] = 07; plateau[5][4] = 00; plateau[6][4] = 00; plateau[7][4] = 00; plateau[8][4] = 00;
+		plateau[0][4] = 00;  plateau[1][4] = 00; plateau[2][4] = 00;  plateau[3][4] = 00;  plateau[4][4] = ch; plateau[5][4] = 00; plateau[6][4] = 00; plateau[7][4] = 00; plateau[8][4] = 00;
 		plateau[0][5] = 00;  plateau[1][5] = 00; plateau[2][5] = 00;  plateau[3][5] = 00;  plateau[4][5] = 00; plateau[5][5] = 00; plateau[6][5] = 00; plateau[7][5] = 00; plateau[8][5] = 00;
 		plateau[0][6] = 00;  plateau[1][6] = 00; plateau[2][6] = 00;  plateau[3][6] = 00;  plateau[4][6] = 00; plateau[5][6] = 00; plateau[6][6] = 00; plateau[7][6] = 00; plateau[8][6] = 00;
 		plateau[0][7] = 00;  plateau[1][7] = 00; plateau[2][7] = 00;  plateau[3][7] = 00;  plateau[4][7] = 00; plateau[5][7] = 00; plateau[6][7] = 00; plateau[7][7] = 00; plateau[8][7] = 00;
@@ -213,8 +214,8 @@ public class Plateau {
 		// on cherche pour chaque case les cases voisines semblables
 		for (int x = 0; x < 9; x++) {
 			for (int y = 0; y < 9; y++) {
-				// on compte uniquement si la case n'est pas vide
-				if (getNature(x, y) != VIDE) {
+				// on compte uniquement si la case n'est pas vide ou n'est pas un chateau
+				if (getNature(x, y) != VIDE && getNature(x, y) != CHATEAU) {
 					// on vide l'historique des cases voisines a la precedente
 					currentlyCounted.clear();
 

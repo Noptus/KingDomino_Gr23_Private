@@ -91,7 +91,7 @@ public class MenuParametres extends JDialog {
 
 		// creation du bouton pour lancer la partie
 		JButton butJouer = new JButton("Lancer la partie");
-
+		
 		// ajout d'une action associee au bouton : on verifie les valeurs et on quitte
 		// le menu
 		butJouer.addActionListener(new ActionListener() {
