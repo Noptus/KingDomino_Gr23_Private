@@ -1,5 +1,13 @@
 # KingDomino_Gr23_Private
 
+TODO :
+vérifier proximité entre inputs
+vérifier fonctionnement isPossible
+appliquer le gridBag
+Mettre au point le JPanel en haut a gauche
+Faire la fenetre de fin de partie
+
+
 
 Objectif : 
 Imiter le jeu de société KingDomino
