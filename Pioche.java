@@ -87,11 +87,12 @@ public class Pioche
 	}
 	
 	//reserve le domino numero indice de la pioche au joueur, si il est deja pris, retourne false
-	public boolean choisir(int indice, int joueur)
+	public boolean choisir(int[] domino, int joueur)
 	{
-		if(appartenances.get(indice) == 0)
+
+		if(appartenances.get(dominos.indexOf(domino)) == 0)
 		{
-			appartenances.set(indice, joueur);
+			appartenances.set(dominos.indexOf(domino), joueur);
 			return true;
 		}
 		return false;
@@ -100,7 +101,7 @@ public class Pioche
 	//retourne l'ordre de jeu du tour suivant, qui correspond en fait a l'appartenance de chaque domino trie
 	public ArrayList<Integer> getOrdre()
 	{
-		return appartenances;
+		return (ArrayList<Integer>)appartenances.clone();
 	}
 	
 }

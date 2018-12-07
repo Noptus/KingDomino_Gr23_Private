@@ -50,12 +50,13 @@ public class Partie {
 	public void jouer() {
 		
 		// Pour chacune des 12 manches
-		for (int manche = 1; manche<= 12; manche++) {
+		for (int manche = 1; manche <= 12; manche++) {
 			
 			//on intervertit les pioches
 			domino_manche = domino_manche_plus_1;
-			if(manche!= 12) //on cree la pioche du tour suivant
+			if((manche != 6 && p.nbTotal == 2) || (manche!= 12 && p.nbTotal != 2)) //on cree la pioche du tour suivant
 				domino_manche_plus_1 = new Pioche(dominos.GetAndDelete_Dominos(p.nbTotal*p.nbDominoParJoueur));
+			
 			
 			for(int joueur = 1; joueur <= p.nbTotal; joueur++)
 			{
@@ -76,6 +77,7 @@ public class Partie {
 			//on fait jouer les joueurs suivant l'ordre de jeu
 			for(int joueur : ordre)
 			{
+				fenetres[joueur-1].setHighlight(domino_manche.getDomino(joueur));
 				fenetres[joueur-1].setVisible(true);
 				
 				//indique quel joueur joue
@@ -98,13 +100,13 @@ public class Partie {
 				else
 				{			
 					//le joueur place son domino sur son terrain
-					int clicks[];
+					int positions[];
 					do
 					{
 						System.out.println("x? y? x2? y2?");
 						
 						//on attend que l'utilisateur ait place son domino
-						while(fenetres[joueur-1].hasClickedTwice() == false)
+						while(fenetres[joueur-1].hasPlacedDomino() == false)
 						{
 							// /!\ on verifie toutes les 10 ms, autrement ca ne fonctionne pas
 							try
@@ -118,13 +120,15 @@ public class Partie {
 						}
 						
 						//on recupere les cases sur lesquelles il a clique
-						clicks = fenetres[joueur-1].getClicks();
+						positions = fenetres[joueur-1].getPositions();
 
 					} //on place son domino (si possible), sinon on lui redemande a nouveau
-					while(plateaux[joueur-1].placer(clicks[0], clicks[1], clicks[2], clicks[3], domino_manche.getDomino(joueur)) == false);
+					while(plateaux[joueur-1].placer(positions[0], positions[1], positions[2], positions[3], domino_manche.getDomino(joueur)) == false);
+					
+					
 					
 					//on met a jour les textures du plateau
-					fenetres[joueur-1].setTextures(clicks, domino_manche.getDomino(joueur));
+					fenetres[joueur-1].setTextures(positions, domino_manche.getDomino(joueur));
 					
 					//on supprimer son domino de la pioche du tour actuel
 					domino_manche.deleteDomino(joueur);
@@ -133,11 +137,29 @@ public class Partie {
 				//le joueur choisit son domino dans la pioche du tour suivant
 				System.out.println("pioche tour suivant :");
 				domino_manche_plus_1.print();
-				do
+				
+				while(fenetres[joueur-1].hasSelectedDomino() == false)
 				{
-					System.out.println("indice du domino a choisir ?");
+					// /!\ on verifie toutes les 10 ms, autrement ca ne fonctionne pas
+					try
+					{
+					    Thread.sleep(10);
+					}
+					catch(InterruptedException e)
+					{
+						e.printStackTrace();
+					}
 				}
-				while(domino_manche_plus_1.choisir(sc.nextInt(), joueur) == false);
+				
+				int[] domino = fenetres[joueur-1].getDomino();
+				domino_manche_plus_1.choisir(domino, joueur);
+				
+				//on met a jour les fenetres pour qu'ils sachent que le joueur a choisit ce domino
+				for(int autreJoueur = 0; autreJoueur < p.nbTotal; autreJoueur++)
+				{
+					fenetres[autreJoueur].setJoueur(domino, joueur);
+					fenetres[autreJoueur].setCrossed(domino);
+				}
 				
 				fenetres[joueur-1].setVisible(false);
 				

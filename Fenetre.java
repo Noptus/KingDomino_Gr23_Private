@@ -67,19 +67,21 @@ public class Fenetre extends JFrame
 	
 	class Domino extends JButton
 	{
-		private Image texture1 = null;
-		private Image texture2 = null;
+		private Image texture1;
+		private Image texture2;
+		private int indice;
 		private int[] domino;
 		private int joueur;
 		private boolean highlight;
+		private boolean crossed;
 		
-		public Domino(int[] domino, int joueur, boolean highlight)
+		public Domino(int[] domino, int indice, int joueur)
 		{
+			this.domino = domino;
 			this.texture1 = textures.get(domino[0]*10 + domino[1]);
 			this.texture2 = textures.get(domino[2]*10 + domino[3]);
-			this.domino = domino;
+			this.indice = indice;
 			this.joueur = joueur;
-			this.highlight = highlight;
 			if(nobodyOwns() == false)
 				this.setBorderPainted(false);
 		
@@ -94,11 +96,20 @@ public class Fenetre extends JFrame
 		{
 			return joueur == 0;
 		}
-		
-		
-		public void setJoueur(int joueur)
+				
+		public void setJoueur(int joueur) //inque l'appartenance du domino (pour la pioche du tour suivant)
 		{
 			this.joueur = joueur;
+		}
+		
+		public void setHighlight(boolean highlight) //insique si le domino doit etre encadre en rouge (domino a jouer)
+		{
+			this.highlight = highlight;
+		}
+		
+		public void setCrossed(boolean crossed) //indique si le domino doit etre barre (domino deja pioche)
+		{
+			this.crossed = crossed;
 		}
 		
 		public void paintComponent(Graphics g)
@@ -112,9 +123,13 @@ public class Fenetre extends JFrame
 			g2d.drawImage(texture2, this.getWidth()/2, 0, this.getWidth()/2, this.getHeight(), null);
 			if(highlight)
 			{
-				System.out.println("salut");
 				g2d.setColor(Color.RED);
 				g2d.drawRect(thickness/2, thickness/2, this.getWidth() - thickness, this.getHeight() - thickness);
+			}
+			if(crossed)
+			{
+				g2d.setColor(Color.RED);
+				g2d.drawLine(10, 10, this.getWidth() - 10, this.getHeight() - 10);
 			}
 			g2d.setStroke(save);
 		} 
@@ -123,7 +138,10 @@ public class Fenetre extends JFrame
 	
 	//ATTRIBUTS PRIVES
 	private HashMap<Integer, Image> textures = new HashMap<Integer, Image>();
-	private int clicks[] = new int[] {-1, -1, -1, -1};
+	
+	private int[] pos = new int[] {-1, -1, -1, -1}; //2 clics pour placer domino
+	private int[] domino = null; //1 clic pour choisir domino
+	
 	private Case[][] cases = new Case[9][9];
 	private Domino[][] dominos = new Domino[4][2];
 	private int joueur;
@@ -177,15 +195,15 @@ public class Fenetre extends JFrame
 		    				int y = source.get()[1];
 		    				
 		    				//on stocke l'indice des cases dans le tableau
-		    				if(clicks[0] != -1)
+		    				if(pos[0] != -1)
 		    				{
-		    					clicks[2] = x;
-		    					clicks[3] = y;
+		    					pos[2] = x;
+		    					pos[3] = y;
 		    				}
 		    				else
 		    				{
-		    					clicks[0] = x;
-		    					clicks[1] = y;
+		    					pos[0] = x;
+		    					pos[1] = y;
 		    				}
 	    				}
 	    			}
@@ -200,10 +218,7 @@ public class Fenetre extends JFrame
 	    domino_manche_Pan.setLayout(new GridLayout(domino_manche.getSize(), 1, 20, 20));
 	    for(int i = 0; i < domino_manche.getSize(); i++)
 	    {
-	    	if(domino_manche.getDominoByIndex(i) == domino_manche.getDomino(joueur))
-	    		dominos[i][0] = new Domino(domino_manche.getDominoByIndex(i), domino_manche.getJoueurByIndex(i), true);
-	    	else
-	    		dominos[i][0] = new Domino(domino_manche.getDominoByIndex(i), domino_manche.getJoueurByIndex(i), false);
+	    	dominos[i][0] = new Domino(domino_manche.getDominoByIndex(i), i, domino_manche.getJoueurByIndex(i));
 	    	domino_manche_Pan.add(dominos[i][0]);
 	    }
 	    
@@ -212,7 +227,21 @@ public class Fenetre extends JFrame
 	    domino_manche_plus_1_Pan.setLayout(new GridLayout(domino_manche_plus_1.getSize(), 1, 20, 20));
 	    for(int i = 0; i < domino_manche_plus_1.getSize(); i++)
 	    {
-	    	dominos[i][1] = new Domino(domino_manche_plus_1.getDominoByIndex(i), domino_manche_plus_1.getJoueurByIndex(i), false);
+	    	dominos[i][1] = new Domino(domino_manche_plus_1.getDominoByIndex(i), i, domino_manche_plus_1.getJoueurByIndex(i));
+	    	dominos[i][1].addActionListener(new ActionListener()
+			{
+    			public void actionPerformed(ActionEvent e)
+    			{
+    				//on recupere la case qui a ete selectionnee
+    				Domino source = (Domino) e.getSource();
+    				
+    				//si le domino appartient deja a quelqu'un, on ne peut pas le choisir
+    				if(source.nobodyOwns())
+    				{
+    					domino = source.get();
+    				}
+    			}
+			});
 	    	domino_manche_plus_1_Pan.add(dominos[i][1]);
 	    }
 	    
@@ -228,20 +257,32 @@ public class Fenetre extends JFrame
     
     
     
-    public boolean hasClickedTwice()
+    public boolean hasPlacedDomino()
     {
-    	return clicks[0] != -1 && clicks[1] != -1 && clicks[2] != -1 && clicks[3] != -1;
+    	return pos[0] != -1 && pos[1] != -1 && pos[2] != -1 && pos[3] != -1;
     }
     
-    public int[] getClicks()
+    public boolean hasSelectedDomino()
+    {
+    	return domino != null;
+    }
+    
+    public int[] getPositions()
     {
     	int[] results = new int[4];
     	for(int i = 0; i < 4; i++)
     	{
-    		results[i] = clicks[i];
-    		clicks[i] = -1;
+    		results[i] = pos[i];
+    		pos[i] = -1;
     	}
     	return results;
+    }
+    
+    public int[] getDomino()
+    {
+    	int[] result = domino;
+    	domino = null;
+    	return result;
     }
     
     public void setTextures(int[] pos, int[] domino)
@@ -249,4 +290,34 @@ public class Fenetre extends JFrame
     	cases[pos[0]][pos[1]].set(textures.get(domino[0]*10 + domino[1]));
     	cases[pos[2]][pos[3]].set(textures.get(domino[2]*10 + domino[3]));
     }
+    
+    public void setJoueur(int[] domino, int joueur)
+    {
+    	for(int i = 0; i < dominos.length; i++)
+    	{
+    		if(dominos[i][0].get() == domino)
+    			dominos[i][0].setJoueur(joueur);
+    	}    
+    }
+    
+    public void setHighlight(int[] domino)
+    {
+    	for(int i = 0; i < dominos.length; i++)
+    	{
+    		if(dominos[i][0].get() == domino)
+    			dominos[i][0].setHighlight(true);
+    		else
+    			dominos[i][0].setHighlight(false);
+    	}    	
+    }
+    
+    public void setCrossed(int[] domino)
+    {
+    	for(int i = 0; i < dominos.length; i++)
+    	{
+    		if(dominos[i][1].get() == domino)
+    			dominos[i][1].setCrossed(true);
+    	}    
+    }
+    
 }
