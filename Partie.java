@@ -50,25 +50,24 @@ public class Partie {
 	public void jouer() {
 		
 		// Pour chacune des 12 manches
-		for (int i = 1; i <= 12; i++) {
+		for (int manche = 1; manche<= 12; manche++) {
 			
 			//on intervertit les pioches
 			domino_manche = domino_manche_plus_1;
-			if(i != 12) //on cree la pioche du tour suivant
+			if(manche!= 12) //on cree la pioche du tour suivant
 				domino_manche_plus_1 = new Pioche(dominos.GetAndDelete_Dominos(p.nbTotal*p.nbDominoParJoueur));
 			
-			for(int joueur = 0; joueur < p.nbTotal; joueur++)
+			for(int joueur = 1; joueur <= p.nbTotal; joueur++)
 			{
-				fenetres[i] = new Fenetre(plateaux[joueur], domino_manche, domino_manche_plus_1, joueur+1);
-				fenetres[i].setVisible(false);
+				fenetres[joueur-1] = new Fenetre(plateaux[joueur-1], domino_manche, domino_manche_plus_1, joueur);
 			}
 			
-			System.out.println("manche " + i);
+			System.out.println("manche " + manche);
 			
 			//on affiche les 2 pioches (pour le debug)
 			System.out.println("pioche tour actuel : ");
 			domino_manche.print();
-			if(i != 12)
+			if(manche != 12)
 			{
 				System.out.println("pioche tour suivant : ");
 				domino_manche_plus_1.print();	

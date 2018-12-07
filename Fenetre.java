@@ -1,4 +1,5 @@
 import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
@@ -6,6 +7,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.Stroke;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -77,6 +79,7 @@ public class Fenetre extends JFrame
 			this.texture2 = textures.get(domino[2]*10 + domino[3]);
 			this.domino = domino;
 			this.joueur = joueur;
+			this.highlight = highlight;
 			if(nobodyOwns() == false)
 				this.setBorderPainted(false);
 		
@@ -101,17 +104,19 @@ public class Fenetre extends JFrame
 		public void paintComponent(Graphics g)
 		{
 			Graphics2D g2d = (Graphics2D) g;
-			g2d.setColor(Color.WHITE);
-			g2d.drawRect(0, 0, this.getWidth(), this.getHeight());
-			float alpha;
-			if(highlight == false)
-				alpha = (float) 0.5; //draw half transparent
-			else
-				alpha = (float) 1.0;
-			AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,alpha);
-			g2d.setComposite(ac);
+			int thickness = 6;
+			Stroke save = g2d.getStroke();
+			g2d.setStroke(new BasicStroke(thickness));
+
 			g2d.drawImage(texture1, 0, 0, this.getWidth()/2, this.getHeight(), null);
 			g2d.drawImage(texture2, this.getWidth()/2, 0, this.getWidth()/2, this.getHeight(), null);
+			if(highlight)
+			{
+				System.out.println("salut");
+				g2d.setColor(Color.RED);
+				g2d.drawRect(thickness/2, thickness/2, this.getWidth() - thickness, this.getHeight() - thickness);
+			}
+			g2d.setStroke(save);
 		} 
 	}
 	
