@@ -12,26 +12,71 @@ public class Plateau {
 
 	// matrice d'entiers qui stockera les cases du plateau avec son contenu
 	private int[][] plateau;
-
+	private Parametres parametres;
+	private int XC;
+	private int YC;
+	
 	// CONSTRUCTEUR
-	public Plateau(int ch) {
-		// on creee un tableau de taille 9x9
-		plateau = new int[9][9];
-
-		// plateau de test pour tester le calcul de score
-		plateau[0][0] = 00;  plateau[1][0] = 00; plateau[2][0] = 00;  plateau[3][0] = 00;  plateau[4][0] = 00; plateau[5][0] = 00; plateau[6][0] = 00; plateau[7][0] = 00; plateau[8][0] = 00;
-		plateau[0][1] = 00;  plateau[1][1] = 00; plateau[2][1] = 00;  plateau[3][1] = 00;  plateau[4][1] = 00; plateau[5][1] = 00; plateau[6][1] = 00; plateau[7][1] = 00; plateau[8][1] = 00;
-		plateau[0][2] = 00;  plateau[1][2] = 00; plateau[2][2] = 00;  plateau[3][2] = 00;  plateau[4][2] = 00; plateau[5][2] = 00; plateau[6][2] = 00; plateau[7][2] = 00; plateau[8][2] = 00;
-		plateau[0][3] = 00;  plateau[1][3] = 00; plateau[2][3] = 00;  plateau[3][3] = 00;  plateau[4][3] = 00; plateau[5][3] = 00; plateau[6][3] = 00; plateau[7][3] = 00; plateau[8][3] = 00;
-		plateau[0][4] = 00;  plateau[1][4] = 00; plateau[2][4] = 00;  plateau[3][4] = 00;  plateau[4][4] = ch; plateau[5][4] = 00; plateau[6][4] = 00; plateau[7][4] = 00; plateau[8][4] = 00;
-		plateau[0][5] = 00;  plateau[1][5] = 00; plateau[2][5] = 00;  plateau[3][5] = 00;  plateau[4][5] = 00; plateau[5][5] = 00; plateau[6][5] = 00; plateau[7][5] = 00; plateau[8][5] = 00;
-		plateau[0][6] = 00;  plateau[1][6] = 00; plateau[2][6] = 00;  plateau[3][6] = 00;  plateau[4][6] = 00; plateau[5][6] = 00; plateau[6][6] = 00; plateau[7][6] = 00; plateau[8][6] = 00;
-		plateau[0][7] = 00;  plateau[1][7] = 00; plateau[2][7] = 00;  plateau[3][7] = 00;  plateau[4][7] = 00; plateau[5][7] = 00; plateau[6][7] = 00; plateau[7][7] = 00; plateau[8][7] = 00;
-		plateau[0][8] = 00;  plateau[1][8] = 00; plateau[2][8] = 00;  plateau[3][8] = 00;  plateau[4][8] = 00; plateau[5][8] = 00; plateau[6][8] = 00; plateau[7][8] = 00; plateau[8][8] = 00;
+	public Plateau(int ch, Parametres P) {
+		
+		Parametres parametres = P;
+		if ( P.modeGrandDuel ) {
+			plateau = new int[13][13];
+			plateau[6][6] = ch;
+			XC = 6;
+			YC = 6;
+		} else {
+			plateau = new int[9][9];
+			plateau[4][4] = ch;
+			XC = 4;
+			YC = 4;
+		}
+	
 	}
 
 	// METHODES PUBLIQUES
 
+	public int[] getDimensions() {
+
+		int min_X = 20;
+		int max_X = -10;
+		int min_Y = 20;
+		int max_Y = -10;
+
+		// On avance en augmentant les valeurs, pour trouver les mins
+		for (int i = 0; i <= 8; i++) {
+			for (int j = 0; j <= 8; j++) {
+				if (getNature(i, j) != 0 && i < min_X) {
+					min_X = i;
+				}
+				if (getNature(i, j) != 0 && j < min_Y) {
+					min_Y = j;
+				}
+			}
+		}
+
+		// On fait diminuer les valeurs, pour trouver les max
+		for (int i = 8; i >= 0; i--) {
+			for (int j = 8; j >= 0; j--) {
+				if (getNature(i, j) != 0 && i > max_X) {
+					max_X = i;
+				}
+				if (getNature(i, j) != 0 && j > max_Y) {
+					max_Y = j;
+				}
+			}
+		}
+
+		int[] Dimensions = new int[4];
+		Dimensions[0] = min_X;
+		Dimensions[1] = max_X;
+		Dimensions[2] = min_Y;
+		Dimensions[3] = max_Y;
+
+		return Dimensions;
+
+	}
+	
 	// retourne la nature de la case
 	public int getNature(int x, int y) {
 		// la nature de la case correspond aux unites
@@ -113,7 +158,42 @@ public class Plateau {
 	}
 	
 	
-	
+	// Chateau au centre > 10 points
+	private boolean isEmpire() {
+
+		int[] Dimensions = getDimensions();
+		int Center_Y = Dimensions[3]-2;
+		int Center_X = Dimensions[1]-2;
+		System.out.println("center is : "+getNature(Center_X, Center_Y));
+		if (getNature(Center_X, Center_Y) == 7) {
+			return true;
+		} else {
+			return false;
+		}
+
+	}
+
+	// 5*5 cases > 5 points
+	private boolean isHarmony() {
+
+		int[] Dimensions = getDimensions();
+		int min_X = Dimensions[0];
+		int min_Y = Dimensions[1];
+		int max_X = Dimensions[2];
+		int max_Y = Dimensions[3];
+		
+		for ( int x = min_X ; x < max_X ; x++) {
+			for ( int y = min_Y ; y < max_Y ; y++) {
+				if (getNature(x,y) == 0) {
+					return false;
+				}
+			}
+		}
+
+		return true;
+		
+		
+	}
 	
 
 	public boolean getRainbowPossibility() {
@@ -203,6 +283,13 @@ public class Plateau {
 	public int getScore() {
 		int score = 0;
 
+		if ( isHarmony() ) {
+			score = score +5;
+		}
+		if ( isEmpire() ) {
+			score = score +10;
+		}
+		
 		// liste qui stocke l'ensemble des cases qui ont ete comptees (pour ne pas les
 		// recompter 2 fois quand on inspecte la case suivante)
 		ArrayList<int[]> globallyCounted = new ArrayList<int[]>();
