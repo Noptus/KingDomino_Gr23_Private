@@ -36,7 +36,7 @@ public class Partie {
 		fenetres = new Fenetre[p.nbTotal];
 		for (int i = 0; i < p.nbTotal; i++) {
 			// On le remplit
-			plateaux[i] = new Plateau(couleurs.get(i));
+			plateaux[i] = new Plateau(couleurs.get(i), p);
 			// test
 			System.out.println();
 			plateaux[i].print();
@@ -60,7 +60,7 @@ public class Partie {
 			
 			for(int joueur = 1; joueur <= p.nbTotal; joueur++)
 			{
-				fenetres[joueur-1] = new Fenetre(plateaux[joueur-1], domino_manche, domino_manche_plus_1, joueur);
+				fenetres[joueur-1] = new Fenetre(plateaux[joueur-1], domino_manche, domino_manche_plus_1, joueur, manche);
 			}
 			
 			System.out.println("manche " + manche);
@@ -90,16 +90,16 @@ public class Partie {
 				//afficher le domino que le joueur doit placer
 				domino_manche.printDomino(joueur);
 				
-				Scanner sc = new Scanner(System.in);
-				
 				//tester si possible de le placer
 				if(!plateaux[joueur-1].isPossible(domino_manche.getDomino(joueur)))
 				{
 					System.out.println("Tu ne peux pas jouer ce domino !");
 				}
 				else
-				{			
+				{						
 					//le joueur place son domino sur son terrain
+					fenetres[joueur-1].setActionEnCours(1);
+					
 					int positions[];
 					do
 					{
@@ -135,6 +135,8 @@ public class Partie {
 				}
 				
 				//le joueur choisit son domino dans la pioche du tour suivant
+				fenetres[joueur-1].setActionEnCours(2);
+				
 				System.out.println("pioche tour suivant :");
 				domino_manche_plus_1.print();
 				

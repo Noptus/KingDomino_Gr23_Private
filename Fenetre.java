@@ -2,12 +2,17 @@ import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.Stroke;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -27,6 +32,7 @@ import javax.swing.JPanel;
 
 public class Fenetre extends JFrame
 {
+	
 	//CLASSE INTERNE qui represente une case de notre damier
 	class Case extends JButton
 	{
@@ -39,6 +45,8 @@ public class Fenetre extends JFrame
 			this.texture = texture;
 			this.x = x;
 			this.y = y;
+			if(isFull() == true)
+				this.setBorderPainted(false);
 		}
 		
 		public boolean isFull()
@@ -55,8 +63,8 @@ public class Fenetre extends JFrame
 		public void set(Image texture)
 		{
 			this.texture = texture;
+			this.setBorderPainted(false); 
 			this.repaint(); //on demande a reafficher le panel mis a jour
-			this.setBorderPainted(false);
 		}
 		
 		public void paintComponent(Graphics g)
@@ -65,22 +73,21 @@ public class Fenetre extends JFrame
 		} 
 	}
 	
+	//CLASSE INTERNE qui represente un domino de notre pioche
 	class Domino extends JButton
 	{
 		private Image texture1;
 		private Image texture2;
-		private int indice;
 		private int[] domino;
 		private int joueur;
 		private boolean highlight;
 		private boolean crossed;
 		
-		public Domino(int[] domino, int indice, int joueur)
+		public Domino(int[] domino, int joueur)
 		{
 			this.domino = domino;
 			this.texture1 = textures.get(domino[0]*10 + domino[1]);
 			this.texture2 = textures.get(domino[2]*10 + domino[3]);
-			this.indice = indice;
 			this.joueur = joueur;
 			if(nobodyOwns() == false)
 				this.setBorderPainted(false);
@@ -99,6 +106,7 @@ public class Fenetre extends JFrame
 				
 		public void setJoueur(int joueur) //inque l'appartenance du domino (pour la pioche du tour suivant)
 		{
+			this.setBorderPainted(false);
 			this.joueur = joueur;
 		}
 		
@@ -116,11 +124,12 @@ public class Fenetre extends JFrame
 		{
 			Graphics2D g2d = (Graphics2D) g;
 			int thickness = 6;
-			Stroke save = g2d.getStroke();
+			Stroke save = g2d.getStroke(); //on sauvegarde l'ancienne methode de rendu pour ne pas influer sur les autres affichages du programme (tous les traits auraient une epaisseur de 6 sinon)
 			g2d.setStroke(new BasicStroke(thickness));
 
-			g2d.drawImage(texture1, 0, 0, this.getWidth()/2, this.getHeight(), null);
-			g2d.drawImage(texture2, this.getWidth()/2, 0, this.getWidth()/2, this.getHeight(), null);
+			g2d.drawImage(texture1, 0, 0, this.getWidth()/2, this.getHeight(), null); //premiere partie du domino
+			g2d.drawImage(texture2, this.getWidth()/2, 0, this.getWidth()/2, this.getHeight(), null); //deuxieme partie du domino
+			
 			if(highlight)
 			{
 				g2d.setColor(Color.RED);
@@ -131,7 +140,7 @@ public class Fenetre extends JFrame
 				g2d.setColor(Color.RED);
 				g2d.drawLine(10, 10, this.getWidth() - 10, this.getHeight() - 10);
 			}
-			g2d.setStroke(save);
+			g2d.setStroke(save); //on restaure l'ancienne methode de rendu
 		} 
 	}
 	
@@ -144,14 +153,21 @@ public class Fenetre extends JFrame
 	
 	private Case[][] cases = new Case[9][9];
 	private Domino[][] dominos = new Domino[4][2];
-	private int joueur;
-	JPanel page;
-	JPanel damier;
-	JPanel domino_manche_Pan, domino_manche_plus_1_Pan;
+	private JPanel page;
+	
+	private JPanel infos;
+	private JPanel damier;
+	private JPanel domino_manche_Pan;
+	private JPanel domino_manche_plus_1_Pan;
+	
+	private JLabel joueur;
+	private JLabel manche;
+	
+	private int actionEnCours = 0;
 	
 	
 	//CONSTRUCTEUR
-    public Fenetre(Plateau plateau, Pioche domino_manche, Pioche domino_manche_plus_1, int joueur)
+    public Fenetre(Plateau plateau, Pioche domino_manche, Pioche domino_manche_plus_1, int joueur, int manche)
 	{
     	for(int i = 0; i < 48; i++)
     	{
@@ -160,8 +176,7 @@ public class Fenetre extends JFrame
 				textures.put(i, ImageIO.read(new File("images//" + i + ".png")));
 			}
 			catch(IOException e)
-			{
-			}
+			{}
     	}
     	
     	//on cree notre fenetre
@@ -169,6 +184,7 @@ public class Fenetre extends JFrame
 	    this.setSize(800, 600);
 	    this.setLocationRelativeTo(null);
 	    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);     
+		this.setExtendedState(JFrame.MAXIMIZED_BOTH); //affichage plein ecran du jeu, mais redimmensionnable par la suite
 	    
 	    //DAMIER
 	    damier = new JPanel();
@@ -185,6 +201,9 @@ public class Fenetre extends JFrame
 				{
 	    			public void actionPerformed(ActionEvent e)
 	    			{
+	    				if(actionEnCours != 1) //le programme ne retient pas les cases si ce n'est pas l'action a effectuer
+	    					return;
+	    				
 	    				//on recupere la case qui a ete selectionnee
 	    				Case source = (Case) e.getSource();
 	    				
@@ -218,7 +237,7 @@ public class Fenetre extends JFrame
 	    domino_manche_Pan.setLayout(new GridLayout(domino_manche.getSize(), 1, 20, 20));
 	    for(int i = 0; i < domino_manche.getSize(); i++)
 	    {
-	    	dominos[i][0] = new Domino(domino_manche.getDominoByIndex(i), i, domino_manche.getJoueurByIndex(i));
+	    	dominos[i][0] = new Domino(domino_manche.getDominoByIndex(i), domino_manche.getJoueurByIndex(i));
 	    	domino_manche_Pan.add(dominos[i][0]);
 	    }
 	    
@@ -227,12 +246,15 @@ public class Fenetre extends JFrame
 	    domino_manche_plus_1_Pan.setLayout(new GridLayout(domino_manche_plus_1.getSize(), 1, 20, 20));
 	    for(int i = 0; i < domino_manche_plus_1.getSize(); i++)
 	    {
-	    	dominos[i][1] = new Domino(domino_manche_plus_1.getDominoByIndex(i), i, domino_manche_plus_1.getJoueurByIndex(i));
+	    	dominos[i][1] = new Domino(domino_manche_plus_1.getDominoByIndex(i), domino_manche_plus_1.getJoueurByIndex(i));
 	    	dominos[i][1].addActionListener(new ActionListener()
 			{
     			public void actionPerformed(ActionEvent e)
     			{
-    				//on recupere la case qui a ete selectionnee
+    				if(actionEnCours != 2) //le programme ne retient pas le domino si ce n'est pas l'action a effectuer
+    					return;
+    				
+    				//on le domino qui a ete selectionnee
     				Domino source = (Domino) e.getSource();
     				
     				//si le domino appartient deja a quelqu'un, on ne peut pas le choisir
@@ -245,13 +267,56 @@ public class Fenetre extends JFrame
 	    	domino_manche_plus_1_Pan.add(dominos[i][1]);
 	    }
 	    
+	    //INFOS
+	    infos = new JPanel(new GridLayout(2, 1));
+	    this.manche = new JLabel("Manche " + manche);
+	    this.manche.setFont(new Font("Book Antiqua", Font.PLAIN, 50));
+	    
+	    infos.add(this.manche);
+	    this.joueur = new JLabel("Joueur " + joueur);
+	    this.joueur.setFont(new Font("Book Antiqua", Font.PLAIN, 50));
+	    infos.add(this.joueur);
 	    
 	    
 	    //on ajoute le conteneur a la fenetre
-	    page = new JPanel(new GridLayout(1, 3, 20, 20));
-	    page.add(domino_manche_Pan);
-	    page.add(domino_manche_plus_1_Pan);
-	    page.add(damier);
+	    page = new JPanel(new GridBagLayout());
+	    GridBagConstraints c = new GridBagConstraints();
+	    
+		c.gridx = 0;
+		c.gridy = 0;
+		c.gridwidth = 2;
+		c.weightx = 0.5;
+		c.weighty = 0.1;
+		c.fill = GridBagConstraints.BOTH;
+		c.insets = new Insets(10, 10, 10, 10);
+		page.add(infos, c);
+
+		c.gridx = 0;
+		c.gridy = 1;
+		c.gridwidth = 1;
+		c.gridheight = 1;
+		c.weightx = 0.25;
+		c.weighty = 0.45;
+		
+		page.add(domino_manche_Pan, c);
+
+		c.gridx = 1;
+		c.gridy = 1;
+		c.gridwidth = 1;
+		c.gridheight = 1;
+		c.weightx = 0.25;
+		c.weighty = 0.45;
+		page.add(domino_manche_plus_1_Pan, c);
+
+		c.gridx = 2;
+		c.gridy = 0;
+		c.gridwidth = 1;
+		c.gridheight = 2;
+		c.weightx = 0.5;
+		c.weighty = 1;
+		page.add(damier, c);
+		
+
 	    this.setContentPane(page);
 	}
     
@@ -295,8 +360,8 @@ public class Fenetre extends JFrame
     {
     	for(int i = 0; i < dominos.length; i++)
     	{
-    		if(dominos[i][0].get() == domino)
-    			dominos[i][0].setJoueur(joueur);
+    		if(dominos[i][1].get() == domino)
+    			dominos[i][1].setJoueur(joueur);
     	}    
     }
     
@@ -318,6 +383,15 @@ public class Fenetre extends JFrame
     		if(dominos[i][1].get() == domino)
     			dominos[i][1].setCrossed(true);
     	}    
+    }
+    
+    public void setActionEnCours(int action)
+    {
+    	actionEnCours = action;
+    	if(action == 1)
+    		joueur.setText(joueur.getText().substring(0, 8) + " place son domino :");
+    	else
+    		joueur.setText(joueur.getText().substring(0, 8) + " choisit son domino :");
     }
     
 }
