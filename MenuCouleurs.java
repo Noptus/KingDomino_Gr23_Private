@@ -20,6 +20,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
 
 public class MenuCouleurs extends JDialog
 {
@@ -27,6 +31,8 @@ public class MenuCouleurs extends JDialog
 	
 	//ces attributs sont ceux qui nous permettent de recuperer les valeurs
 	private ArrayList<JComboBox> couleurs = new ArrayList<JComboBox>();
+	
+	private ArrayList<JTextField> noms = new ArrayList<JTextField>();
 	
 	private boolean jouer = false;
 	
@@ -126,25 +132,35 @@ public class MenuCouleurs extends JDialog
 			
 			//on cree l'image correspondante a la couleur
 			backgroundColors.add(new BackgroundPanel(chateaux.get(couleurs.get(i).getSelectedItem().toString())));
-			backgroundColors.get(i).setPreferredSize(new Dimension(90, 90));
+			backgroundColors.get(i).setPreferredSize(new Dimension(75, 75));
 			
 			//on cree la legende
-			JLabel lab = new JLabel("couleur : ");
+			JLabel labCouleur = new JLabel("couleur : ");
 			
 			//on cree le conteneur de ces 3 elements
 			JPanel panCouleur = new JPanel();
 			panCouleur.setBackground(Color.white);
 			panCouleur.setPreferredSize(new Dimension(160, 160));
 			
+			
+			String text;
+			if(i < nbJoueurs)
+				text = "Joueur " + (i + 1);
+			else
+				text = "IA " + (i + 1 - nbJoueurs);
+				
+			JLabel labNom = new JLabel("nom");
+			noms.add(new JTextField(text));
+			noms.get(i).setPreferredSize(new Dimension(80, 20));
+			
 			//on ajoute tous les elements au conteneur
-			panCouleur.add(lab);
+			panCouleur.add(labNom);
+			panCouleur.add(noms.get(i));
+			panCouleur.add(labCouleur);
 			panCouleur.add(couleurs.get(i));
 			panCouleur.add(backgroundColors.get(i));
 			
-			if(i < nbJoueurs) //il s'agit d'un joueur
-				panCouleur.setBorder(BorderFactory.createTitledBorder("Joueur " + (i + 1)));
-			else //il s'agit d'une IA
-				panCouleur.setBorder(BorderFactory.createTitledBorder("IA " + (i + 1 - nbJoueurs)));
+			panCouleur.setBorder(BorderFactory.createTitledBorder(text));
 			
 			//ajout au conteneur qui contient tous les joueurs
 			content.add(panCouleur);
@@ -194,6 +210,16 @@ public class MenuCouleurs extends JDialog
 		return couleursChoisies;
 	}
 	
+	public ArrayList<String> getNoms()
+	{
+		ArrayList<String> noms = new ArrayList<String>();
+		for(int i = 0; i < this.noms.size(); i++)
+		{
+			noms.add(this.noms.get(i).getText());
+		}
+		return noms;
+	}
+	
 	
 	//METHODES PRIVEES, QUI SERVENT UNIQUEMENT A D'AUTRES METHODES DE CETTE CLASSE
 	
@@ -209,6 +235,13 @@ public class MenuCouleurs extends JDialog
 				JOptionPane message = new JOptionPane();
 				//affiche un message d'erreur pour avertir l'utilisateur
 				message.showMessageDialog(null, "Deux joueurs ne peuvent pas avoir la meme couleur", "impossible de lancer la partie", JOptionPane.INFORMATION_MESSAGE);
+				return false;
+			}
+			else if(noms.get(i).getText().length() > 20)
+			{
+				JOptionPane message = new JOptionPane();
+				//affiche un message d'erreur pour avertir l'utilisateur
+				message.showMessageDialog(null, "Les noms sont limites a 20 caracteres", "impossible de lancer la partie", JOptionPane.INFORMATION_MESSAGE);
 				return false;
 			}
 		}

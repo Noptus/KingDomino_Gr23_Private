@@ -27,6 +27,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 
@@ -144,6 +145,29 @@ public class Fenetre extends JFrame
 		} 
 	}
 	
+	class Infos extends JPanel
+	{
+		private Image texture;
+		
+		public Infos(GridLayout g)
+		{
+			super(g);
+			try
+			{
+				texture =  ImageIO.read(new File("images//ingame.png"));
+			}
+			catch(IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		
+		public void paintComponent(Graphics g)
+		{
+			g.drawImage(texture, 0, 0, this.getWidth(), this.getHeight(), null);
+		}
+	}
+	
 	
 	//ATTRIBUTS PRIVES
 	private HashMap<Integer, Image> textures = new HashMap<Integer, Image>();
@@ -155,7 +179,7 @@ public class Fenetre extends JFrame
 	private Domino[][] dominos = new Domino[4][2];
 	private JPanel page;
 	
-	private JPanel infos;
+	private Infos infos;
 	private JPanel damier;
 	private JPanel domino_manche_Pan;
 	private JPanel domino_manche_plus_1_Pan;
@@ -163,11 +187,12 @@ public class Fenetre extends JFrame
 	private JLabel joueur;
 	private JLabel manche;
 	
+	private String nom;
 	private int actionEnCours = 0;
 	
 	
 	//CONSTRUCTEUR
-    public Fenetre(Plateau plateau, Pioche domino_manche, Pioche domino_manche_plus_1, int joueur, int manche)
+    public Fenetre(Plateau plateau, Pioche domino_manche, Pioche domino_manche_plus_1, String nom, int manche)
 	{
     	for(int i = 0; i < 48; i++)
     	{
@@ -186,6 +211,8 @@ public class Fenetre extends JFrame
 	    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);     
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH); //affichage plein ecran du jeu, mais redimmensionnable par la suite
 	    
+		this.nom = nom;
+		
 	    //DAMIER
 	    damier = new JPanel();
 	    
@@ -268,15 +295,21 @@ public class Fenetre extends JFrame
 	    }
 	    
 	    //INFOS
-	    infos = new JPanel(new GridLayout(2, 1));
+	    
+	    Color couleur = new Color(15, 67, 113);
+	    infos = new Infos(new GridLayout(2, 1));
 	    this.manche = new JLabel("Manche " + manche);
 	    this.manche.setFont(new Font("Book Antiqua", Font.PLAIN, 50));
+	    this.manche.setForeground(couleur);
+	    this.manche.setHorizontalAlignment(JLabel.CENTER);
 	    
 	    infos.add(this.manche);
-	    this.joueur = new JLabel("Joueur " + joueur);
+	    this.joueur = new JLabel(nom);
 	    this.joueur.setFont(new Font("Book Antiqua", Font.PLAIN, 50));
-	    infos.add(this.joueur);
+	    this.joueur.setForeground(couleur);
+	    this.joueur.setHorizontalAlignment(JLabel.CENTER);
 	    
+	    infos.add(this.joueur);
 	    
 	    //on ajoute le conteneur a la fenetre
 	    page = new JPanel(new GridBagLayout());
@@ -388,10 +421,16 @@ public class Fenetre extends JFrame
     public void setActionEnCours(int action)
     {
     	actionEnCours = action;
-    	if(action == 1)
-    		joueur.setText(joueur.getText().substring(0, 8) + " place son domino :");
-    	else
-    		joueur.setText(joueur.getText().substring(0, 8) + " choisit son domino :");
+    	if(action == Partie.PLACER_DOMINO)
+    		joueur.setText(nom + " place son domino");
+    	else if(action == Partie.CHOISIR_DOMINO)
+    		joueur.setText(nom + " choisit son domino");
+    	else if(action == Partie.IMPOSSIBLE_PLACER_DOMINO)
+    	{
+    		JOptionPane message = new JOptionPane();
+			// affiche un message d'erreur pour avertir l'utilisateur
+			message.showMessageDialog(null, "le domino ne peut pas etre place sur le plateau", "action impossible", JOptionPane.INFORMATION_MESSAGE);
+    	}
     }
     
 }

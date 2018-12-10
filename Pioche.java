@@ -7,6 +7,13 @@ public class Pioche
 	private ArrayList<int[]> dominos; 
 	private ArrayList<Integer> appartenances; //indique pour chaque domino a quel joueur il appartient (de base a 0 = a aucun joueur)
 	
+	
+	public Pioche() //pioche vide pour le dernier tour
+	{
+		this.dominos = new ArrayList<int[]>();
+		this.appartenances = new ArrayList<Integer>();
+	}
+	
 	public Pioche(int[][] dominos)
 	{
 		this.dominos = new ArrayList<int[]>();
@@ -33,7 +40,7 @@ public class Pioche
 
 	}
 		
-		public Pioche(int[][] dominos, ArrayList<Integer> appartenances)
+		public Pioche(int[][] dominos, ArrayList<Integer> appartenances) //pioche pour le premier tour
 		{
 			this(dominos);
 			this.appartenances = appartenances;

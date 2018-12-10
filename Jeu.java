@@ -16,7 +16,7 @@ public class Jeu
 				return;
 			
 			//on cree une nouvelle partie
-			Partie partie = new Partie(menuParametres.getParametres(), menuCouleurs.getCouleurs());
+			Partie partie = new Partie(menuParametres.getParametres(), menuCouleurs.getCouleurs(), menuCouleurs.getNoms());
 			
 			//on joue la partie
 			partie.jouer();

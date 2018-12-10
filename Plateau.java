@@ -374,11 +374,19 @@ public class Plateau {
 	}
 
 	public boolean placer(int x, int y, int x2, int y2, int[] domino) {
-		// + est contenu dans le plateau + ne depasse les 5x5
+		if(Math.sqrt(Math.pow(x - x2, 2) + Math.pow(y - y2, 2)) != 1) //les deux morceaux sont separes de plus d'une case ou sont superposes
+			return false;
 		if (isAvailable(x, y) && isAvailable(x2, y2)
-				&& (isCompatible(x, y, domino[1]) || isCompatible(x2, y2, domino[3]))) {
+				&& (isCompatible(x, y, domino[1]) || isCompatible(x2, y2, domino[3]))) { //les cases sont libres et les dominos compatibles
 			plateau[x][y] = domino[0] * 10 + domino[1];
 			plateau[x2][y2] = domino[2] * 10 + domino[3];
+			int[] dimensions = getDimensions();
+			if(Math.abs(dimensions[0] - dimensions[1]) > 5 || Math.abs(dimensions[2] - dimensions[3]) > 5) //on depasse les dimensions autorisees
+			{
+				plateau[x][y] = VIDE; //on supprime le domino qu'on a place
+				plateau[x][y] = VIDE;
+				return false;
+			}
 			return true;
 		}
 		return false;
