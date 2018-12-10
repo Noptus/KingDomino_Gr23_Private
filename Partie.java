@@ -14,7 +14,7 @@ public class Partie {
 	private ArrayList<Integer> ordre;
 	private Dominos dominos;
 	private Plateau[] plateaux;
-	private Fenetre[] fenetres;
+	private Fenetre fenetre;
 	
 	private Pioche domino_manche;
 	private Pioche domino_manche_plus_1;
@@ -35,7 +35,7 @@ public class Partie {
 		
 		// On cree le grand plateau
 		plateaux = new Plateau[p.nbTotal];
-		fenetres = new Fenetre[p.nbTotal];
+
 		for (int i = 0; i < p.nbTotal; i++) {
 			// On le remplit
 			plateaux[i] = new Plateau(couleurs.get(i), p);
@@ -43,6 +43,8 @@ public class Partie {
 			System.out.println();
 			plateaux[i].print();
 		}
+		
+		fenetre = null;
 
 	}
 
@@ -53,6 +55,8 @@ public class Partie {
 		
 		//on cree la pioche du premier tour et on indique l'appartenance des dominos suivant l'odre des joueurs genere aleatoirement		
 		domino_manche_plus_1 = new Pioche(dominos.GetAndDelete_Dominos(p.nbTotal*p.nbDominoParJoueur), (ArrayList<Integer>)ordre.clone());
+		fenetre = new Fenetre(plateaux, domino_manche_plus_1, couleurs);
+		fenetre.setVisible(true);
 		
 		// On definit le nombre de manches du jeu selon le nb de joueurs
 		int nb_manches;
@@ -73,11 +77,8 @@ public class Partie {
 			else
 				domino_manche_plus_1 = new Pioche();
 			
-			//on cree les fenetres des joueurs
-			for(int joueur = 1; joueur <= p.nbTotal; joueur++)
-			{
-				fenetres[joueur-1] = new Fenetre(plateaux[joueur-1], domino_manche, domino_manche_plus_1, noms.get(joueur-1), manche);
-			}
+			fenetre.updatePioche(domino_manche_plus_1);
+			fenetre.updateManche(manche);
 			
 			System.out.println("manche " + manche);
 			
@@ -93,8 +94,9 @@ public class Partie {
 			//on fait jouer les joueurs suivant l'ordre de jeu
 			for(int joueur : ordre)
 			{
-				fenetres[joueur-1].setHighlight(domino_manche.getDomino(joueur));
-				fenetres[joueur-1].setVisible(true);
+				fenetre.setJoueur(joueur, noms.get(joueur-1));
+				fenetre.setHighlight(domino_manche.getDomino(joueur));
+				fenetre.updateAction(PLACER_DOMINO);
 				
 				//indique quel joueur joue
 				System.out.println("joueur " + joueur);
@@ -110,20 +112,18 @@ public class Partie {
 				if(!plateaux[joueur-1].isPossible(domino_manche.getDomino(joueur)))
 				{
 					System.out.println("Tu ne peux pas jouer ce domino !");
-					fenetres[joueur-1].setActionEnCours(IMPOSSIBLE_PLACER_DOMINO);
+					fenetre.updateAction(IMPOSSIBLE_PLACER_DOMINO);
 				}
 				else
 				{						
-					//le joueur place son domino sur son terrain
-					fenetres[joueur-1].setActionEnCours(PLACER_DOMINO);
-					
+					//le joueur place son domino sur son terrain					
 					int positions[];
 					do
 					{
 						System.out.println("x? y? x2? y2?");
 						
 						//on attend que l'utilisateur ait place son domino
-						while(fenetres[joueur-1].hasPlacedDomino() == false)
+						while(fenetre.hasPlacedDomino() == false)
 						{
 							// /!\ on verifie toutes les 10 ms, autrement ca ne fonctionne pas
 							try
@@ -137,7 +137,7 @@ public class Partie {
 						}
 						
 						//on recupere les cases sur lesquelles il a clique
-						positions = fenetres[joueur-1].getPositions();
+						positions = fenetre.getPositions();
 
 					} //on place son domino (si possible), sinon on lui redemande a nouveau
 					while(plateaux[joueur-1].placer(positions[0], positions[1], positions[2], positions[3], domino_manche.getDomino(joueur)) == false);
@@ -145,7 +145,7 @@ public class Partie {
 					
 					
 					//on met a jour les textures du plateau
-					fenetres[joueur-1].setTextures(positions, domino_manche.getDomino(joueur));
+					fenetre.setDomino(positions, domino_manche.getDomino(joueur));
 					
 					//on supprimer son domino de la pioche du tour actuel
 					domino_manche.deleteDomino(joueur);
@@ -154,12 +154,12 @@ public class Partie {
 				if(manche != nb_manches)
 				{
 					//le joueur choisit son domino dans la pioche du tour suivant
-					fenetres[joueur-1].setActionEnCours(CHOISIR_DOMINO);
+					fenetre.updateAction(CHOISIR_DOMINO);
 					
 					System.out.println("pioche tour suivant :");
 					domino_manche_plus_1.print();
 					
-					while(fenetres[joueur-1].hasSelectedDomino() == false)
+					while(fenetre.hasSelectedDomino() == false)
 					{
 						// /!\ on verifie toutes les 10 ms, autrement ca ne fonctionne pas
 						try
@@ -172,19 +172,17 @@ public class Partie {
 						}
 					}
 					
-					int[] domino = fenetres[joueur-1].getDomino();
+					int[] domino = fenetre.getDomino();
 					domino_manche_plus_1.choisir(domino, joueur);
 					
 					//on met a jour les fenetres pour qu'ils sachent que le joueur a choisit ce domino
 					for(int autreJoueur = 0; autreJoueur < p.nbTotal; autreJoueur++)
 					{
-						fenetres[autreJoueur].setJoueur(domino, joueur);
-						fenetres[autreJoueur].setCrossed(domino);
+						fenetre.setCrossed(domino);
+						fenetre.setCouleur(domino, couleurs.get(joueur-1));
 					}
 				}
-				
-				fenetres[joueur-1].setVisible(false);
-				
+								
 			}
 			
 			//mettre a jour ordre tour suivant
