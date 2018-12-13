@@ -12,15 +12,15 @@ public class Plateau {
 
 	// matrice d'entiers qui stockera les cases du plateau avec son contenu
 	private int[][] plateau;
-	private Parametres parametres;
+	private Parametres p;
 	private int XC;
 	private int YC;
 	
 	// CONSTRUCTEUR
-	public Plateau(int ch, Parametres P) {
+	public Plateau(int ch, Parametres p) {
 		
-		Parametres parametres = P;
-		if ( P.modeGrandDuel ) {
+		this.p = p;
+		if ( p.modeGrandDuel ) {
 			plateau = new int[13][13];
 			plateau[6][6] = ch;
 			XC = 6;
@@ -44,8 +44,8 @@ public class Plateau {
 		int max_Y = -10;
 
 		// On avance en augmentant les valeurs, pour trouver les mins
-		for (int i = 0; i <= 8; i++) {
-			for (int j = 0; j <= 8; j++) {
+		for (int i = 0; i < sizeX(); i++) {
+			for (int j = 0; j < sizeY(); j++) {
 				if (getNature(i, j) != 0 && i < min_X) {
 					min_X = i;
 				}
@@ -56,8 +56,8 @@ public class Plateau {
 		}
 
 		// On fait diminuer les valeurs, pour trouver les max
-		for (int i = 8; i >= 0; i--) {
-			for (int j = 8; j >= 0; j--) {
+		for (int i = sizeX() - 1; i >= 0; i--) {
+			for (int j = sizeY() - 1; j >= 0; j--) {
 				if (getNature(i, j) != 0 && i > max_X) {
 					max_X = i;
 				}
@@ -160,7 +160,8 @@ public class Plateau {
 	
 	// Chateau au centre > 10 points
 	private boolean isEmpire() {
-
+		if(p.modeEmpireMilieu == false) //le mode n'est pas active
+			return false;
 		int[] Dimensions = getDimensions();
 		int Center_Y = Dimensions[3]-2;
 		int Center_X = Dimensions[1]-2;
@@ -175,7 +176,8 @@ public class Plateau {
 
 	// 5*5 cases > 5 points
 	private boolean isHarmony() {
-
+		if(p.modeHarmonie == false) //le mode n'est pas active
+			return false;
 		int[] Dimensions = getDimensions();
 		int min_X = Dimensions[0];
 		int min_Y = Dimensions[1];
@@ -195,19 +197,19 @@ public class Plateau {
 		
 	}
 	
-
+	//4 4
 	public boolean getRainbowPossibility() {
-		if (       getNature(4, 5) == 0 && getNature(3, 5) == 0 || getNature(4, 5) == 0 && getNature(4, 6) == 0
-				|| getNature(4, 5) == 0 && getNature(5, 5) == 0
+		if (       getNature(XC, YC+1) == 0 && getNature(XC-1, YC+1) == 0 || getNature(XC, YC+1) == 0 && getNature(XC, YC+2) == 0
+				|| getNature(XC, YC+1) == 0 && getNature(XC+1, YC+1) == 0
 
-				|| getNature(3, 4) == 0 && getNature(3, 3) == 0 || getNature(3, 4) == 0 && getNature(2, 4) == 0
-				|| getNature(3, 4) == 0 && getNature(3, 5) == 0
+				|| getNature(XC-1, YC) == 0 && getNature(XC-1, YC-1) == 0 || getNature(XC-1, YC) == 0 && getNature(XC-2, YC) == 0
+				|| getNature(XC-1, YC) == 0 && getNature(XC-1, YC+1) == 0
 
-				|| getNature(5, 4) == 0 && getNature(5, 5) == 0 || getNature(5, 4) == 0 && getNature(5, 3) == 0
-				|| getNature(5, 4) == 0 && getNature(5, 6) == 0
+				|| getNature(XC+1, YC) == 0 && getNature(XC+1, YC+1) == 0 || getNature(XC+1, YC) == 0 && getNature(XC+1, YC-1) == 0
+				|| getNature(XC+1, YC) == 0 && getNature(XC+1, YC+2) == 0
 
-				|| getNature(4, 3) == 0 && getNature(3, 3) == 0 || getNature(4, 3) == 0 && getNature(4, 2) == 0
-				|| getNature(4, 3) == 0 && getNature(5, 3) == 0) {
+				|| getNature(XC, YC-1) == 0 && getNature(XC-1, YC-1) == 0 || getNature(XC, YC-1) == 0 && getNature(XC, YC-1) == 0
+				|| getNature(XC, YC-1) == 0 && getNature(XC+1, YC-1) == 0) {
 			return true;
 		}
 		return false;
@@ -221,8 +223,8 @@ public class Plateau {
 		int max_Y = -10;
 
 		// On avance en augmentant les valeurs, pour trouver les mins
-		for (int i = 0; i <= 8; i++) {
-			for (int j = 0; j <= 8; j++) {
+		for (int i = 0; i < sizeX(); i++) {
+			for (int j = 0; j < sizeY(); j++) {
 				if (getNature(i, j) != 0 && i < min_X) {
 					min_X = i;
 				}
@@ -233,8 +235,8 @@ public class Plateau {
 		}
 
 		// On fait diminuer les valeurs, pour trouver les max
-		for (int i = 8; i >= 0; i--) {
-			for (int j = 8; j >= 0; j--) {
+		for (int i = sizeX() - 1; i >= 0; i--) {
+			for (int j = sizeY() - 1; j >= 0; j--) {
 				if (getNature(i, j) != 0 && i > max_X) {
 					max_X = i;
 				}
@@ -280,14 +282,16 @@ public class Plateau {
 	}
 
 	// retourne le score du plateau
-	public int getScore() {
+	public int getScore(boolean partieFinie) {
 		int score = 0;
-
+		
+		if(partieFinie) {
 		if ( isHarmony() ) {
 			score = score +5;
 		}
 		if ( isEmpire() ) {
 			score = score +10;
+		}
 		}
 		
 		// liste qui stocke l'ensemble des cases qui ont ete comptees (pour ne pas les
@@ -299,8 +303,8 @@ public class Plateau {
 		ArrayList<int[]> currentlyCounted = new ArrayList<int[]>();
 
 		// on cherche pour chaque case les cases voisines semblables
-		for (int x = 0; x < 9; x++) {
-			for (int y = 0; y < 9; y++) {
+		for (int x = 0; x < sizeX(); x++) {
+			for (int y = 0; y < sizeY(); y++) {
 				// on compte uniquement si la case n'est pas vide ou n'est pas un chateau
 				if (getNature(x, y) != VIDE && getNature(x, y) != CHATEAU) {
 					// on vide l'historique des cases voisines a la precedente
@@ -331,16 +335,15 @@ public class Plateau {
 	// affiche le plateau
 	public void print() {
 		System.out.println("  |0 |1 |2 |3 |4 |5 |6 | 7| 8");
-		for (int y = 0; y <= 8; y++) {
+		for (int y = 0; y < sizeX(); y++) {
 			System.out.print(y + " |");
-			for (int x = 0; x <= 8; x++) {
+			for (int x = 0; x < sizeY(); x++) {
 					System.out.print(getCouronne(x, y));
 					System.out.print(getNature(x, y));
 					System.out.print("|");
 				}
 			System.out.println("");
 		}
-		System.out.println("Score: " + getScore());
 	}
 
 	// METHODES PRIVEES, QUI SERVENT UNIQUEMENT A D'AUTRES METHODES DE CETTE CLASSE
@@ -348,7 +351,7 @@ public class Plateau {
 	// sert au calcul du score
 	private void count(ArrayList<int[]> globallyCounted, ArrayList<int[]> currentlyCounted, int nature, int x, int y) {
 		// hors du plateau -> on s'arrete la 
-		if (x < 0 || y < 0 || x > 8 || y > 8)
+		if (x < 0 || y < 0 || x >= sizeX() || y >= sizeY())
 			return;
 
 		// pas la meme nature -> on s'arrete la
@@ -380,8 +383,14 @@ public class Plateau {
 				&& (isCompatible(x, y, domino[1]) || isCompatible(x2, y2, domino[3]))) { //les cases sont libres et les dominos compatibles
 			plateau[x][y] = domino[0] * 10 + domino[1];
 			plateau[x2][y2] = domino[2] * 10 + domino[3];
+			
 			int[] dimensions = getDimensions();
-			if(Math.abs(dimensions[0] - dimensions[1]) > 5 || Math.abs(dimensions[2] - dimensions[3]) > 5) //on depasse les dimensions autorisees
+			int dim_autorisee;
+			if(p.modeEmpireMilieu == true)
+				dim_autorisee = 7;
+			else
+				dim_autorisee = 5;
+			if(Math.abs(dimensions[0] - dimensions[1]) > dim_autorisee || Math.abs(dimensions[2] - dimensions[3]) > dim_autorisee) //on depasse les dimensions autorisees
 			{
 				plateau[x][y] = VIDE; //on supprime le domino qu'on a place
 				plateau[x][y] = VIDE;
@@ -399,7 +408,7 @@ public class Plateau {
 
 	private boolean isCompatible(int x, int y, int nature) {
 		boolean isCompatible = false;
-		if ((x == 3 && y == 4) || (x == 5 && y == 4) || (x == 4 && y == 5) || (x == 4 && y == 3))
+		if ((x == XC - 1 && y == YC) || (x == XC + 1 && y == YC) || (x == XC && y == YC - 1) || (x == XC && y == YC + 1)) //rainbow
 			isCompatible = true;
 		if (getNature(x - 1, y) == nature)
 			isCompatible = true;
@@ -410,6 +419,16 @@ public class Plateau {
 		if (getNature(x, y + 1) == nature)
 			isCompatible = true;
 		return isCompatible;
+	}
+	
+	public int sizeX()
+	{
+		return plateau.length;
+	}
+	
+	public int sizeY()
+	{
+		return plateau[0].length;
 	}
 
 }

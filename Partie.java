@@ -55,7 +55,7 @@ public class Partie {
 		
 		//on cree la pioche du premier tour et on indique l'appartenance des dominos suivant l'odre des joueurs genere aleatoirement		
 		domino_manche_plus_1 = new Pioche(dominos.GetAndDelete_Dominos(p.nbTotal*p.nbDominoParJoueur), (ArrayList<Integer>)ordre.clone());
-		fenetre = new Fenetre(plateaux, domino_manche_plus_1, couleurs);
+		fenetre = new Fenetre(plateaux, domino_manche_plus_1, couleurs, noms);
 		fenetre.setVisible(true);
 		
 		// On definit le nombre de manches du jeu selon le nb de joueurs
@@ -94,9 +94,10 @@ public class Partie {
 			//on fait jouer les joueurs suivant l'ordre de jeu
 			for(int joueur : ordre)
 			{
-				fenetre.setJoueur(joueur, noms.get(joueur-1));
+				fenetre.setJoueur(joueur-1);
 				fenetre.setHighlight(domino_manche.getDomino(joueur));
 				fenetre.updateAction(PLACER_DOMINO);
+				fenetre.updateScore(plateaux[joueur-1].getScore(false));
 				
 				//indique quel joueur joue
 				System.out.println("joueur " + joueur);
@@ -147,11 +148,14 @@ public class Partie {
 					//on met a jour les textures du plateau
 					fenetre.setDomino(positions, domino_manche.getDomino(joueur));
 					
+					//on met a jour le score
+					fenetre.updateScore(plateaux[joueur-1].getScore(false));
+					
 					//on supprimer son domino de la pioche du tour actuel
 					domino_manche.deleteDomino(joueur);
 				}
 				
-				if(manche != nb_manches)
+				if(manche != nb_manches) //si ce n'est pas la derniere manche
 				{
 					//le joueur choisit son domino dans la pioche du tour suivant
 					fenetre.updateAction(CHOISIR_DOMINO);
@@ -192,7 +196,7 @@ public class Partie {
 		//on affiche les scores de fin de partie
 		for(int i = 0; i < p.nbTotal; i++)
 		{
-			System.out.println(noms.get(i) + " a termine avec un score de : " + plateaux[i].getScore());
+			System.out.println(noms.get(i) + " a termine avec un score de : " + plateaux[i].getScore(true));
 		}
 		
 	}

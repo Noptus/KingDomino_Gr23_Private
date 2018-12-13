@@ -191,24 +191,32 @@ public class Fenetre extends JFrame
 	private Domino[] domino_manche;
 	private Domino[] domino_manche_plus_1;
 	
-	private int joueur = 1;
-	private String nom;
+	private int joueur = 0;
+	private ArrayList<String> noms;
 	
 	private JPanel[] pan_plateau;
 	private JPanel pan_pioche_manche;
 	private JPanel pan_pioche_manche_plus_1;
 	private Infos pan_infos;
+	private JPanel pan_legende_pioche;
+	
+	private Color couleur = new Color(15, 67, 113);
+	private Font police = new Font("Book Antiqua", Font.PLAIN, 40);
 	
 	private JLabel lab_action;
 	private JLabel lab_manche;
+	private JLabel lab_score;
+	
+	private JButton but_vue;
 	
 	private int actionEnCours = 0;
 	
 	
 	//CONSTRUCTEUR
-    public Fenetre(Plateau[] plateaux, Pioche pioche_initiale, ArrayList<Integer> couleurs)
+    public Fenetre(Plateau[] plateaux, Pioche pioche_initiale, ArrayList<Integer> couleurs, ArrayList<String> noms)
 	{
-
+    	this.noms = noms;	
+    	
     	for(int i = 0; i <= 48; i++)
     	{
 	    	try
@@ -228,14 +236,14 @@ public class Fenetre extends JFrame
 	    		
 	    //plateaux de tous les joueurs
 	    pan_plateau = new JPanel[plateaux.length];
-	    cases = new Case[plateaux.length][9][9];
+	    cases = new Case[plateaux.length][plateaux[0].sizeX()][plateaux[0].sizeY()];
 	    for(int i = 0; i < pan_plateau.length; i++)
 	    {
 	    	pan_plateau[i] = new JPanel();
-	    	pan_plateau[i].setLayout(new GridLayout(9, 9, 5, 5));
-	    	for(int x = 0; x < 9; x++)
+	    	pan_plateau[i].setLayout(new GridLayout(plateaux[0].sizeX(), plateaux[0].sizeY(), 5, 5));
+	    	for(int x = 0; x < plateaux[0].sizeX(); x++)
 		    {
-		    	for(int y = 0; y < 9; y++)
+		    	for(int y = 0; y < plateaux[0].sizeY(); y++)
 		    	{
 		    		cases[i][x][y] = new Case(textures.get(plateaux[i].getCouronne(x, y)*10 + plateaux[i].getNature(x, y)), x, y);
 		    		
@@ -276,12 +284,29 @@ public class Fenetre extends JFrame
 		    }
 	    }
 	    
+	    //legendes des pioches
+	    pan_legende_pioche = new JPanel(new GridLayout(1, 2));
+	    JLabel lab_pioche_manche = new JLabel("Manche actuelle :");
+	    lab_pioche_manche.setFont(police);
+	    lab_pioche_manche.setForeground(couleur);
+	    lab_pioche_manche.setHorizontalAlignment(JLabel.CENTER);
+	    pan_legende_pioche.add(lab_pioche_manche);
+	    
+	    JLabel lab_pioche_manche_plus_1 = new JLabel("Manche suivante :");
+	    lab_pioche_manche_plus_1.setFont(police);
+	    lab_pioche_manche_plus_1.setForeground(couleur);
+	    lab_pioche_manche_plus_1.setHorizontalAlignment(JLabel.CENTER);
+	    pan_legende_pioche.add(lab_pioche_manche_plus_1);
+	    
+	    
+	    
 	    //meme s'il est vide, il faut l'initialiser
 	    pan_pioche_manche = new JPanel();
 	    
 	    //PIOCHE INTIALE (qu'on definit comme etant celle de la manche plus 1 car elle sera intervertit lors de l'update des pioche)
 	    pan_pioche_manche_plus_1 = new JPanel();
 	    pan_pioche_manche_plus_1.setLayout(new GridLayout(pioche_initiale.getSize(), 1, 20, 20));
+	    
 	    domino_manche_plus_1 = new Domino[pioche_initiale.getSize()];
 	    for(int i = 0; i < pioche_initiale.getSize(); i++)
 	    {
@@ -290,56 +315,50 @@ public class Fenetre extends JFrame
 	    }
 	    
 	    //INFOS
-	    Color couleur = new Color(15, 67, 113);
-	    pan_infos = new Infos(new GridLayout(2, 1));
+	    pan_infos = new Infos(new GridLayout(4, 1));
 	    lab_manche = new JLabel();
-	    lab_manche.setFont(new Font("Book Antiqua", Font.PLAIN, 50));
+	    lab_manche.setFont(police);
 	    lab_manche.setForeground(couleur);
 	    lab_manche.setHorizontalAlignment(JLabel.CENTER);
 	    pan_infos.add(lab_manche);
 	    
 	    lab_action = new JLabel();
-	    lab_action.setFont(new Font("Book Antiqua", Font.PLAIN, 50));
+	    lab_action.setFont(police);
 	    lab_action.setForeground(couleur);
 	    lab_action.setHorizontalAlignment(JLabel.CENTER);
 	    pan_infos.add(lab_action);
 	    
+	    lab_score = new JLabel();
+	    lab_score.setFont(police);
+	    lab_score.setForeground(couleur);
+	    lab_score.setHorizontalAlignment(JLabel.CENTER);
+	    pan_infos.add(lab_score);
+	    
+	    but_vue = new JButton("vue d'ensemble");
+	    but_vue.setContentAreaFilled(false);
+	    but_vue.setFont(police);
+	    but_vue.setForeground(couleur);
+	    but_vue.addActionListener(new ActionListener()
+		{
+	    	public void actionPerformed(ActionEvent e)
+	    	{
+	    		JButton source = (JButton)e.getSource();
+	    		if(source.getText().equals("vue d'ensemble"))
+	    			displayVueEnsemble();
+	    		else
+	    			displayVueJoueur();
+	    	}
+		});
+	    pan_infos.add(but_vue);
+	    
+	    
 	    //on ajoute uniquement les infos a la fenetre (le reste sera ajoute ensuite)
 	    this.getContentPane().setLayout((new GridBagLayout()));
-	    GridBagConstraints c = new GridBagConstraints();
-	    
-		c.gridx = 0;
-		c.gridy = 0;
-		c.gridwidth = 2;
-		c.weightx = 0.5;
-		c.weighty = 0.1;
-		c.fill = GridBagConstraints.BOTH;
-		c.insets = new Insets(10, 10, 10, 10);
-		this.getContentPane().add(pan_infos, c);
-		
-		c.gridx = 0;
-		c.gridy = 1;
-		c.gridwidth = 1;
-		c.gridheight = 1;
-		c.weightx = 0.25;
-		c.weighty = 0.5;
-		this.getContentPane().add(pan_pioche_manche, c);
-		
-		c.gridx = 1;
-		c.gridy = 1;
-		c.gridwidth = 1;
-		c.gridheight = 1;
-		c.weightx = 0.25;
-		c.weighty = 0.5;
-		this.getContentPane().add(pan_pioche_manche_plus_1, c);
-		
-		c.gridx = 2;
-		c.gridy = 0;
-		c.gridwidth = 1;
-		c.gridheight = 2;
-		c.weightx = 0.5;
-		c.weighty = 1;
-		this.getContentPane().add(pan_plateau[joueur-1], c);
+		this.getContentPane().add(pan_infos, GBC_infos());
+		this.getContentPane().add(pan_legende_pioche, GBC_legende_pioche());
+		this.getContentPane().add(pan_pioche_manche, GBC_pioche_manche());
+		this.getContentPane().add(pan_pioche_manche_plus_1, GBC_pioche_manche_plus_1());
+		this.getContentPane().add(pan_plateau[joueur], GBC_plateau());
 	}
     
     
@@ -374,8 +393,8 @@ public class Fenetre extends JFrame
     
     public void setDomino(int[] pos, int[] domino)
     {
-    	cases[joueur-1][pos[0]][pos[1]].set(textures.get(domino[0]*10 + domino[1]));
-    	cases[joueur-1][pos[2]][pos[3]].set(textures.get(domino[2]*10 + domino[3]));
+    	cases[joueur][pos[0]][pos[1]].set(textures.get(domino[0]*10 + domino[1]));
+    	cases[joueur][pos[2]][pos[3]].set(textures.get(domino[2]*10 + domino[3]));
     }
     
     public void setCouleur(int[] domino, int couleur)
@@ -408,30 +427,20 @@ public class Fenetre extends JFrame
     }
     
     
-    public void setJoueur(int joueur, String nom)
+    public void setJoueur(int joueur)
     {
     	if(joueur != this.joueur) //si c'est toujours le meme joueur, rien a faire
     	{
     		//on supprime le plateau de l'affichage
-			this.getContentPane().remove(pan_plateau[this.joueur-1]);
+			this.getContentPane().remove(pan_plateau[this.joueur]);
 			
 			//on ajoute le bon plateau a l'affichage
-			GridBagConstraints c = new GridBagConstraints();
-			c.gridx = 2;
-			c.gridy = 0;
-			c.gridwidth = 1;
-			c.gridheight = 2;
-			c.weightx = 0.5;
-			c.weighty = 1;
-			c.fill = GridBagConstraints.BOTH;
-			c.insets = new Insets(10, 10, 10, 10);
-			this.getContentPane().add(pan_plateau[joueur-1], c);
+			this.getContentPane().add(pan_plateau[joueur], GBC_plateau());
 			this.getContentPane().validate();
 			this.getContentPane().repaint();
 			
 			//on met a jour ces attributs
 	    	this.joueur = joueur;
-	    	this.nom = nom;
     	}
     }
     
@@ -440,13 +449,18 @@ public class Fenetre extends JFrame
     	lab_manche.setText("Manche " + manche);
     }
     
+    public void updateScore(int score)
+    {
+    	lab_score.setText("Score : " + score);
+    }
+    
     public void updateAction(int action)
     {
     	actionEnCours = action;
     	if(action == Partie.PLACER_DOMINO)
-    		lab_action.setText(nom + " place son domino");
+    		lab_action.setText(noms.get(joueur) + " place son domino");
     	else if(action == Partie.CHOISIR_DOMINO)
-    		lab_action.setText(nom + " choisit son domino");
+    		lab_action.setText(noms.get(joueur) + " choisit son domino");
     	else if(action == Partie.IMPOSSIBLE_PLACER_DOMINO)
     	{
     		JOptionPane message = new JOptionPane();
@@ -456,9 +470,7 @@ public class Fenetre extends JFrame
     }
     
     public void updatePioche(Pioche pioche_manche_plus_1)
-    {
-    	GridBagConstraints c = new GridBagConstraints();
-    	
+    {    	
     	//on supprime les 2 pioches de l'affichage
     	this.getContentPane().remove(pan_pioche_manche);
     	this.getContentPane().remove(pan_pioche_manche_plus_1);
@@ -472,19 +484,12 @@ public class Fenetre extends JFrame
     	}
     	
     	//on l'ajoute a l'affichage
-    	c.gridx = 0;
-		c.gridy = 1;
-		c.gridwidth = 1;
-		c.gridheight = 1;
-		c.weightx = 0.25;
-		c.weighty = 0.5;
-		c.fill = GridBagConstraints.BOTH;
-		c.insets = new Insets(10, 10, 10, 10);
-		this.getContentPane().add(pan_pioche_manche, c);
+		this.getContentPane().add(pan_pioche_manche, GBC_pioche_manche());
     	
     	//on cree la pioche de la manche plus 1
 	    pan_pioche_manche_plus_1 = new JPanel();
 	    pan_pioche_manche_plus_1.setLayout(new GridLayout(pioche_manche_plus_1.getSize(), 1, 20, 20));
+	    
 	    domino_manche_plus_1 = new Domino[pioche_manche_plus_1.getSize()];
 	    for(int i = 0; i < pioche_manche_plus_1.getSize(); i++)
 	    {
@@ -510,17 +515,141 @@ public class Fenetre extends JFrame
 	    }
 	    
 	    //on l'ajoute a l'affichage
-		c.gridx = 1;
-		c.gridy = 1;
-		c.gridwidth = 1;
-		c.gridheight = 1;
-		c.weightx = 0.25;
-		c.weighty = 0.5;
-		c.fill = GridBagConstraints.BOTH;
-		c.insets = new Insets(10, 10, 10, 10);
-		this.getContentPane().add(pan_pioche_manche_plus_1, c);
+		this.getContentPane().add(pan_pioche_manche_plus_1, GBC_pioche_manche_plus_1());
 		this.getContentPane().validate();
 		this.getContentPane().repaint();
+    
     }
     
+    private void displayVueJoueur()
+    {
+    	while(this.getContentPane().getComponentCount() > 0)
+    	{
+    		this.getContentPane().remove(0);
+    	}
+    	but_vue.setText("vue d'ensemble");
+    	pan_infos.add(but_vue);
+		this.getContentPane().add(pan_infos, GBC_infos());
+		this.getContentPane().add(pan_legende_pioche, GBC_legende_pioche());
+		this.getContentPane().add(pan_pioche_manche, GBC_pioche_manche());
+		this.getContentPane().add(pan_pioche_manche_plus_1, GBC_pioche_manche_plus_1());
+		this.getContentPane().add(pan_plateau[joueur], GBC_plateau());
+		this.getContentPane().validate();
+		this.getContentPane().repaint();
+    	
+    }
+    
+    private void displayVueEnsemble()
+    {
+    	while(this.getContentPane().getComponentCount() > 0)
+    	{
+    		this.getContentPane().remove(0);
+    	}
+    	but_vue.setText("vue joueur");
+    	GridBagConstraints c = new GridBagConstraints();
+    	c.gridx = 0;
+		c.gridy = 0;
+		c.gridwidth = 2;
+		c.gridheight = 1;
+		c.weightx = 1;
+		c.weighty = 0.05;
+		c.fill = GridBagConstraints.BOTH;
+		c.insets = new Insets(10, 10, 10, 10);
+		this.getContentPane().add(but_vue, c);
+		
+   		for(int i = 0; i < pan_plateau.length; i++)
+    	{
+			JLabel nom = new JLabel(noms.get(i));
+	    	nom.setFont(police);
+	    	nom.setForeground(couleur);
+	    	nom.setHorizontalAlignment(JLabel.CENTER);
+    		
+    		c.gridx = i % 2;
+    		c.gridy = 1 + i / 2 * 2;
+    		c.gridwidth = 1;
+    		c.gridheight = 1;
+    		c.weightx = 0.5;
+    		c.weighty = 0.05;
+    		c.fill = GridBagConstraints.BOTH;
+    		this.getContentPane().add(nom, c);
+    		
+    		c.weighty = 0.45;
+    		c.gridy += 1;
+    		c.insets = new Insets(10, 10, 10, 10);
+    		this.getContentPane().add(pan_plateau[i], c);
+    	}
+    	this.getContentPane().validate();
+		this.getContentPane().repaint();
+    	
+    }
+    
+    private GridBagConstraints GBC_infos()
+    {
+    	GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 0;
+		c.gridwidth = 2;
+		c.gridheight = 1;
+		c.weightx = 0.4;
+		c.weighty = 0.15;
+		c.fill = GridBagConstraints.BOTH;
+		c.insets = new Insets(10, 10, 10, 10);
+		return c;
+    }
+    
+    private GridBagConstraints GBC_legende_pioche()
+    {
+    	GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 1;
+		c.gridwidth = 2;
+		c.gridheight = 1;
+		c.weightx = 0.2;
+		c.weighty = 0.05;
+		c.fill = GridBagConstraints.BOTH;
+		c.insets = new Insets(10, 10, 10, 10);
+		return c;
+    }
+    
+    private GridBagConstraints GBC_pioche_manche()
+    {
+    	GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 2;
+		c.gridwidth = 1;
+		c.gridheight = 1;
+		c.weightx = 0.2;
+		c.weighty = 0.75;
+		c.fill = GridBagConstraints.BOTH;
+		c.insets = new Insets(10, 10, 10, 10);
+		return c;
+    }
+    
+    private GridBagConstraints GBC_pioche_manche_plus_1()
+    {
+    	GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = 2;
+		c.gridwidth = 1;
+		c.gridheight = 1;
+		c.weightx = 0.2;
+		c.weighty = 0.75;
+		c.fill = GridBagConstraints.BOTH;
+		c.insets = new Insets(10, 10, 10, 10);
+		return c;
+    }
+    
+    private GridBagConstraints GBC_plateau()
+    {
+    	GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = 0;
+		c.gridwidth = 1;
+		c.gridheight = 3;
+		c.weightx = 0.6;
+		c.weighty = 1;
+		c.fill = GridBagConstraints.BOTH;
+		c.insets = new Insets(10, 10, 10, 10);
+		return c;
+    }    
 }
