@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class Partie {
-	
+
 	public static final int PLACER_DOMINO = 1;
 	public static final int CHOISIR_DOMINO = 2;
 	public static final int IMPOSSIBLE_PLACER_DOMINO = 3;
@@ -15,13 +15,13 @@ public class Partie {
 	private Dominos dominos;
 	private Plateau[] plateaux;
 	private Fenetre fenetre;
-	
+
 	private Pioche domino_manche;
 	private Pioche domino_manche_plus_1;
 
 	// CONSTRUCTEUR
 	public Partie(Parametres p, ArrayList<Integer> couleurs, ArrayList<String> noms) {
-		
+
 		// On initialise les parametres, les couleurs, l'ordre pour commencer
 		this.p = p;
 		this.couleurs = couleurs;
@@ -32,7 +32,7 @@ public class Partie {
 		dominos = new Dominos(12 * p.nbTotal);
 		// test
 		dominos.print();
-		
+
 		// On cree le grand plateau
 		plateaux = new Plateau[p.nbTotal];
 
@@ -43,7 +43,7 @@ public class Partie {
 			System.out.println();
 			plateaux[i].print();
 		}
-		
+
 		fenetre = null;
 
 	}
@@ -52,164 +52,162 @@ public class Partie {
 
 	// deroulement de la partie, la ou tout se passera
 	public void jouer() {
+
+		SoundPlayer s = new SoundPlayer();
 		
-		//on cree la pioche du premier tour et on indique l'appartenance des dominos suivant l'odre des joueurs genere aleatoirement		
-		domino_manche_plus_1 = new Pioche(dominos.GetAndDelete_Dominos(p.nbTotal*p.nbDominoParJoueur), (ArrayList<Integer>)ordre.clone());
+		// on cree la pioche du premier tour et on indique l'appartenance des dominos
+		// suivant l'odre des joueurs genere aleatoirement
+		domino_manche_plus_1 = new Pioche(dominos.GetAndDelete_Dominos(p.nbTotal * p.nbDominoParJoueur),
+				(ArrayList<Integer>) ordre.clone());
 		fenetre = new Fenetre(plateaux, domino_manche_plus_1, couleurs, noms);
 		fenetre.setVisible(true);
-		
+
 		// On definit le nombre de manches du jeu selon le nb de joueurs
 		int nb_manches;
-		if(p.nbTotal == 2)
+		if (p.nbTotal == 2)
 			nb_manches = 6;
 		else
 			nb_manches = 12;
 		
-		//boucle de jeu
+		long startTime = System.currentTimeMillis();
+
+		// boucle de jeu
 		for (int manche = 1; manche <= nb_manches; manche++) {
 			
-			//on intervertit les pioches
+			// on intervertit les pioches
 			domino_manche = domino_manche_plus_1;
-			
-			//on cree la pioche du tour suivant
-			if(manche != nb_manches) 
-				domino_manche_plus_1 = new Pioche(dominos.GetAndDelete_Dominos(p.nbTotal*p.nbDominoParJoueur));
+
+			// on cree la pioche du tour suivant
+			if (manche != nb_manches)
+				domino_manche_plus_1 = new Pioche(dominos.GetAndDelete_Dominos(p.nbTotal * p.nbDominoParJoueur));
 			else
 				domino_manche_plus_1 = new Pioche();
-			
+
 			fenetre.updatePioche(domino_manche_plus_1);
 			fenetre.updateManche(manche);
-			
+
 			System.out.println("manche " + manche);
-			
-			//on affiche les 2 pioches (pour le debug)
+
+			// on affiche les 2 pioches (pour le debug)
 			System.out.println("pioche tour actuel : ");
 			domino_manche.print();
-			if(manche != nb_manches)
-			{
+			if (manche != nb_manches) {
 				System.out.println("pioche tour suivant : ");
-				domino_manche_plus_1.print();	
+				domino_manche_plus_1.print();
 			}
-			
-			//on fait jouer les joueurs suivant l'ordre de jeu
-			for(int joueur : ordre)
-			{
-				fenetre.setJoueur(joueur-1);
+
+			// on fait jouer les joueurs suivant l'ordre de jeu
+			for (int joueur : ordre) {
+				fenetre.setJoueur(joueur - 1);
 				fenetre.setHighlight(domino_manche.getDomino(joueur));
 				fenetre.updateAction(PLACER_DOMINO);
-				fenetre.updateScore(plateaux[joueur-1].getScore(false));
-				
-				//indique quel joueur joue
+				fenetre.updateScore(plateaux[joueur - 1].getScore(false));
+
+				// indique quel joueur joue
 				System.out.println("joueur " + joueur);
 
-				//afficher le plateau du joueur
+				// afficher le plateau du joueur
 				System.out.println("plateau du joueur : ");
-				plateaux[joueur-1].print();
-				
-				//afficher le domino que le joueur doit placer
+				plateaux[joueur - 1].print();
+
+				// afficher le domino que le joueur doit placer
 				domino_manche.printDomino(joueur);
-				
-				//tester si possible de le placer
-				if(!plateaux[joueur-1].isPossible(domino_manche.getDomino(joueur)))
-				{
+
+				// tester si possible de le placer
+				if (!plateaux[joueur - 1].isPossible(domino_manche.getDomino(joueur))) {
 					System.out.println("Tu ne peux pas jouer ce domino !");
+					s.playAudio("sorciere", true);
 					fenetre.updateAction(IMPOSSIBLE_PLACER_DOMINO);
-				}
-				else
-				{						
-					//le joueur place son domino sur son terrain					
+				} else {
+					// le joueur place son domino sur son terrain
 					int positions[];
-					do
-					{
+					do {
 						System.out.println("x? y? x2? y2?");
-						
-						//on attend que l'utilisateur ait place son domino
-						while(fenetre.hasPlacedDomino() == false)
-						{
+
+						// on attend que l'utilisateur ait place son domino
+						while (fenetre.hasPlacedDomino() == false) {
 							// /!\ on verifie toutes les 10 ms, autrement ca ne fonctionne pas
-							try
-							{
-							    Thread.sleep(10);
-							}
-							catch(InterruptedException e)
-							{
+							try {
+								Thread.sleep(10);
+							} catch (InterruptedException e) {
 								e.printStackTrace();
 							}
 						}
-						
-						//on recupere les cases sur lesquelles il a clique
+
+						// on recupere les cases sur lesquelles il a clique
 						positions = fenetre.getPositions();
 
-					} //on place son domino (si possible), sinon on lui redemande a nouveau
-					while(plateaux[joueur-1].placer(positions[0], positions[1], positions[2], positions[3], domino_manche.getDomino(joueur)) == false);
-					
-					
-					
-					//on met a jour les textures du plateau
+					} // on place son domino (si possible), sinon on lui redemande a nouveau
+					while (plateaux[joueur - 1].placer(positions[0], positions[1], positions[2], positions[3],
+							domino_manche.getDomino(joueur)) == false);
+
+					// on met a jour les textures du plateau
 					fenetre.setDomino(positions, domino_manche.getDomino(joueur));
-					
-					//on met a jour le score
-					fenetre.updateScore(plateaux[joueur-1].getScore(false));
-					
-					//on supprimer son domino de la pioche du tour actuel
+					s.playDomino(domino_manche.getDomino(joueur));
+
+					// on met a jour le score
+					fenetre.updateScore(plateaux[joueur - 1].getScore(false));
+
+					// on supprimer son domino de la pioche du tour actuel
 					domino_manche.deleteDomino(joueur);
 				}
-				
-				if(manche != nb_manches) //si ce n'est pas la derniere manche
+
+				if (manche != nb_manches) // si ce n'est pas la derniere manche
 				{
-					//le joueur choisit son domino dans la pioche du tour suivant
+					// le joueur choisit son domino dans la pioche du tour suivant
 					fenetre.updateAction(CHOISIR_DOMINO);
-					
+
 					System.out.println("pioche tour suivant :");
 					domino_manche_plus_1.print();
-					
-					while(fenetre.hasSelectedDomino() == false)
-					{
+
+					while (fenetre.hasSelectedDomino() == false) {
 						// /!\ on verifie toutes les 10 ms, autrement ca ne fonctionne pas
-						try
-						{
-						    Thread.sleep(10);
-						}
-						catch(InterruptedException e)
-						{
+						try {
+							Thread.sleep(10);
+						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
 					}
-					
+
 					int[] domino = fenetre.getDomino();
 					domino_manche_plus_1.choisir(domino, joueur);
-					
-					//on met a jour les fenetres pour qu'ils sachent que le joueur a choisit ce domino
-					for(int autreJoueur = 0; autreJoueur < p.nbTotal; autreJoueur++)
-					{
+
+					// on met a jour les fenetres pour qu'ils sachent que le joueur a choisit ce
+					// domino
+					for (int autreJoueur = 0; autreJoueur < p.nbTotal; autreJoueur++) {
 						fenetre.setCrossed(domino);
-						fenetre.setCouleur(domino, couleurs.get(joueur-1));
+						fenetre.setCouleur(domino, couleurs.get(joueur - 1));
 					}
 				}
-								
+
 			}
-			
-			//mettre a jour ordre tour suivant
+
+			// mettre a jour ordre tour suivant
 			ordre = domino_manche_plus_1.getOrdre();
 		}
 		
-		//on affiche les scores de fin de partie
-		for(int i = 0; i < p.nbTotal; i++)
-		{
+		long estimatedTime = System.currentTimeMillis() - startTime;
+
+		fenetre.setVisible(false);
+		FinDePartie f = new FinDePartie(p, couleurs, plateaux, estimatedTime, noms);
+		f.setVisible(true);
+		
+		// on affiche les scores de fin de partie
+		for (int i = 0; i < p.nbTotal; i++) {
 			System.out.println(noms.get(i) + " a termine avec un score de : " + plateaux[i].getScore(true));
 		}
-		
+
+
 	}
-	
-	
-	//METHODES PUBLIQUE
+
+	// METHODES PUBLIQUE
 
 	// METHODES PRIVEES, QUI SERVENT UNIQUEMENT A D'AUTRES METHODES DE CETTE CLASSE
 
 	// Methode pour savoir qui commence
 	private ArrayList<Integer> defOrderInit() {
 
-		System.out.println("Ordre pour la première manche :");
+		System.out.println("Ordre pour la premiÃ¨re manche :");
 		ArrayList<Integer> orderInit = new ArrayList<Integer>();
 
 		if (p.nbTotal != 2) {
