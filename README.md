@@ -3,13 +3,12 @@
 TODO :
 - vérifier fonctionnement isPossible
 - Faire la fenetre de fin de partie
-- Fenetre de vision
-- Titre pioche
+
 
 Features :
 - Choisir son nom
 - Sound
-- Gameplay opérationnel ?
+- Gameplay opérationnel
 - Avoir des images
 - Calcul du score en live
 
