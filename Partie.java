@@ -54,7 +54,7 @@ public class Partie {
 	public void jouer() {
 
 		SoundPlayer s = new SoundPlayer();
-		
+
 		// on cree la pioche du premier tour et on indique l'appartenance des dominos
 		// suivant l'odre des joueurs genere aleatoirement
 		domino_manche_plus_1 = new Pioche(dominos.GetAndDelete_Dominos(p.nbTotal * p.nbDominoParJoueur),
@@ -68,12 +68,12 @@ public class Partie {
 			nb_manches = 6;
 		else
 			nb_manches = 12;
-		
+
 		long startTime = System.currentTimeMillis();
 
 		// boucle de jeu
 		for (int manche = 1; manche <= nb_manches; manche++) {
-			
+
 			// on intervertit les pioches
 			domino_manche = domino_manche_plus_1;
 
@@ -116,13 +116,17 @@ public class Partie {
 				// tester si possible de le placer
 				if (!plateaux[joueur - 1].isPossible(domino_manche.getDomino(joueur))) {
 					System.out.println("Tu ne peux pas jouer ce domino !");
-					s.playAudio("sorciere", true);
+					s.playAudio("bad", true);
 					fenetre.updateAction(IMPOSSIBLE_PLACER_DOMINO);
 				} else {
 					// le joueur place son domino sur son terrain
 					int positions[];
+					int T = 0;
 					do {
 						System.out.println("x? y? x2? y2?");
+						if (T != 0) {
+							s.playAudio("bad", true);
+						}
 
 						// on attend que l'utilisateur ait place son domino
 						while (fenetre.hasPlacedDomino() == false) {
@@ -136,6 +140,7 @@ public class Partie {
 
 						// on recupere les cases sur lesquelles il a clique
 						positions = fenetre.getPositions();
+						T = T + 1;
 
 					} // on place son domino (si possible), sinon on lui redemande a nouveau
 					while (plateaux[joueur - 1].placer(positions[0], positions[1], positions[2], positions[3],
@@ -185,18 +190,17 @@ public class Partie {
 			// mettre a jour ordre tour suivant
 			ordre = domino_manche_plus_1.getOrdre();
 		}
-		
+
 		long estimatedTime = System.currentTimeMillis() - startTime;
 
 		fenetre.setVisible(false);
 		FinDePartie f = new FinDePartie(p, couleurs, plateaux, estimatedTime, noms);
 		f.setVisible(true);
-		
+
 		// on affiche les scores de fin de partie
 		for (int i = 0; i < p.nbTotal; i++) {
 			System.out.println(noms.get(i) + " a termine avec un score de : " + plateaux[i].getScore(true));
 		}
-
 
 	}
 
@@ -207,7 +211,7 @@ public class Partie {
 	// Methode pour savoir qui commence
 	private ArrayList<Integer> defOrderInit() {
 
-		System.out.println("Ordre pour la premiÃ¨re manche :");
+		System.out.println("Ordre pour la première manche :");
 		ArrayList<Integer> orderInit = new ArrayList<Integer>();
 
 		if (p.nbTotal != 2) {
