@@ -386,7 +386,7 @@ public class Plateau {
 			
 			int[] dimensions = getDimensions();
 			int dim_autorisee;
-			if(p.modeEmpireMilieu == true)
+			if(p.modeGrandDuel == true)
 				dim_autorisee = 7;
 			else
 				dim_autorisee = 5;
