@@ -4,7 +4,7 @@ public class Plateau {
 
 	// CONSTANTES (POUR PLUS DE CLARTE DANS LE CODE)
 
-	// on définit une case vide, sans dominos dessus
+	// on dÃ©finit une case vide, sans dominos dessus
 	public static final int VIDE = 0;
 	public static final int CHATEAU = 7;
 
@@ -88,7 +88,7 @@ public class Plateau {
 
 	}
 
-	// retourne true si il y a possibilité de poser le domino dans le plateau
+	// retourne true si il y a possibilitÃ© de poser le domino dans le plateau
 	public boolean isPossible(int[] Domino) {
 
 		// On a les positions maximales et minimales de X et Y
@@ -100,7 +100,7 @@ public class Plateau {
 			return true;
 		}
 
-		// Sinon, on navigue dans le carré où l'on peut poser
+		// Sinon, on navigue dans le carrÃ© oÃ¹ l'on peut poser
 		for (int x = Dimensions[0]; x <= Dimensions[1]; x++) {
 			for (int y = Dimensions[2]; y <= Dimensions[3]; y++) {
 
@@ -117,7 +117,7 @@ public class Plateau {
 			}
 		}
 
-		// Si aucun true n'a été sortie
+		// Si aucun true n'a Ã©tÃ© sortie
 		return false;
 	}
 
@@ -310,7 +310,7 @@ public class Plateau {
 					// on vide l'historique des cases voisines a la precedente
 					currentlyCounted.clear();
 
-					// on compte les cases voisines semblables a  celle a la position (x, y)
+					// on compte les cases voisines semblables aÂ  celle a la position (x, y)
 					count(globallyCounted, currentlyCounted, getNature(x, y), x, y);
 
 					// on compte les couronnes en parcourant la liste des cases voisines semblables
@@ -319,7 +319,7 @@ public class Plateau {
 						couronnes += getCouronne(position[0], position[1]);
 					}
 
-					// les cases correspondent a  la taille de la liste des cases voisines
+					// les cases correspondent aÂ  la taille de la liste des cases voisines
 					// semblables
 					int cases = currentlyCounted.size();
 
@@ -350,7 +350,7 @@ public class Plateau {
 
 	// sert au calcul du score
 	private void count(ArrayList<int[]> globallyCounted, ArrayList<int[]> currentlyCounted, int nature, int x, int y) {
-		// hors du plateau -> on s'arrete la 
+		// hors du plateau -> on s'arrete laÂ 
 		if (x < 0 || y < 0 || x >= sizeX() || y >= sizeY())
 			return;
 
@@ -358,14 +358,14 @@ public class Plateau {
 		if (getNature(x, y) != nature)
 			return;
 
-		// on verifie si la case a ete comptee auparavant -> on s'arrete la 
+		// on verifie si la case a ete comptee auparavant -> on s'arrete laÂ 
 		int[] currentPos = { x, y };
 		for (int[] pos : globallyCounted) {
 			if (pos[0] == currentPos[0] && pos[1] == currentPos[1])
 				return;
 		}
 
-		// on ajoute la case a  l'historique des cases comptees
+		// on ajoute la case aÂ  l'historique des cases comptees
 		globallyCounted.add(currentPos);
 		currentlyCounted.add(currentPos);
 
@@ -377,6 +377,7 @@ public class Plateau {
 	}
 
 	public boolean placer(int x, int y, int x2, int y2, int[] domino) {
+		
 		if(Math.sqrt(Math.pow(x - x2, 2) + Math.pow(y - y2, 2)) != 1) //les deux morceaux sont separes de plus d'une case ou sont superposes
 			return false;
 		if (isAvailable(x, y) && isAvailable(x2, y2)
@@ -386,7 +387,7 @@ public class Plateau {
 			
 			int[] dimensions = getDimensions();
 			int dim_autorisee;
-			if(p.modeGrandDuel == true)
+			if(p.modeEmpireMilieu == true)
 				dim_autorisee = 7;
 			else
 				dim_autorisee = 5;
@@ -401,12 +402,47 @@ public class Plateau {
 		return false;
 
 	}
+	
+	
+	public int tester(int x, int y, int x2, int y2, int[] domino) {
+		
+		if(Math.sqrt(Math.pow(x - x2, 2) + Math.pow(y - y2, 2)) != 1) //les deux morceaux sont separes de plus d'une case ou sont superposes
+			return -1;
+		if (isAvailable(x, y) && isAvailable(x2, y2)
+				&& (isCompatible(x, y, domino[1]) || isCompatible(x2, y2, domino[3]))) { //les cases sont libres et les dominos compatibles
+			plateau[x][y] = domino[0] * 10 + domino[1];
+			plateau[x2][y2] = domino[2] * 10 + domino[3];
+			
+			int[] dimensions = getDimensions();
+			int dim_autorisee;
+			if(p.modeEmpireMilieu == true)
+				dim_autorisee = 7;
+			else
+				dim_autorisee = 5;
+			if(Math.abs(dimensions[0] - dimensions[1]) > dim_autorisee || Math.abs(dimensions[2] - dimensions[3]) > dim_autorisee) //on depasse les dimensions autorisees
+			{
+				plateau[x][y] = VIDE; //on supprime le domino qu'on a place
+				plateau[x][y] = VIDE;
+				return -1;
+			}
+			int Score = getScore(false);
+			
+			plateau[x][y] = VIDE;
+			plateau[x2][y2] = VIDE;
+			return Score;
+		}
+		return -1;
+	}
 
-	private boolean isAvailable(int x, int y) {
+
+
+
+
+	public boolean isAvailable(int x, int y) {
 		return getNature(x, y) == VIDE;
 	}
 
-	private boolean isCompatible(int x, int y, int nature) {
+	public boolean isCompatible(int x, int y, int nature) {
 		boolean isCompatible = false;
 		if ((x == XC - 1 && y == YC) || (x == XC + 1 && y == YC) || (x == XC && y == YC - 1) || (x == XC && y == YC + 1)) //rainbow
 			isCompatible = true;
