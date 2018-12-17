@@ -6,10 +6,27 @@ public class IA {
 
 	private Plateau p;
 
-	public int getChoice(Plateau p, int[][] nextDominos) {
+	public int[] getChoice(Plateau plateau, Pioche pioche) {
 
-		return 0;
+		int L = pioche.getSize();
+		int max = 0;
+		int[] MeilleurDomino = new int[5];
+
+		for (int i = 0; i < L; i++) {
+			if (pioche.getJoueurByIndex(i) == 0 && plateau.isPossible(pioche.getDominoByIndex(i))) {
+				int Points = getMove(plateau, pioche.getDominoByIndex(i))[4];
+				if (Points >= max) {
+					MeilleurDomino = pioche.getDominoByIndex(i);
+					max = Points;
+				}
+
+			}
+		}
+
+		return MeilleurDomino;
 	}
+
+
 
 	public int[] getMove(Plateau p, int[] Domino) {
 
@@ -89,7 +106,7 @@ public class IA {
 		}
 
 		Random rn = new Random();
-		int R = ( rn.nextInt() ) % (Moves.size() - 1);
+		int R = rn.nextInt(Moves.size());
 		
 		System.out.println(R);
 
@@ -98,7 +115,7 @@ public class IA {
 		System.out.println("Move choisi : " + (Moves.get(R)[0]) + "-" + (Moves.get(R)[1]) + " + " + (Moves.get(R)[2])
 				+ "-" + (Moves.get(R)[3]));
 		System.out.println(Moves.get(R)[4] + " points");
-
+		
 		return Moves.get(R);
 
 	}

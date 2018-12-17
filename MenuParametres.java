@@ -43,11 +43,12 @@ public class MenuParametres extends JDialog {
 		panNbJoueurs.setPreferredSize(new Dimension(150, 70));
 		panNbJoueurs.setBorder(BorderFactory.createTitledBorder("Joueurs"));
 		nbJoueurs = new JComboBox();
+		nbJoueurs.addItem("0");
 		nbJoueurs.addItem("1");
 		nbJoueurs.addItem("2");
 		nbJoueurs.addItem("3");
 		nbJoueurs.addItem("4");
-		nbJoueurs.setSelectedIndex(1);
+		nbJoueurs.setSelectedIndex(0);
 		JLabel labNbJoueurs = new JLabel("nombre : ");
 		panNbJoueurs.add(labNbJoueurs);
 		panNbJoueurs.add(nbJoueurs);
@@ -62,6 +63,8 @@ public class MenuParametres extends JDialog {
 		nbIA.addItem("1");
 		nbIA.addItem("2");
 		nbIA.addItem("3");
+		nbIA.addItem("4");
+		nbIA.setSelectedIndex(2);
 		JLabel labNbIA = new JLabel("nombre : ");
 		panNbIA.add(labNbIA);
 		panNbIA.add(nbIA);

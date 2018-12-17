@@ -19,6 +19,8 @@ public class Partie {
 	private Pioche domino_manche;
 	private Pioche domino_manche_plus_1;
 	
+	private IA chevre;
+	
 	private long startTime;
 
 	// CONSTRUCTEUR
@@ -47,6 +49,10 @@ public class Partie {
 		}
 
 		fenetre = null;
+		
+		chevre = new IA();
+		
+		
 
 	}
 
@@ -153,7 +159,13 @@ public class Partie {
 					}
 					else //c'est une ia
 					{
-						
+						positions = chevre.getMove(plateaux[joueur - 1], domino_manche.getDomino(joueur));
+						plateaux[joueur - 1].placer(positions[0], positions[1], positions[2], positions[3], domino_manche.getDomino(joueur));
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
 					}
 					// on met a jour les textures du plateau
 					fenetre.setDomino(positions, domino_manche.getDomino(joueur));
@@ -190,7 +202,12 @@ public class Partie {
 					}
 					else //c'est une ia
 					{
-						
+						domino = chevre.getChoice(plateaux[joueur-1], domino_manche_plus_1);
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
 					}
 					domino_manche_plus_1.choisir(domino, joueur);
 					
