@@ -10,7 +10,6 @@ public class SoundPlayer {
 			File Clap = new File("Son//" + sound + ".wav");
 			Clip clip = AudioSystem.getClip();
 			clip.open(AudioSystem.getAudioInputStream(Clap));
-
 			if (B) {
 				clip.start();
 				System.out.println(sound + " plays");

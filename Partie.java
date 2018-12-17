@@ -18,6 +18,8 @@ public class Partie {
 
 	private Pioche domino_manche;
 	private Pioche domino_manche_plus_1;
+	
+	private long startTime;
 
 	// CONSTRUCTEUR
 	public Partie(Parametres p, ArrayList<Integer> couleurs, ArrayList<String> noms) {
@@ -29,7 +31,7 @@ public class Partie {
 		ordre = defOrderInit();
 
 		// On cree les dominos
-		dominos = new Dominos(12 * p.nbTotal);
+		dominos = new Dominos(p.nbDominosPartie);
 		// test
 		dominos.print();
 
@@ -57,19 +59,19 @@ public class Partie {
 
 		// on cree la pioche du premier tour et on indique l'appartenance des dominos
 		// suivant l'odre des joueurs genere aleatoirement
-		domino_manche_plus_1 = new Pioche(dominos.GetAndDelete_Dominos(p.nbTotal * p.nbDominoParJoueur),
+		domino_manche_plus_1 = new Pioche(dominos.GetAndDelete_Dominos(p.nbDominosManche),
 				(ArrayList<Integer>) ordre.clone());
 		fenetre = new Fenetre(plateaux, domino_manche_plus_1, couleurs, noms);
 		fenetre.setVisible(true);
 
 		// On definit le nombre de manches du jeu selon le nb de joueurs
 		int nb_manches;
-		if (p.nbTotal == 2)
+		if (p.nbTotal == 2 && p.modeGrandDuel == false)
 			nb_manches = 6;
 		else
 			nb_manches = 12;
 
-		long startTime = System.currentTimeMillis();
+		startTime = System.currentTimeMillis();
 
 		// boucle de jeu
 		for (int manche = 1; manche <= nb_manches; manche++) {
@@ -79,7 +81,7 @@ public class Partie {
 
 			// on cree la pioche du tour suivant
 			if (manche != nb_manches)
-				domino_manche_plus_1 = new Pioche(dominos.GetAndDelete_Dominos(p.nbTotal * p.nbDominoParJoueur));
+				domino_manche_plus_1 = new Pioche(dominos.GetAndDelete_Dominos(p.nbDominosManche));
 			else
 				domino_manche_plus_1 = new Pioche();
 
@@ -119,33 +121,40 @@ public class Partie {
 					s.playAudio("bad", true);
 					fenetre.updateAction(IMPOSSIBLE_PLACER_DOMINO);
 				} else {
-					// le joueur place son domino sur son terrain
-					int positions[];
-					int T = 0;
-					do {
-						System.out.println("x? y? x2? y2?");
-						if (T != 0) {
-							s.playAudio("bad", true);
-						}
-
-						// on attend que l'utilisateur ait place son domino
-						while (fenetre.hasPlacedDomino() == false) {
-							// /!\ on verifie toutes les 10 ms, autrement ca ne fonctionne pas
-							try {
-								Thread.sleep(10);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
+					
+					int positions[] = new int[2];
+					if(joueur <= p.nbJoueurs) //c'est un jouueur qui joue
+					{
+						// le joueur place son domino sur son terrain
+						int T = 0;
+						do {
+							System.out.println("x? y? x2? y2?");
+							if (T != 0) {
+								s.playAudio("bad", true);
 							}
-						}
-
-						// on recupere les cases sur lesquelles il a clique
-						positions = fenetre.getPositions();
-						T = T + 1;
-
-					} // on place son domino (si possible), sinon on lui redemande a nouveau
-					while (plateaux[joueur - 1].placer(positions[0], positions[1], positions[2], positions[3],
-							domino_manche.getDomino(joueur)) == false);
-
+								
+							// on attend que l'utilisateur ait place son domino
+							while (fenetre.hasPlacedDomino() == false) {
+								// /!\ on verifie toutes les 10 ms, autrement ca ne fonctionne pas
+								try {
+									Thread.sleep(10);
+								} catch (InterruptedException e) {
+									e.printStackTrace();
+								}
+							}
+	
+							// on recupere les cases sur lesquelles il a clique
+							positions = fenetre.getPositions();
+							T = T + 1;
+	
+						} // on place son domino (si possible), sinon on lui redemande a nouveau
+						while (plateaux[joueur - 1].placer(positions[0], positions[1], positions[2], positions[3],
+								domino_manche.getDomino(joueur)) == false);
+					}
+					else //c'est une ia
+					{
+						
+					}
 					// on met a jour les textures du plateau
 					fenetre.setDomino(positions, domino_manche.getDomino(joueur));
 					s.playDomino(domino_manche.getDomino(joueur));
@@ -164,25 +173,30 @@ public class Partie {
 
 					System.out.println("pioche tour suivant :");
 					domino_manche_plus_1.print();
-
-					while (fenetre.hasSelectedDomino() == false) {
-						// /!\ on verifie toutes les 10 ms, autrement ca ne fonctionne pas
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
+					
+					int[] domino = new int[5];
+					if(joueur <= p.nbJoueurs)//c'est un joueur qui joue
+					{
+						while (fenetre.hasSelectedDomino() == false) {
+							// /!\ on verifie toutes les 10 ms, autrement ca ne fonctionne pas
+							try {
+								Thread.sleep(10);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
 						}
+	
+						domino = fenetre.getDomino();
 					}
-
-					int[] domino = fenetre.getDomino();
+					else //c'est une ia
+					{
+						
+					}
 					domino_manche_plus_1.choisir(domino, joueur);
-
-					// on met a jour les fenetres pour qu'ils sachent que le joueur a choisit ce
-					// domino
-					for (int autreJoueur = 0; autreJoueur < p.nbTotal; autreJoueur++) {
-						fenetre.setCrossed(domino);
-						fenetre.setCouleur(domino, couleurs.get(joueur - 1));
-					}
+					
+					//on met a jour l'affichage
+					fenetre.setCrossed(domino);
+					fenetre.setCouleur(domino, couleurs.get(joueur - 1));
 				}
 
 			}
@@ -190,22 +204,32 @@ public class Partie {
 			// mettre a jour ordre tour suivant
 			ordre = domino_manche_plus_1.getOrdre();
 		}
-
-		long estimatedTime = System.currentTimeMillis() - startTime;
-
-		fenetre.setVisible(false);
-		FinDePartie f = new FinDePartie(p, couleurs, plateaux, estimatedTime, noms);
-		f.setVisible(true);
-
+		
+		
 		// on affiche les scores de fin de partie
 		for (int i = 0; i < p.nbTotal; i++) {
 			System.out.println(noms.get(i) + " a termine avec un score de : " + plateaux[i].getScore(true));
 		}
-
+		fenetre.setVisible(false);
 	}
 
 	// METHODES PUBLIQUE
-
+	public int[] getScores()
+	{
+		int[] scores = new int[p.nbTotal];
+		for(int i = 0; i < p.nbTotal; i++)
+		{
+			scores[i] = plateaux[i].getScore(true);
+		}
+		return scores;
+	}
+	
+	public long getElapsedTime()
+	{
+		return System.currentTimeMillis() - startTime;
+	}
+	
+	
 	// METHODES PRIVEES, QUI SERVENT UNIQUEMENT A D'AUTRES METHODES DE CETTE CLASSE
 
 	// Methode pour savoir qui commence

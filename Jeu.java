@@ -1,12 +1,12 @@
-import java.util.Scanner;
 
 public class Jeu {
 
 	public static void main(String[] args) {
+		boolean souhaiteRejouer = false;
+		SoundPlayer s = new SoundPlayer();
+		s.playMusique("Musique", true);
 		do {
-			SoundPlayer s = new SoundPlayer();
-			s.playMusique("Musique", true);
-
+			
 			// on affiche les menus
 			MenuParametres menuParametres = new MenuParametres();
 			if (menuParametres.display() == false) // l'utilisateur a quitte le menu, on ferme le programme
@@ -24,27 +24,20 @@ public class Jeu {
 
 			// on joue la partie
 			partie.jouer();
-		} while (souhaiteRejouer());
-	}
-
-	// propose au joueur de rejouer
-	public static boolean souhaiteRejouer() {
-		Scanner reader = new Scanner(System.in);
-		String reponse = "";
-		do {
-			System.out.println("Voulez-vous rejouer ? (y/n)");
-			try {
-				reponse = reader.nextLine();
-			} catch (Exception e) {
+			
+			//on affiche l'ecran de fin de partie
+			FinDePartie f = new FinDePartie(menuParametres.getParametres(), menuCouleurs.getCouleurs(), partie.getScores(), partie.getElapsedTime(), menuCouleurs.getNoms());
+			f.setVisible(true);
+			while (f.hasDecided() == false) {
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
-			if (!reponse.equals("y") && !reponse.equals("n"))
-				System.out.println("veuillez repondre par y ou n");
-		} while (!reponse.equals("y") && !reponse.equals("n"));
-
-		if (reponse.equals("y"))
-			return true;
-		else
-			return false;
+			f.setVisible(false);
+			souhaiteRejouer = f.souhaiteRejouer();
+		} while (souhaiteRejouer);
+		System.exit(0);
 	}
-
 }

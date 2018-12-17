@@ -30,7 +30,7 @@ public class FinDePartie extends JFrame {
 	public void addComponentsToPane(Container pane, int[] score, int[] couleur, String[] nom) {
 
 		int[][] infos = new int[3][4];
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < score.length; i++) {
 			infos[0][i] = score[i];
 			infos[1][i] = couleur[i];
 			// infos[2][i] = nom[i];
@@ -141,10 +141,8 @@ public class FinDePartie extends JFrame {
 		Rejouer.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("replay");
-				setVisible(false);
-				dispose();
-				String[] useless = null;
-				Jeu.main(useless);
+				rejouer = true;
+				hasDecided = true;
 			}
 		});
 		Rejouer.setBorderPainted(false);
@@ -161,9 +159,8 @@ public class FinDePartie extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("");
 				System.out.println("quit");
-				setVisible(false);
-		        System.exit(0);
-				dispose();
+				rejouer = false;
+				hasDecided = true;
 			}
 		});
 		Quitter.setBorderPainted(false);
@@ -188,13 +185,15 @@ public class FinDePartie extends JFrame {
 	private int nbJoueurs, nbIA, nbTotal;
 	private boolean modeDynastie, modeEmpireMilieu, modeHarmonie, modeGrandDuel;
 	private long Time;
-
+	
+	private boolean rejouer;
+	private boolean hasDecided = false;
+	
 	JFrame FenetreFinale;
 	JButton Quitter, Recommencer;
-	public Plateau[] plateaux;
 
 	// CONSTRUCTEUR
-	public FinDePartie(Parametres parametres, ArrayList<Integer> couleurs, Plateau[] plateaux, long Time,
+	public FinDePartie(Parametres parametres, ArrayList<Integer> couleurs, int[] score, long Time,
 			ArrayList<String> noms2) {
 
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -217,15 +216,12 @@ public class FinDePartie extends JFrame {
 		this.modeEmpireMilieu = parametres.modeEmpireMilieu;
 		this.modeHarmonie = parametres.modeHarmonie;
 		this.modeGrandDuel = parametres.modeGrandDuel;
-		this.plateaux = plateaux;
 
-		int[] score = new int[4];
 		String[] nom = new String[4];
 		int[] couleur = new int[4];
 
 		for (int i = 0; i < this.nbTotal; i++) {
 
-			score[i] = plateaux[i].getScore(true);
 			couleur[i] = couleurs.get(i);
 			nom[i] = noms2.get(i);
 
@@ -252,6 +248,16 @@ public class FinDePartie extends JFrame {
 				largest = i;
 		}
 		return largest;
+	}
+	
+	public boolean souhaiteRejouer()
+	{
+		return rejouer;
+	}
+	
+	public boolean hasDecided()
+	{
+		return hasDecided;
 	}
 
 }
