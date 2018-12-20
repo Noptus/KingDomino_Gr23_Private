@@ -9,11 +9,13 @@ public class IA {
 	public int[] getChoice(Plateau plateau, Pioche pioche) {
 
 		int L = pioche.getSize();
-		int max = 0;
+		int max = -1;
 		int[] MeilleurDomino = new int[5];
 
 		for (int i = 0; i < L; i++) {
+			System.out.println("domino 1");
 			if (pioche.getJoueurByIndex(i) == 0 && plateau.isPossible(pioche.getDominoByIndex(i))) {
+				System.out.println("on le test");
 				int Points = getMove(plateau, pioche.getDominoByIndex(i))[4];
 				if (Points >= max) {
 					MeilleurDomino = pioche.getDominoByIndex(i);
@@ -21,6 +23,16 @@ public class IA {
 				}
 
 			}
+		}
+		if(max == -1) //aucun domino ne convient, on en prend un au hasard
+		{
+			ArrayList<Integer> possibilites = new ArrayList<Integer>();
+			for (int i = 0; i < L; i++) {
+				if(pioche.getJoueurByIndex(i) == 0)
+					possibilites.add(i);
+			}
+			Random rn = new Random();
+			MeilleurDomino = pioche.getDominoByIndex(possibilites.get(rn.nextInt(possibilites.size())));
 		}
 
 		return MeilleurDomino;
@@ -96,7 +108,7 @@ public class IA {
 
 			}
 		}
-
+		
 		int max = Moves.get(Moves.size() - 1)[4];
 
 		for (int i = Moves.size() - 1; i >= 0; i--) {

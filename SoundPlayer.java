@@ -55,21 +55,21 @@ public class SoundPlayer {
 		case 1:
 			playAudio("power_1", true);
 			try {
-				Thread.sleep(1500);
+				Thread.sleep(1);
 			} catch (InterruptedException e) {
 			}
 			break;
 		case 2:
 			playAudio("power_2", true);
 			try {
-				Thread.sleep(1500);
+				Thread.sleep(1);
 			} catch (InterruptedException e) {
 			}
 			break;
 		case 3:
 			playAudio("power_3", true);
 			try {
-				Thread.sleep(1500);
+				Thread.sleep(1);
 			} catch (InterruptedException e) {
 			}
 			break;
@@ -98,28 +98,28 @@ public class SoundPlayer {
 
 		}
 		try {
-			Thread.sleep(1500);
+			Thread.sleep(1);
 		} catch (InterruptedException e) {
 		}
 		switch (C2) {
 		case 1:
 			playAudio("power_1", true);
 			try {
-				Thread.sleep(1500);
+				Thread.sleep(1);
 			} catch (InterruptedException e) {
 			}
 			break;
 		case 2:
 			playAudio("power_2", true);
 			try {
-				Thread.sleep(1500);
+				Thread.sleep(1);
 			} catch (InterruptedException e) {
 			}
 			break;
 		case 3:
 			playAudio("power_3", true);
 			try {
-				Thread.sleep(1500);
+				Thread.sleep(1);
 			} catch (InterruptedException e) {
 			}
 			break;

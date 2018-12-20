@@ -102,6 +102,8 @@ public class Pioche
 			appartenances.set(dominos.indexOf(domino), joueur);
 			return true;
 		}
+		else
+			System.out.println("J'APPARTIENS DEJA A QUELQU'UN");
 		return false;
 	}
 	

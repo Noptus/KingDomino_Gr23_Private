@@ -125,17 +125,19 @@ public class Partie {
 				if (!plateaux[joueur - 1].isPossible(domino_manche.getDomino(joueur))) {
 					System.out.println("Tu ne peux pas jouer ce domino !");
 					s.playAudio("bad", true);
-					fenetre.updateAction(IMPOSSIBLE_PLACER_DOMINO);
+					//fenetre.updateAction(IMPOSSIBLE_PLACER_DOMINO);
 				} else {
 					
 					int positions[] = new int[2];
 					if(joueur <= p.nbJoueurs) //c'est un jouueur qui joue
 					{
 						// le joueur place son domino sur son terrain
-						int T = 0;
+						int T = 0; //nombre de tentatives de placement
+						
+						//tant que le joueur n'a pas reussi a placer son domino
 						do {
 							System.out.println("x? y? x2? y2?");
-							if (T != 0) {
+							if (T != 0) { //le joueur a mal place son domino
 								s.playAudio("bad", true);
 							}
 								
@@ -161,8 +163,9 @@ public class Partie {
 					{
 						positions = chevre.getMove(plateaux[joueur - 1], domino_manche.getDomino(joueur));
 						plateaux[joueur - 1].placer(positions[0], positions[1], positions[2], positions[3], domino_manche.getDomino(joueur));
+						//on ralentit l'IA sinon elle joue trop rapidement
 						try {
-							Thread.sleep(1000);
+							Thread.sleep(100);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
@@ -173,10 +176,9 @@ public class Partie {
 
 					// on met a jour le score
 					fenetre.updateScore(plateaux[joueur - 1].getScore(false));
-
-					// on supprimer son domino de la pioche du tour actuel
-					domino_manche.deleteDomino(joueur);
 				}
+				// on supprimer son domino de la pioche du tour actuel
+				domino_manche.deleteDomino(joueur);
 
 				if (manche != nb_manches) // si ce n'est pas la derniere manche
 				{
@@ -203,10 +205,11 @@ public class Partie {
 					else //c'est une ia
 					{
 						domino = chevre.getChoice(plateaux[joueur-1], domino_manche_plus_1);
+						//on ralentit l'IA sinon elle joue trop rapidement
 						try {
-							Thread.sleep(1000);
+							Thread.sleep(100);
 						} catch (InterruptedException e) {
-							e.printStackTrace();
+							e.printStackTrace(); 
 						}
 					}
 					domino_manche_plus_1.choisir(domino, joueur);

@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Plateau {
 
@@ -94,29 +95,15 @@ public class Plateau {
 		// On a les positions maximales et minimales de X et Y
 		int[] Dimensions = getPossibleDimensions();
 
-		// On teste les cases multicolores
-		if (getRainbowPossibility() == true) {
-			System.out.println("Possible rainbow");
-			return true;
-		}
-
-		// Sinon, on navigue dans le carrÃ© oÃ¹ l'on peut poser
 		for (int x = Dimensions[0]; x <= Dimensions[1]; x++) {
 			for (int y = Dimensions[2]; y <= Dimensions[3]; y++) {
-
-
-				if (getNature(x, y) == 0) {
-					boolean possible = getPossibilityHere(x, y, Domino);
-					if (possible == true) {
-						System.out.println("Possible : "+x+"-"+y);
-						return true;
-					}
-
-				} // fin du if case vide
-
+				if (getPossibilityHere(x, y, Domino) == true) {
+					System.out.println("Possible : "+x+"-"+y);
+					return true;
+				}
 			}
-		}
 
+		} // fin du if case vide
 		// Si aucun true n'a Ã©tÃ© sortie
 		return false;
 	}
@@ -126,35 +113,13 @@ public class Plateau {
 	
 	public boolean getPossibilityHere(int x, int y, int[] Domino) {
 
-		int[] Dimensions = getPossibleDimensions();
+		ArrayList<Integer> gains = new ArrayList<Integer>();
+		gains.add(tester(x-1, y, x, y, Domino));
+		gains.add(tester(x+1, y, x, y, Domino));
+		gains.add(tester(x, y-1, x, y, Domino));
+		gains.add(tester(x, y+1, x, y, Domino));
+		return Collections.max(gains) != -1;
 		
-		// case a gauche match
-		if( getNature(x-1,y) == Domino[1] || getNature(x-1,y) == Domino[3] ) {
-			if( getNature(x-2,y)==0 || getNature(x-1,y-1)==0 || getNature(x-1,y+1)==0 ) {
-				return true;
-			}
-		}
-		// case a droite match
-		if( getNature(x+1,y) == Domino[1] || getNature(x+1,y) == Domino[3] ) {
-			if( getNature(x+2,y)==0 || getNature(x+1,y-1)==0 || getNature(x+1,y+1)==0 ) {
-				return true;
-			}
-		}
-		// case en dessous match
-		if( getNature(x,y+1) == Domino[1] || getNature(x,y+1) == Domino[3] ) {
-			if( getNature(x-1,y+1)==0 || getNature(x,y+2)==0 || getNature(x+1,y+1)==0 ) {
-				return true;
-			}
-		}
-		// case au dessus match
-		if( getNature(x,y-1) == Domino[1] || getNature(x,y-1) == Domino[3] ) {
-			if( getNature(x-1,y-1)==0 || getNature(x,y-2)==0 || getNature(x+1,y-1)==0 ) {
-				return true;
-			}
-		}
-		
-		// aucun match valide
-		return false;
 	}
 	
 	
@@ -163,9 +128,18 @@ public class Plateau {
 		if(p.modeEmpireMilieu == false) //le mode n'est pas active
 			return false;
 		int[] Dimensions = getDimensions();
-		int Center_Y = Dimensions[3]-2;
-		int Center_X = Dimensions[1]-2;
+		
+		//distance du centre par rapport au bord de son plateau
+		int distance;
+		if(p.modeGrandDuel == true)
+			distance = 3;
+		else
+			distance = 2;
+		
+		int Center_Y = Dimensions[3]-distance;
+		int Center_X = Dimensions[1]-distance;
 		System.out.println("center is : "+getNature(Center_X, Center_Y));
+		//on verifie que le chateau est au centre de son plateau
 		if (getNature(Center_X, Center_Y) == 7) {
 			return true;
 		} else {
@@ -184,17 +158,15 @@ public class Plateau {
 		int max_X = Dimensions[2];
 		int max_Y = Dimensions[3];
 		
-		for ( int x = min_X ; x < max_X ; x++) {
-			for ( int y = min_Y ; y < max_Y ; y++) {
+		//on verifie que chaque case est bien remplie
+		for ( int x = min_X ; x < max_X + 1 ; x++) {
+			for ( int y = min_Y ; y < max_Y + 1 ; y++) {
 				if (getNature(x,y) == 0) {
 					return false;
 				}
 			}
 		}
-
 		return true;
-		
-		
 	}
 	
 	//4 4
@@ -217,37 +189,22 @@ public class Plateau {
 
 	public int[] getPossibleDimensions() {
 
-		int min_X = 20;
-		int max_X = -10;
-		int min_Y = 20;
-		int max_Y = -10;
+		int[] Dim_Actuelles = getDimensions();
+		int min_X = Dim_Actuelles[0];
+		int max_X = Dim_Actuelles[1];
+		int min_Y = Dim_Actuelles[2];
+		int max_Y = Dim_Actuelles[3];
 
-		// On avance en augmentant les valeurs, pour trouver les mins
-		for (int i = 0; i < sizeX(); i++) {
-			for (int j = 0; j < sizeY(); j++) {
-				if (getNature(i, j) != 0 && i < min_X) {
-					min_X = i;
-				}
-				if (getNature(i, j) != 0 && j < min_Y) {
-					min_Y = j;
-				}
-			}
-		}
-
-		// On fait diminuer les valeurs, pour trouver les max
-		for (int i = sizeX() - 1; i >= 0; i--) {
-			for (int j = sizeY() - 1; j >= 0; j--) {
-				if (getNature(i, j) != 0 && i > max_X) {
-					max_X = i;
-				}
-				if (getNature(i, j) != 0 && j > max_Y) {
-					max_Y = j;
-				}
-			}
-		}
-
-		int Marge_X = 5 - (max_X - min_X + 1);
-		int Marge_Y = 5 - (max_Y - min_Y + 1);
+		
+		int dim_autorisee;
+		if(p.modeGrandDuel == true)
+			dim_autorisee = 7;
+		else
+			dim_autorisee = 5;
+		
+		//de combien on peut se decaler sur les cotes en respectant les dimensions autorisees
+		int Marge_X = dim_autorisee - (max_X - min_X + 1);
+		int Marge_Y = dim_autorisee - (max_Y - min_Y + 1);
 
 		int Minimum_Ever_X = min_X - Marge_X;
 		if (Minimum_Ever_X < 0)
@@ -376,27 +333,13 @@ public class Plateau {
 		count(globallyCounted, currentlyCounted, nature, x, y + 1);
 	}
 
+	//retourne true si le domino a ete place, false si le placement etait invalide
 	public boolean placer(int x, int y, int x2, int y2, int[] domino) {
 		
-		if(Math.sqrt(Math.pow(x - x2, 2) + Math.pow(y - y2, 2)) != 1) //les deux morceaux sont separes de plus d'une case ou sont superposes
-			return false;
-		if (isAvailable(x, y) && isAvailable(x2, y2)
-				&& (isCompatible(x, y, domino[1]) || isCompatible(x2, y2, domino[3]))) { //les cases sont libres et les dominos compatibles
+		if(tester(x, y, x2, y2, domino) != -1)
+		{
 			plateau[x][y] = domino[0] * 10 + domino[1];
 			plateau[x2][y2] = domino[2] * 10 + domino[3];
-			
-			int[] dimensions = getDimensions();
-			int dim_autorisee;
-			if(p.modeEmpireMilieu == true)
-				dim_autorisee = 7;
-			else
-				dim_autorisee = 5;
-			if(Math.abs(dimensions[0] - dimensions[1]) > dim_autorisee || Math.abs(dimensions[2] - dimensions[3]) > dim_autorisee) //on depasse les dimensions autorisees
-			{
-				plateau[x][y] = VIDE; //on supprime le domino qu'on a place
-				plateau[x][y] = VIDE;
-				return false;
-			}
 			return true;
 		}
 		return false;
@@ -404,27 +347,33 @@ public class Plateau {
 	}
 	
 	
+	//retourne le score du nouveau plateau, ou -1 si le placement est invalide
 	public int tester(int x, int y, int x2, int y2, int[] domino) {
 		
 		if(Math.sqrt(Math.pow(x - x2, 2) + Math.pow(y - y2, 2)) != 1) //les deux morceaux sont separes de plus d'une case ou sont superposes
 			return -1;
 		if (isAvailable(x, y) && isAvailable(x2, y2)
 				&& (isCompatible(x, y, domino[1]) || isCompatible(x2, y2, domino[3]))) { //les cases sont libres et les dominos compatibles
+			
+			//on place le domino
 			plateau[x][y] = domino[0] * 10 + domino[1];
 			plateau[x2][y2] = domino[2] * 10 + domino[3];
 			
 			int[] dimensions = getDimensions();
 			int dim_autorisee;
-			if(p.modeEmpireMilieu == true)
+			if(p.modeGrandDuel == true)
 				dim_autorisee = 7;
 			else
 				dim_autorisee = 5;
-			if(Math.abs(dimensions[0] - dimensions[1]) > dim_autorisee || Math.abs(dimensions[2] - dimensions[3]) > dim_autorisee) //on depasse les dimensions autorisees
+			//on verifie que le nouveau plateau ne depasse pas les dimensions autorisees
+			if(Math.abs(dimensions[0] - dimensions[1]) + 1 > dim_autorisee || Math.abs(dimensions[2] - dimensions[3]) + 1 > dim_autorisee) 
 			{
-				plateau[x][y] = VIDE; //on supprime le domino qu'on a place
-				plateau[x][y] = VIDE;
+				plateau[x][y] = VIDE; 
+				plateau[x2][y2] = VIDE;
 				return -1;
 			}
+			
+			//on calcule le score de ce nouveau plateau
 			int Score = getScore(false);
 			
 			plateau[x][y] = VIDE;
@@ -438,11 +387,11 @@ public class Plateau {
 
 
 
-	public boolean isAvailable(int x, int y) {
+	private boolean isAvailable(int x, int y) {
 		return getNature(x, y) == VIDE;
 	}
 
-	public boolean isCompatible(int x, int y, int nature) {
+	private boolean isCompatible(int x, int y, int nature) {
 		boolean isCompatible = false;
 		if ((x == XC - 1 && y == YC) || (x == XC + 1 && y == YC) || (x == XC && y == YC - 1) || (x == XC && y == YC + 1)) //rainbow
 			isCompatible = true;
