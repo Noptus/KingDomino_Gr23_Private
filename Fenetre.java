@@ -18,6 +18,7 @@ import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -163,6 +164,7 @@ public class Fenetre extends JFrame {
 
 	private int joueur = 0;
 	private ArrayList<String> noms;
+	private ArrayList<Integer> scores;
 
 	private JPanel[] pan_plateau;
 	private JPanel pan_pioche_manche;
@@ -180,10 +182,18 @@ public class Fenetre extends JFrame {
 	private JButton but_vue;
 
 	private int actionEnCours = 0;
+	
+	private SoundPlayer s;
 
 	// CONSTRUCTEUR
-	public Fenetre(Plateau[] plateaux, Pioche pioche_initiale, ArrayList<Integer> couleurs, ArrayList<String> noms) {
+	public Fenetre(Plateau[] plateaux, Pioche pioche_initiale, ArrayList<Integer> couleurs, ArrayList<String> noms, SoundPlayer s) {
+		
+		this.s = s;
 		this.noms = noms;
+		this.scores = new ArrayList<Integer>(); //on initialise les scores a 0
+		for(int i = 0; i < plateaux.length; i++)
+			this.scores.add(0);
+	
 
 		for (int i = 0; i <= 48; i++) {
 			try {
@@ -192,8 +202,6 @@ public class Fenetre extends JFrame {
 			}
 		}
 
-		SoundPlayer s = new SoundPlayer();
-
 		// on cree notre fenetre
 		this.setTitle("KingDomino");
 		this.setSize(800, 600);
@@ -201,6 +209,7 @@ public class Fenetre extends JFrame {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH); // affichage plein ecran du jeu, mais redimmensionnable par la
 														// suite
+		this.setDefaultCloseOperation(JDialog.EXIT_ON_CLOSE);
 
 		// plateaux de tous les joueurs
 		pan_plateau = new JPanel[plateaux.length];
@@ -301,11 +310,10 @@ public class Fenetre extends JFrame {
 		but_vue.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JButton source = (JButton) e.getSource();
+				s.playAudio("button");
 				if (source.getText().equals("Vue d'ensemble")) {
-					s.playAudio("button", true);
 					displayVueEnsemble();
 				} else {
-					s.playAudio("button", true);
 					displayVueJoueur();
 				}
 					
@@ -396,6 +404,7 @@ public class Fenetre extends JFrame {
 
 	public void updateScore(int score) {
 		lab_score.setText("Score : " + score);
+		scores.set(joueur, score); 
 	}
 
 	public void updateAction(int action) {
@@ -443,10 +452,9 @@ public class Fenetre extends JFrame {
 											// effectuer
 						return;
 
-					// on le domino qui a ete selectionnee
+					// on recupere le domino qui a ete selectionnee
 					Domino source = (Domino) e.getSource();
-					SoundPlayer s = new SoundPlayer();
-					s.playAudio("button", true);
+					s.playAudio("button");
 					// si le domino appartient deja a quelqu'un, on ne peut pas le choisir
 					if (source.nobodyOwns()) {
 						domino = source.get();
@@ -496,7 +504,7 @@ public class Fenetre extends JFrame {
 		this.getContentPane().add(but_vue, c);
 
 		for (int i = 0; i < pan_plateau.length; i++) {
-			JLabel nom = new JLabel(noms.get(i));
+			JLabel nom = new JLabel(noms.get(i) + " : " + scores.get(i) + " points");
 			nom.setFont(police);
 			nom.setForeground(couleur);
 			nom.setHorizontalAlignment(JLabel.CENTER);

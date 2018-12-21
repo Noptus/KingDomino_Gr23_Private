@@ -196,6 +196,7 @@ public class MenuCouleurs extends JDialog
 	public boolean display()
 	{
 		this.setVisible(true);
+		System.out.println("salut");
 		return jouer;
 	}
 	

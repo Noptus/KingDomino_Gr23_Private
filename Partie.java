@@ -22,10 +22,13 @@ public class Partie {
 	private IA chevre;
 	
 	private long startTime;
+	
+	private SoundPlayer s;
 
 	// CONSTRUCTEUR
-	public Partie(Parametres p, ArrayList<Integer> couleurs, ArrayList<String> noms) {
+	public Partie(Parametres p, ArrayList<Integer> couleurs, ArrayList<String> noms, SoundPlayer s) {
 
+		this.s = s;
 		// On initialise les parametres, les couleurs, l'ordre pour commencer
 		this.p = p;
 		this.couleurs = couleurs;
@@ -61,13 +64,11 @@ public class Partie {
 	// deroulement de la partie, la ou tout se passera
 	public void jouer() {
 
-		SoundPlayer s = new SoundPlayer();
-
 		// on cree la pioche du premier tour et on indique l'appartenance des dominos
 		// suivant l'odre des joueurs genere aleatoirement
 		domino_manche_plus_1 = new Pioche(dominos.GetAndDelete_Dominos(p.nbDominosManche),
 				(ArrayList<Integer>) ordre.clone());
-		fenetre = new Fenetre(plateaux, domino_manche_plus_1, couleurs, noms);
+		fenetre = new Fenetre(plateaux, domino_manche_plus_1, couleurs, noms, s);
 		fenetre.setVisible(true);
 
 		// On definit le nombre de manches du jeu selon le nb de joueurs
@@ -124,8 +125,9 @@ public class Partie {
 				// tester si possible de le placer
 				if (!plateaux[joueur - 1].isPossible(domino_manche.getDomino(joueur))) {
 					System.out.println("Tu ne peux pas jouer ce domino !");
-					s.playAudio("bad", true);
-					//fenetre.updateAction(IMPOSSIBLE_PLACER_DOMINO);
+					s.playAudio("sorciere");
+					if(joueur <= p.nbJoueurs) //le message ne s'affiche que pour les joueurs
+						fenetre.updateAction(IMPOSSIBLE_PLACER_DOMINO);
 				} else {
 					
 					int positions[] = new int[2];
@@ -138,7 +140,7 @@ public class Partie {
 						do {
 							System.out.println("x? y? x2? y2?");
 							if (T != 0) { //le joueur a mal place son domino
-								s.playAudio("bad", true);
+								s.playAudio("bad");
 							}
 								
 							// on attend que l'utilisateur ait place son domino
@@ -231,6 +233,7 @@ public class Partie {
 			System.out.println(noms.get(i) + " a termine avec un score de : " + plateaux[i].getScore(true));
 		}
 		fenetre.setVisible(false);
+		fenetre.dispose();
 	}
 
 	// METHODES PUBLIQUE

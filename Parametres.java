@@ -5,7 +5,7 @@ public class Parametres
 	
 	//tous les attributs sont publics pour y acceder partout
 	public int nbJoueurs, nbIA, nbTotal;
-	public boolean modeDynastie, modeEmpireMilieu, modeHarmonie, modeGrandDuel; 
+	public boolean modeDynastie, modeEmpireMilieu, modeHarmonie, modeGrandDuel;
 	public int nbDominosManche, nbDominosPartie;
 	
 	public Parametres()

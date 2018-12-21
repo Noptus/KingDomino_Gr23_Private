@@ -21,6 +21,7 @@ public class MenuParametres extends JDialog {
 	// ces attributs sont ceux qui nous permettent de recuperer les valeurs
 	private JComboBox nbJoueurs, nbIA;
 	private JCheckBox dynastie, empireMilieu, harmonie, grandDuel;
+	private JCheckBox musique, effets;
 	private boolean jouer = false;
 	
 	// CONSTRUCTEUR
@@ -35,7 +36,7 @@ public class MenuParametres extends JDialog {
 		// on remplit la fenetre
 
 		// logo du jeu
-		JLabel labImage = new JLabel(new ImageIcon("images//kingdomino.jpg"));
+		JLabel labImage = new JLabel(new ImageIcon("images//kingdomino.png"));
 
 		// liste deroutante pour choisir nb de joueurs
 		JPanel panNbJoueurs = new JPanel();
@@ -84,13 +85,28 @@ public class MenuParametres extends JDialog {
 		panReglesAdditionnelles.add(empireMilieu);
 		panReglesAdditionnelles.add(harmonie);
 		panReglesAdditionnelles.add(grandDuel);
-
-		// on ajoute les 3 elements au conteneur central (pour la mise en page)
+		
+		JPanel panAudio = new JPanel();
+		panAudio.setBackground(Color.WHITE);
+		panAudio.setPreferredSize(new Dimension(300, 60));
+		panAudio.setBorder(BorderFactory.createTitledBorder("Audio"));
+		musique = new JCheckBox("musique");
+		musique.setSelected(true);
+		effets = new JCheckBox("effets");
+		effets.setSelected(true);
+		JLabel labAudio = new JLabel("activer :");
+		panAudio.add(labAudio);
+		panAudio.add(musique);
+		panAudio.add(effets);
+		
+		
+		// on ajoute les 4 elements au conteneur central (pour la mise en page)
 		JPanel content = new JPanel();
 		content.setBackground(Color.white);
 		content.add(panNbJoueurs);
 		content.add(panNbIA);
 		content.add(panReglesAdditionnelles);
+		content.add(panAudio);
 
 		// creation du bouton pour lancer la partie
 		JButton butJouer = new JButton("Lancer la partie");
@@ -148,6 +164,16 @@ public class MenuParametres extends JDialog {
 	public boolean getModeGrandDuel() {
 		return grandDuel.isSelected();
 	}
+	
+	public boolean getMusique()
+	{
+		return musique.isSelected();
+	}
+	
+	public boolean getEffets()
+	{
+		return effets.isSelected();
+	}
 
 	// retoure toutes les valeurs dans la structure Parametres
 	public Parametres getParametres() {
@@ -168,10 +194,10 @@ public class MenuParametres extends JDialog {
 					"impossible de lancer la partie", JOptionPane.INFORMATION_MESSAGE);
 			return false;
 		}
-		if(total != 2 && getModeDynastie() == true){
+		if(total != 2 && getModeGrandDuel() == true){
 			JOptionPane message = new JOptionPane();
 			// affiche un message d'erreur pour avertir l'utilisateur
-			message.showMessageDialog(null, "le mode dynastie ne peut etre jouer qu'a 2",
+			message.showMessageDialog(null, "le mode grand duel ne peut etre jouer qu'a 2",
 					"impossible de lancer la partie", JOptionPane.INFORMATION_MESSAGE);
 			return false;
 		}
