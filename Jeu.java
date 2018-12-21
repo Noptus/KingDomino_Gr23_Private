@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 
 public class Jeu {
 
@@ -10,33 +11,48 @@ public class Jeu {
 			// on affiche les menus
 			MenuParametres menuParametres = new MenuParametres();
 			if (menuParametres.display() == false) // l'utilisateur a quitte le menu, on ferme le programme
-			{
-				menuParametres.dispose();
 				break;
-			}
+			
 			s.set(menuParametres.getMusique(), menuParametres.getEffets());
 			s.playAudio("button");
 			menuParametres.dispose();
 
 			MenuCouleurs menuCouleurs = new MenuCouleurs(menuParametres.getNbJoueurs(), menuParametres.getNbIA());
 			if (menuCouleurs.display() == false) // l'utilisateur a quitte le menu, on ferme le programme
-			{
-				menuCouleurs.dispose();
 				break;
-			}
+			
 			s.playAudio("button");
 			menuCouleurs.dispose();
-
-			// on cree une nouvelle partie
-			Partie partie = new Partie(menuParametres.getParametres(), menuCouleurs.getCouleurs(),
-					menuCouleurs.getNoms(), s);
-
-			// on joue la partie
-			partie.jouer();
+			
+			//variables necessaires pour le mode dynastie
+			int[] score_cumule = new int[menuParametres.getNbIA() + menuParametres.getNbIA()];
+			long temps_cumule = 0;
+			int nb_parties;
+			if(menuParametres.getModeDynastie())
+				nb_parties = 3;
+			else
+				nb_parties = 1;
+			for(int i = 0; i < nb_parties; i++)
+			{
+				// on cree une nouvelle partie
+				Partie partie = new Partie(menuParametres.getParametres(), menuCouleurs.getCouleurs(),
+						menuCouleurs.getNoms(), s);
+				
+				// on joue la partie
+				partie.jouer();
+				
+				//on recupere le score et le temps ecoule
+				int[] score = partie.getScores();
+				for(int j = 0; j < score.length; j++)
+				{
+					score_cumule[j] += score[j];
+				}
+				temps_cumule += partie.getElapsedTime();
+			}
 			
 			s.playAudio("applaudissement");
 			//on affiche l'ecran de fin de partie
-			FinDePartie f = new FinDePartie(menuParametres.getParametres(), menuCouleurs.getCouleurs(), partie.getScores(), partie.getElapsedTime(), menuCouleurs.getNoms());
+			FinDePartie f = new FinDePartie(menuParametres.getParametres(), menuCouleurs.getCouleurs(), score_cumule, temps_cumule, menuCouleurs.getNoms());
 			f.setVisible(true);
 			while (f.hasDecided() == false) {
 				try {

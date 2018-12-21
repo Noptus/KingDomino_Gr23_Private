@@ -167,7 +167,7 @@ public class Partie {
 						plateaux[joueur - 1].placer(positions[0], positions[1], positions[2], positions[3], domino_manche.getDomino(joueur));
 						//on ralentit l'IA sinon elle joue trop rapidement
 						try {
-							Thread.sleep(100);
+							Thread.sleep(1);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
@@ -209,7 +209,7 @@ public class Partie {
 						domino = chevre.getChoice(plateaux[joueur-1], domino_manche_plus_1);
 						//on ralentit l'IA sinon elle joue trop rapidement
 						try {
-							Thread.sleep(100);
+							Thread.sleep(1);
 						} catch (InterruptedException e) {
 							e.printStackTrace(); 
 						}

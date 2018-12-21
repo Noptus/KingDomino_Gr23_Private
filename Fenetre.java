@@ -209,7 +209,6 @@ public class Fenetre extends JFrame {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH); // affichage plein ecran du jeu, mais redimmensionnable par la
 														// suite
-		this.setDefaultCloseOperation(JDialog.EXIT_ON_CLOSE);
 
 		// plateaux de tous les joueurs
 		pan_plateau = new JPanel[plateaux.length];
