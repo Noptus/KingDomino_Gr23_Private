@@ -1,9 +1,10 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -14,6 +15,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
 
 public class MenuParametres extends JDialog {
 	// ATTRIBUTS (PRIVES, ACCESSIBLES UNIQUEMENT DEPUIS CETTE CLASSE)
@@ -23,12 +26,17 @@ public class MenuParametres extends JDialog {
 	private JCheckBox dynastie, empireMilieu, harmonie, grandDuel;
 	private JCheckBox musique, effets;
 	private boolean jouer = false;
-	
+
 	// CONSTRUCTEUR
 	public MenuParametres() {
+
 		// on intialise la fenetre
-		super((JFrame) null, " KingDomino", true); // appel du constructeur de la classe mere
-		this.setSize(400, 400); // taille de la fentre
+		super((JFrame) null, " ", true); // appel du constructeur de la classe mere
+
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		int x = (int) screenSize.getWidth() / 100;
+		int y = (int) screenSize.getHeight() / 100;
+		this.setSize(31 * x, 28 * x); // taille de la fentre
 		this.setLocationRelativeTo(null); // centre au milieu de l'ecrann
 		this.setResizable(false); // pas redimmensionnable
 		this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE); // quand on clique sur la croix, quitte la fenetre
@@ -37,69 +45,95 @@ public class MenuParametres extends JDialog {
 
 		// logo du jeu
 		JLabel labImage = new JLabel(new ImageIcon("images//kingdomino.png"));
+		Font font = new Font("Book Antiqua", Font.PLAIN, 20);
+		Font Mfont = new Font("Book Antiqua", Font.PLAIN, 35);
+		Font Lfont = new Font("Book Antiqua", Font.BOLD, 25);
+
+
+		Border border = BorderFactory.createMatteBorder(5, 5, 5, 5, Color.BLACK);
+		Border blueborder = BorderFactory.createMatteBorder(5, 5, 5, 5, Color.BLUE);
+		Border redborder = BorderFactory.createMatteBorder(5, 5, 5, 5, Color.RED);
 
 		// liste deroutante pour choisir nb de joueurs
 		JPanel panNbJoueurs = new JPanel();
 		panNbJoueurs.setBackground(Color.white);
-		panNbJoueurs.setPreferredSize(new Dimension(150, 70));
-		panNbJoueurs.setBorder(BorderFactory.createTitledBorder("Joueurs"));
+		panNbJoueurs.setFont(font);
+		panNbJoueurs.setPreferredSize(new Dimension(14*x, 5*x));
+		panNbJoueurs.setBorder(BorderFactory.createTitledBorder(blueborder, " Joueurs ", TitledBorder.LEFT, TitledBorder.TOP,
+				Lfont, Color.BLUE));
 		nbJoueurs = new JComboBox();
+		nbJoueurs.setFont(font);
 		nbJoueurs.addItem("0");
 		nbJoueurs.addItem("1");
 		nbJoueurs.addItem("2");
 		nbJoueurs.addItem("3");
 		nbJoueurs.addItem("4");
 		nbJoueurs.setSelectedIndex(0);
-		JLabel labNbJoueurs = new JLabel("nombre : ");
+		JLabel labNbJoueurs = new JLabel(" Effectif : ");
+		labNbJoueurs.setFont(font);
 		panNbJoueurs.add(labNbJoueurs);
 		panNbJoueurs.add(nbJoueurs);
 
 		// liste deroulante pour choisir le nb d'IA
 		JPanel panNbIA = new JPanel();
 		panNbIA.setBackground(Color.white);
-		panNbIA.setPreferredSize(new Dimension(150, 70));
-		panNbIA.setBorder(BorderFactory.createTitledBorder("IA"));
+		panNbIA.setPreferredSize(new Dimension(14*x, 5*x));
+		panNbIA.setBorder(BorderFactory.createTitledBorder(redborder, " IA ", TitledBorder.LEFT, TitledBorder.TOP, Lfont,
+				Color.RED));
+		panNbIA.setFont(font);
 		nbIA = new JComboBox();
+		nbIA.setFont(font);
 		nbIA.addItem("0");
 		nbIA.addItem("1");
 		nbIA.addItem("2");
 		nbIA.addItem("3");
 		nbIA.addItem("4");
 		nbIA.setSelectedIndex(2);
-		JLabel labNbIA = new JLabel("nombre : ");
+		JLabel labNbIA = new JLabel(" Effectif : ");
+		labNbIA.setFont(font);
 		panNbIA.add(labNbIA);
 		panNbIA.add(nbIA);
 
 		// caces a cocher pour activer des regles additionnelles
 		JPanel panReglesAdditionnelles = new JPanel();
 		panReglesAdditionnelles.setBackground(Color.white);
-		panReglesAdditionnelles.setPreferredSize(new Dimension(300, 90));
-		panReglesAdditionnelles.setBorder(BorderFactory.createTitledBorder("Regles additionnelles"));
-		dynastie = new JCheckBox("dynastie");
-		empireMilieu = new JCheckBox("empire du milieu");
-		harmonie = new JCheckBox("harmonie");
-		grandDuel = new JCheckBox("grand duel");
-		JLabel labReglesAdditionnelles = new JLabel("activer : ");
+		panReglesAdditionnelles.setPreferredSize(new Dimension(25*x, 7*x));
+		panReglesAdditionnelles.setFont(font);
+		panReglesAdditionnelles.setBorder(BorderFactory.createTitledBorder(border, " Regles aditionelles ", TitledBorder.LEFT, TitledBorder.TOP, Lfont,
+				Color.BLACK));
+		dynastie = new JCheckBox(" Dynastie ");
+		dynastie.setFont(font);
+		empireMilieu = new JCheckBox(" Empire du milieu ");
+		empireMilieu.setFont(font);
+		harmonie = new JCheckBox(" Harmonie ");
+		harmonie.setFont(font);
+		grandDuel = new JCheckBox(" Grand duel ");
+		grandDuel.setFont(font);
+		JLabel labReglesAdditionnelles = new JLabel(" Activer : ");
+		labReglesAdditionnelles.setFont(font);
 		panReglesAdditionnelles.add(labReglesAdditionnelles);
 		panReglesAdditionnelles.add(dynastie);
 		panReglesAdditionnelles.add(empireMilieu);
 		panReglesAdditionnelles.add(harmonie);
 		panReglesAdditionnelles.add(grandDuel);
-		
+
 		JPanel panAudio = new JPanel();
 		panAudio.setBackground(Color.WHITE);
-		panAudio.setPreferredSize(new Dimension(300, 60));
-		panAudio.setBorder(BorderFactory.createTitledBorder("Audio"));
-		musique = new JCheckBox("musique");
+		panAudio.setPreferredSize(new Dimension(25*x, 5*x));
+		panAudio.setBorder(BorderFactory.createTitledBorder(border, " Audio ", TitledBorder.LEFT, TitledBorder.TOP, Lfont,
+				Color.BLACK));
+		musique = new JCheckBox(" Musique ");
 		musique.setSelected(true);
-		effets = new JCheckBox("effets");
+		musique.setFont(font);
+		effets = new JCheckBox(" Effets sonores ");
 		effets.setSelected(true);
-		JLabel labAudio = new JLabel("activer :");
+		effets.setFont(font);
+		JLabel labAudio = new JLabel("  Activer :");
+		labAudio.setFont(font);
 		panAudio.add(labAudio);
 		panAudio.add(musique);
 		panAudio.add(effets);
-		
-		
+
 		// on ajoute les 4 elements au conteneur central (pour la mise en page)
 		JPanel content = new JPanel();
 		content.setBackground(Color.white);
@@ -110,6 +144,7 @@ public class MenuParametres extends JDialog {
 
 		// creation du bouton pour lancer la partie
 		JButton butJouer = new JButton("Lancer la partie");
+		butJouer.setFont(Mfont);
 		
 		// ajout d'une action associee au bouton : on verifie les valeurs et on quitte
 		// le menu
@@ -137,7 +172,7 @@ public class MenuParametres extends JDialog {
 	// partie ou false s'il a quitte le menu
 	public boolean display() {
 		this.setVisible(true); // afficher la fenetre
-		return jouer; // quand on quitte la fenetre, on retourne la valeur du booléen jouer
+		return jouer; // quand on quitte la fenetre, on retourne la valeur du boolÃ©en jouer
 	}
 
 	// methodes pour recuperer les valeurs entrees par l'utilisateur
@@ -164,14 +199,12 @@ public class MenuParametres extends JDialog {
 	public boolean getModeGrandDuel() {
 		return grandDuel.isSelected();
 	}
-	
-	public boolean getMusique()
-	{
+
+	public boolean getMusique() {
 		return musique.isSelected();
 	}
-	
-	public boolean getEffets()
-	{
+
+	public boolean getEffets() {
 		return effets.isSelected();
 	}
 
@@ -194,7 +227,7 @@ public class MenuParametres extends JDialog {
 					"impossible de lancer la partie", JOptionPane.INFORMATION_MESSAGE);
 			return false;
 		}
-		if(total != 2 && getModeGrandDuel() == true){
+		if (total != 2 && getModeGrandDuel() == true) {
 			JOptionPane message = new JOptionPane();
 			// affiche un message d'erreur pour avertir l'utilisateur
 			message.showMessageDialog(null, "le mode grand duel ne peut etre jouer qu'a 2",
