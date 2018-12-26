@@ -99,7 +99,7 @@ public class MenuParametres extends JDialog {
 		panReglesAdditionnelles.setBackground(Color.white);
 		panReglesAdditionnelles.setPreferredSize(new Dimension(25*x, 7*x));
 		panReglesAdditionnelles.setFont(font);
-		panReglesAdditionnelles.setBorder(BorderFactory.createTitledBorder(border, " Regles aditionelles ", TitledBorder.LEFT, TitledBorder.TOP, Lfont,
+		panReglesAdditionnelles.setBorder(BorderFactory.createTitledBorder(border, " Regles aditionelles ", TitledBorder.CENTER, TitledBorder.TOP, Lfont,
 				Color.BLACK));
 		dynastie = new JCheckBox(" Dynastie ");
 		dynastie.setFont(font);
@@ -120,7 +120,7 @@ public class MenuParametres extends JDialog {
 		JPanel panAudio = new JPanel();
 		panAudio.setBackground(Color.WHITE);
 		panAudio.setPreferredSize(new Dimension(25*x, 5*x));
-		panAudio.setBorder(BorderFactory.createTitledBorder(border, " Audio ", TitledBorder.LEFT, TitledBorder.TOP, Lfont,
+		panAudio.setBorder(BorderFactory.createTitledBorder(border, " Audio ", TitledBorder.CENTER, TitledBorder.TOP, Lfont,
 				Color.BLACK));
 		musique = new JCheckBox(" Musique ");
 		musique.setSelected(true);
