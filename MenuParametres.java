@@ -223,15 +223,15 @@ public class MenuParametres extends JDialog {
 		if (total < 2 || total > 4) {
 			JOptionPane message = new JOptionPane();
 			// affiche un message d'erreur pour avertir l'utilisateur
-			message.showMessageDialog(null, "le nombre de joueurs doit etre compris entre 2 et 4",
-					"impossible de lancer la partie", JOptionPane.INFORMATION_MESSAGE);
+			message.showMessageDialog(null, "Le nombre de joueurs doit etre compris entre 2 et 4",
+					"Impossible de lancer la partie", JOptionPane.INFORMATION_MESSAGE);
 			return false;
 		}
 		if (total != 2 && getModeGrandDuel() == true) {
 			JOptionPane message = new JOptionPane();
 			// affiche un message d'erreur pour avertir l'utilisateur
-			message.showMessageDialog(null, "le mode grand duel ne peut etre jouer qu'a 2",
-					"impossible de lancer la partie", JOptionPane.INFORMATION_MESSAGE);
+			message.showMessageDialog(null, "Le mode grand duel ne peut etre jouer qu'a 2",
+					"Impossible de lancer la partie", JOptionPane.INFORMATION_MESSAGE);
 			return false;
 		}
 		return true;
