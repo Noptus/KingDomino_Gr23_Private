@@ -65,7 +65,7 @@ public class MenuParametres extends JDialog {
 		nbIA.addItem("2");
 		nbIA.addItem("3");
 		nbIA.addItem("4");
-		nbIA.setSelectedIndex(2);
+		nbIA.setSelectedIndex(4);
 		JLabel labNbIA = new JLabel("nombre : ");
 		panNbIA.add(labNbIA);
 		panNbIA.add(nbIA);
@@ -91,9 +91,9 @@ public class MenuParametres extends JDialog {
 		panAudio.setPreferredSize(new Dimension(300, 60));
 		panAudio.setBorder(BorderFactory.createTitledBorder("Audio"));
 		musique = new JCheckBox("musique");
-		musique.setSelected(true);
+		//musique.setSelected(true);
 		effets = new JCheckBox("effets");
-		effets.setSelected(true);
+		//effets.setSelected(true);
 		JLabel labAudio = new JLabel("activer :");
 		panAudio.add(labAudio);
 		panAudio.add(musique);

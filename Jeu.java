@@ -25,17 +25,19 @@ public class Jeu {
 			menuCouleurs.dispose();
 			
 			//variables necessaires pour le mode dynastie
-			int[] score_cumule = new int[menuParametres.getNbIA() + menuParametres.getNbIA()];
+			int[] score_cumule = new int[menuParametres.getNbJoueurs() + menuParametres.getNbIA()];
 			long temps_cumule = 0;
 			int nb_parties;
 			if(menuParametres.getModeDynastie())
 				nb_parties = 3;
 			else
 				nb_parties = 1;
-			for(int i = 0; i < nb_parties; i++)
+			
+			Parametres p = menuParametres.getParametres();
+			for(int i = 0; i < 10; i++)
 			{
 				// on cree une nouvelle partie
-				Partie partie = new Partie(menuParametres.getParametres(), menuCouleurs.getCouleurs(),
+				Partie partie = new Partie(p, menuCouleurs.getCouleurs(),
 						menuCouleurs.getNoms(), s);
 				
 				// on joue la partie

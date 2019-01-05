@@ -33,7 +33,7 @@ public class SoundPlayer {
 			clips.get(clips.size()-1).open(AudioSystem.getAudioInputStream(Clap));
 			clips.get(clips.size()-1).start();
 		} catch (Exception e) {
-			System.out.println("error playing " + sound);
+			e.printStackTrace(); 
 		}
 
 	}

@@ -74,6 +74,13 @@ public class Pioche
 		int indexJoueur = appartenances.indexOf(joueur);
 		return dominos.get(indexJoueur);
 	}
+
+	//retourne le deuxieme domino a jouer du joueur
+	public int[] getSecondDomino(int joueur)
+	{
+		int indexJoueur = appartenances.lastIndexOf(joueur);
+		return dominos.get(indexJoueur);
+	}
 	
 	public int[] getDominoByIndex(int index)
 	{
@@ -102,8 +109,6 @@ public class Pioche
 			appartenances.set(dominos.indexOf(domino), joueur);
 			return true;
 		}
-		else
-			System.out.println("J'APPARTIENS DEJA A QUELQU'UN");
 		return false;
 	}
 	

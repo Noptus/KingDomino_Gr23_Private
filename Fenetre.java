@@ -23,6 +23,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import java.awt.AlphaComposite;
+import java.awt.Composite;
 
 public class Fenetre extends JFrame {
 
@@ -31,6 +33,7 @@ public class Fenetre extends JFrame {
 		private Image halfDomino;
 		private int x;
 		private int y;
+		boolean temporary = false;
 
 		public Case(Image texture, int x, int y) {
 			this.halfDomino = texture;
@@ -38,6 +41,7 @@ public class Fenetre extends JFrame {
 			this.y = y;
 			if (isFull() == true)
 				this.setBorderPainted(false);
+			this.setOpaque(false);
 		}
 
 		public boolean isFull() {
@@ -48,13 +52,24 @@ public class Fenetre extends JFrame {
 			return new int[] { this.x, this.y };
 		}
 
-		public void set(Image texture) {
+		public void set(Image texture, boolean temporary) {
 			this.halfDomino = texture;
+			this.temporary = temporary;
 			this.setBorderPainted(false);
 			this.repaint(); // on demande a reafficher le panel mis a jour
 		}
 
+		public void reset()
+		{
+			this.halfDomino = textures.get(0);
+			this.temporary = false;
+			this.setBorderPainted(true);
+			this.repaint(); // on demande a reafficher le panel mis a jour
+		}
+
 		public void paintComponent(Graphics g) {
+			Graphics2D g2d = (Graphics2D) g;
+			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, temporary ? 0.5f : 1f));
 			g.drawImage(halfDomino, 0, 0, this.getWidth(), this.getHeight(), null);
 		}
 	}
@@ -164,7 +179,6 @@ public class Fenetre extends JFrame {
 
 	private int joueur = 0;
 	private ArrayList<String> noms;
-	private ArrayList<Integer> scores;
 
 	private JPanel[] pan_plateau;
 	private JPanel pan_pioche_manche;
@@ -178,9 +192,11 @@ public class Fenetre extends JFrame {
 	private JLabel lab_action;
 	private JLabel lab_manche;
 	private JLabel lab_score;
+	private JLabel[] lab_nom_score;
 
 	private JButton but_vue;
-
+	
+	private boolean vueEnsemble = false;
 	private int actionEnCours = 0;
 	
 	private SoundPlayer s;
@@ -190,9 +206,6 @@ public class Fenetre extends JFrame {
 		
 		this.s = s;
 		this.noms = noms;
-		this.scores = new ArrayList<Integer>(); //on initialise les scores a 0
-		for(int i = 0; i < plateaux.length; i++)
-			this.scores.add(0);
 	
 
 		for (int i = 0; i <= 48; i++) {
@@ -209,7 +222,16 @@ public class Fenetre extends JFrame {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH); // affichage plein ecran du jeu, mais redimmensionnable par la
 														// suite
-
+		//initialise le label des noms et scores des joueurs pour la vue d'ensemble
+		lab_nom_score = new JLabel[plateaux.length];
+		for(int i = 0; i < lab_nom_score.length; i++)
+		{
+			lab_nom_score[i] = new JLabel();
+			lab_nom_score[i].setFont(police);
+			lab_nom_score[i].setForeground(couleur);
+			lab_nom_score[i].setHorizontalAlignment(JLabel.CENTER);
+		}
+		
 		// plateaux de tous les joueurs
 		pan_plateau = new JPanel[plateaux.length];
 		cases = new Case[plateaux.length][plateaux[0].sizeX()][plateaux[0].sizeY()];
@@ -311,8 +333,10 @@ public class Fenetre extends JFrame {
 				JButton source = (JButton) e.getSource();
 				s.playAudio("button");
 				if (source.getText().equals("Vue d'ensemble")) {
+					vueEnsemble = true;
 					displayVueEnsemble();
 				} else {
+					vueEnsemble = false;
 					displayVueJoueur();
 				}
 					
@@ -354,8 +378,8 @@ public class Fenetre extends JFrame {
 	}
 
 	public void setDomino(int[] pos, int[] domino) {
-		cases[joueur][pos[0]][pos[1]].set(textures.get(domino[0] * 10 + domino[1]));
-		cases[joueur][pos[2]][pos[3]].set(textures.get(domino[2] * 10 + domino[3]));
+		cases[joueur][pos[0]][pos[1]].set(textures.get(domino[0] * 10 + domino[1]), false);
+		cases[joueur][pos[2]][pos[3]].set(textures.get(domino[2] * 10 + domino[3]), false);
 	}
 
 	public void setCouleur(int[] domino, int couleur) {
@@ -384,15 +408,16 @@ public class Fenetre extends JFrame {
 	public void setJoueur(int joueur) {
 		if (joueur != this.joueur) // si c'est toujours le meme joueur, rien a faire
 		{
-			// on supprime le plateau de l'affichage
-			this.getContentPane().remove(pan_plateau[this.joueur]);
-
-			// on ajoute le bon plateau a l'affichage
-			this.getContentPane().add(pan_plateau[joueur], GBC_plateau());
-			this.getContentPane().validate();
-			this.getContentPane().repaint();
-
-			// on met a jour ces attributs
+			if(vueEnsemble == false)
+			{
+				// on supprime le plateau de l'affichage
+				this.getContentPane().remove(pan_plateau[this.joueur]);
+	
+				// on ajoute le bon plateau a l'affichage
+				this.getContentPane().add(pan_plateau[joueur], GBC_plateau());
+				this.getContentPane().validate();
+				this.getContentPane().repaint();
+			}
 			this.joueur = joueur;
 		}
 	}
@@ -403,7 +428,8 @@ public class Fenetre extends JFrame {
 
 	public void updateScore(int score) {
 		lab_score.setText("Score : " + score);
-		scores.set(joueur, score); 
+		lab_nom_score[joueur].setText(noms.get(joueur) + " : " + score + " points");
+		
 	}
 
 	public void updateAction(int action) {
@@ -422,9 +448,14 @@ public class Fenetre extends JFrame {
 	}
 
 	public void updatePioche(Pioche pioche_manche_plus_1) {
+		
+		
 		// on supprime les 2 pioches de l'affichage
-		this.getContentPane().remove(pan_pioche_manche);
-		this.getContentPane().remove(pan_pioche_manche_plus_1);
+		if(vueEnsemble == false)
+		{
+			this.getContentPane().remove(pan_pioche_manche);
+			this.getContentPane().remove(pan_pioche_manche_plus_1);
+		}
 
 		// la pioche de la manche plus 1 devient celle du tour actuel (pas besoin de la
 		// creer)
@@ -436,7 +467,8 @@ public class Fenetre extends JFrame {
 		}
 
 		// on l'ajoute a l'affichage
-		this.getContentPane().add(pan_pioche_manche, GBC_pioche_manche());
+		if(vueEnsemble == false)
+			this.getContentPane().add(pan_pioche_manche, GBC_pioche_manche());
 
 		// on cree la pioche de la manche plus 1
 		pan_pioche_manche_plus_1 = new JPanel();
@@ -464,9 +496,12 @@ public class Fenetre extends JFrame {
 		}
 
 		// on l'ajoute a l'affichage
-		this.getContentPane().add(pan_pioche_manche_plus_1, GBC_pioche_manche_plus_1());
-		this.getContentPane().validate();
-		this.getContentPane().repaint();
+		if(vueEnsemble == false)
+		{
+			this.getContentPane().add(pan_pioche_manche_plus_1, GBC_pioche_manche_plus_1());
+			this.getContentPane().validate();
+			this.getContentPane().repaint();
+		}
 
 	}
 
@@ -503,11 +538,6 @@ public class Fenetre extends JFrame {
 		this.getContentPane().add(but_vue, c);
 
 		for (int i = 0; i < pan_plateau.length; i++) {
-			JLabel nom = new JLabel(noms.get(i) + " : " + scores.get(i) + " points");
-			nom.setFont(police);
-			nom.setForeground(couleur);
-			nom.setHorizontalAlignment(JLabel.CENTER);
-
 			c.gridx = i % 2;
 			c.gridy = 1 + i / 2 * 2;
 			c.gridwidth = 1;
@@ -515,7 +545,7 @@ public class Fenetre extends JFrame {
 			c.weightx = 0.5;
 			c.weighty = 0.05;
 			c.fill = GridBagConstraints.BOTH;
-			this.getContentPane().add(nom, c);
+			this.getContentPane().add(lab_nom_score[i], c);
 
 			c.weighty = 0.45;
 			c.gridy += 1;
@@ -590,5 +620,29 @@ public class Fenetre extends JFrame {
 		c.fill = GridBagConstraints.BOTH;
 		c.insets = new Insets(10, 10, 10, 10);
 		return c;
+	}
+
+	public void showMoves(ArrayList<IA.Move> moves)
+	{
+		for(IA.Move move : moves)
+		{
+			if(move.impossible)
+				continue;
+
+			cases[joueur][move.pos[0]][move.pos[1]].set(textures.get(move.domino[0] * 10 + move.domino[1]), true);
+			cases[joueur][move.pos[2]][move.pos[3]].set(textures.get(move.domino[2] * 10 + move.domino[3]), true);
+		}
+	}
+
+	public void hideMoves(ArrayList<IA.Move> moves)
+	{
+		for(IA.Move move : moves)
+		{
+			if(move.impossible)
+				continue;
+
+			cases[joueur][move.pos[0]][move.pos[1]].reset();
+			cases[joueur][move.pos[2]][move.pos[3]].reset();
+		}
 	}
 }

@@ -1,5 +1,8 @@
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Scanner;
 
 public class Partie {
 
@@ -37,8 +40,6 @@ public class Partie {
 
 		// On cree les dominos
 		dominos = new Dominos(p.nbDominosPartie);
-		// test
-		dominos.print();
 
 		// On cree le grand plateau
 		plateaux = new Plateau[p.nbTotal];
@@ -46,17 +47,11 @@ public class Partie {
 		for (int i = 0; i < p.nbTotal; i++) {
 			// On le remplit
 			plateaux[i] = new Plateau(couleurs.get(i), p);
-			// test
-			System.out.println();
-			plateaux[i].print();
 		}
 
 		fenetre = null;
 		
-		chevre = new IA();
-		
-		
-
+		chevre = new IA(p);
 	}
 
 	// METHODES PUBLIQUES
@@ -95,41 +90,28 @@ public class Partie {
 			fenetre.updatePioche(domino_manche_plus_1);
 			fenetre.updateManche(manche);
 
-			System.out.println("manche " + manche);
-
-			// on affiche les 2 pioches (pour le debug)
-			System.out.println("pioche tour actuel : ");
-			domino_manche.print();
-			if (manche != nb_manches) {
-				System.out.println("pioche tour suivant : ");
-				domino_manche_plus_1.print();
-			}
-
 			// on fait jouer les joueurs suivant l'ordre de jeu
 			for (int joueur : ordre) {
 				fenetre.setJoueur(joueur - 1);
 				fenetre.setHighlight(domino_manche.getDomino(joueur));
 				fenetre.updateAction(PLACER_DOMINO);
 				fenetre.updateScore(plateaux[joueur - 1].getScore(false));
-
-				// indique quel joueur joue
-				System.out.println("joueur " + joueur);
-
-				// afficher le plateau du joueur
-				System.out.println("plateau du joueur : ");
-				plateaux[joueur - 1].print();
-
-				// afficher le domino que le joueur doit placer
-				domino_manche.printDomino(joueur);
+				//l'ia prend ses decisions
+				if(joueur > p.nbJoueurs)
+				{
+					chevre.think(plateaux[joueur-1], domino_manche, domino_manche_plus_1, joueur);
+					fenetre.showMoves(chevre.getMoves());
+					Scanner sc = new Scanner(System.in);
+					sc.nextLine();
+					fenetre.hideMoves(chevre.getMoves());
+				}
 
 				// tester si possible de le placer
 				if (!plateaux[joueur - 1].isPossible(domino_manche.getDomino(joueur))) {
-					System.out.println("Tu ne peux pas jouer ce domino !");
 					s.playAudio("sorciere");
 					if(joueur <= p.nbJoueurs) //le message ne s'affiche que pour les joueurs
 						fenetre.updateAction(IMPOSSIBLE_PLACER_DOMINO);
 				} else {
-					
 					int positions[] = new int[2];
 					if(joueur <= p.nbJoueurs) //c'est un jouueur qui joue
 					{
@@ -138,7 +120,6 @@ public class Partie {
 						
 						//tant que le joueur n'a pas reussi a placer son domino
 						do {
-							System.out.println("x? y? x2? y2?");
 							if (T != 0) { //le joueur a mal place son domino
 								s.playAudio("bad");
 							}
@@ -163,7 +144,7 @@ public class Partie {
 					}
 					else //c'est une ia
 					{
-						positions = chevre.getMove(plateaux[joueur - 1], domino_manche.getDomino(joueur));
+						positions = chevre.getPos();
 						plateaux[joueur - 1].placer(positions[0], positions[1], positions[2], positions[3], domino_manche.getDomino(joueur));
 						//on ralentit l'IA sinon elle joue trop rapidement
 						try {
@@ -172,6 +153,7 @@ public class Partie {
 							e.printStackTrace();
 						}
 					}
+										
 					// on met a jour les textures du plateau
 					fenetre.setDomino(positions, domino_manche.getDomino(joueur));
 					s.playDomino(domino_manche.getDomino(joueur));
@@ -187,8 +169,6 @@ public class Partie {
 					// le joueur choisit son domino dans la pioche du tour suivant
 					fenetre.updateAction(CHOISIR_DOMINO);
 
-					System.out.println("pioche tour suivant :");
-					domino_manche_plus_1.print();
 					
 					int[] domino = new int[5];
 					if(joueur <= p.nbJoueurs)//c'est un joueur qui joue
@@ -206,7 +186,7 @@ public class Partie {
 					}
 					else //c'est une ia
 					{
-						domino = chevre.getChoice(plateaux[joueur-1], domino_manche_plus_1);
+						domino = chevre.getDomino();
 						//on ralentit l'IA sinon elle joue trop rapidement
 						try {
 							Thread.sleep(1);
@@ -226,12 +206,19 @@ public class Partie {
 			// mettre a jour ordre tour suivant
 			ordre = domino_manche_plus_1.getOrdre();
 		}
-		
-		
+
 		// on affiche les scores de fin de partie
 		for (int i = 0; i < p.nbTotal; i++) {
 			System.out.println(noms.get(i) + " a termine avec un score de : " + plateaux[i].getScore(true));
 		}
+
+		//on attend a la fin de la partie pour analyser les plateaux des ia
+		try {
+			Thread.sleep(60000);
+		} catch (InterruptedException e) {
+			e.printStackTrace(); 
+		}
+
 		fenetre.setVisible(false);
 		fenetre.dispose();
 	}
@@ -258,7 +245,6 @@ public class Partie {
 	// Methode pour savoir qui commence
 	private ArrayList<Integer> defOrderInit() {
 
-		System.out.println("Ordre pour la première manche :");
 		ArrayList<Integer> orderInit = new ArrayList<Integer>();
 
 		if (p.nbTotal != 2) {
@@ -269,9 +255,6 @@ public class Partie {
 			Collections.shuffle(orderInit);
 			// shuffleList(orderInit);
 
-			for (int i = 0; i < p.nbTotal; i++) {
-				System.out.println("Joueur " + (orderInit.get(i)) + " : Place = " + (i + 1));
-			}
 
 			return orderInit;
 
@@ -284,11 +267,7 @@ public class Partie {
 			Collections.shuffle(orderInit);
 			// shuffleList(orderInit);
 
-			for (int i = 0; i < 4; i++) {
-				System.out.println("Joueur " + (orderInit.get(i)) + " : Place = " + (i + 1));
-			}
 			return orderInit;
 		}
 	}
-
 }
