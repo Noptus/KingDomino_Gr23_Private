@@ -55,7 +55,6 @@ public class Dominos {
 
 				if (!Elements[0].equals("NbCouronne1")) {
 
-
 					int C1 = Integer.parseInt(Elements[0]);
 					int C2 = getValueOfText(Elements[1]);
 					int C3 = Integer.parseInt(Elements[2]);
@@ -63,8 +62,6 @@ public class Dominos {
 					int C5 = Integer.parseInt(Elements[4]);
 					int[] D = { C1, C2, C3, C4, C5 };
 					dominos.add(D);
-					System.out.println(C1 + "-" + C2 + "-" + C3 + "-" + C4 + "-" + C5);
-
 				}
 
 			}

@@ -1,8 +1,8 @@
-import java.util.ArrayList;
 
 public class Jeu {
 
 	public static void main(String[] args) {
+
 		boolean souhaiteRejouer = false;
 		SoundPlayer s = new SoundPlayer();
 		s.playAudio("musique");
@@ -34,7 +34,7 @@ public class Jeu {
 				nb_parties = 1;
 			
 			Parametres p = menuParametres.getParametres();
-			for(int i = 0; i < 10; i++)
+			for(int i = 0; i < nb_parties; i++)
 			{
 				// on cree une nouvelle partie
 				Partie partie = new Partie(p, menuCouleurs.getCouleurs(),

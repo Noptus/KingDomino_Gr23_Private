@@ -99,11 +99,11 @@ public class Partie {
 				//l'ia prend ses decisions
 				if(joueur > p.nbJoueurs)
 				{
-					chevre.think(plateaux[joueur-1], domino_manche, domino_manche_plus_1, joueur);
-					fenetre.showMoves(chevre.getMoves());
+					chevre.think(plateaux[joueur-1], domino_manche, domino_manche_plus_1, joueur, manche);
+					/*fenetre.showMoves(chevre.getMoves());
 					Scanner sc = new Scanner(System.in);
 					sc.nextLine();
-					fenetre.hideMoves(chevre.getMoves());
+					fenetre.hideMoves(chevre.getMoves());*/
 				}
 
 				// tester si possible de le placer
@@ -138,14 +138,12 @@ public class Partie {
 							positions = fenetre.getPositions();
 							T = T + 1;
 	
-						} // on place son domino (si possible), sinon on lui redemande a nouveau
-						while (plateaux[joueur - 1].placer(positions[0], positions[1], positions[2], positions[3],
-								domino_manche.getDomino(joueur)) == false);
+						} // verifie que le placement est valide, sinon on lui redemande a nouveau
+						while (plateaux[joueur - 1].placementValide(positions[0], positions[1], positions[2], positions[3],domino_manche.getDomino(joueur)) == false);
 					}
 					else //c'est une ia
 					{
 						positions = chevre.getPos();
-						plateaux[joueur - 1].placer(positions[0], positions[1], positions[2], positions[3], domino_manche.getDomino(joueur));
 						//on ralentit l'IA sinon elle joue trop rapidement
 						try {
 							Thread.sleep(1);
@@ -153,7 +151,10 @@ public class Partie {
 							e.printStackTrace();
 						}
 					}
-										
+					
+					//on place le domino
+					plateaux[joueur - 1].placer(positions[0], positions[1], positions[2], positions[3], domino_manche.getDomino(joueur));	
+
 					// on met a jour les textures du plateau
 					fenetre.setDomino(positions, domino_manche.getDomino(joueur));
 					s.playDomino(domino_manche.getDomino(joueur));
@@ -213,8 +214,10 @@ public class Partie {
 		}
 
 		//on attend a la fin de la partie pour analyser les plateaux des ia
+		/*Scanner sc = new Scanner(System.in);
+		sc.nextLine();*/
 		try {
-			Thread.sleep(60000);
+			Thread.sleep(1);
 		} catch (InterruptedException e) {
 			e.printStackTrace(); 
 		}

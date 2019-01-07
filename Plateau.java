@@ -39,10 +39,11 @@ public class Plateau
 
 	public Plateau(Plateau other)
 	{
+		//make a copy of the plateau (/!\ and not a copy of the adress /!\)
 		this.plateau = new int[other.sizeX()][other.sizeY()];
 		for(int x = 0; x < other.sizeX(); x++)
 		{
-			this.plateau[x] = Arrays.copyOf(other.plateau[x], other.sizeX());
+			this.plateau[x] = Arrays.copyOf(other.plateau[x], other.sizeY());
 		}
 		this.p = other.p;
 		this.XC = other.XC;
@@ -109,8 +110,8 @@ public class Plateau
 			dim_autorisee = 5;
 		
 		//de combien on peut se decaler sur les cotes en respectant les dimensions autorisees
-		int Marge_X = dim_autorisee - (max_X - min_X + 1);
-		int Marge_Y = dim_autorisee - (max_Y - min_Y + 1);
+		int Marge_X = (dim_autorisee - 1) - (max_X - min_X);
+		int Marge_Y = (dim_autorisee - 1) - (max_Y - min_Y);
 
 		int Minimum_Ever_X = min_X - Marge_X;
 		int Minimum_Ever_Y = min_Y - Marge_Y;
@@ -192,14 +193,10 @@ public class Plateau
 		if(p.modeHarmonie == false) //le mode n'est pas active
 			return false;
 		int[] Dimensions = getDimensions();
-		int min_X = Dimensions[0];
-		int min_Y = Dimensions[1];
-		int max_X = Dimensions[2];
-		int max_Y = Dimensions[3];
 		
 		//on verifie que chaque case est bien remplie
-		for ( int x = min_X ; x < max_X + 1 ; x++) {
-			for ( int y = min_Y ; y < max_Y + 1 ; y++) {
+		for ( int x = Dimensions[0] ; x <= Dimensions[1]; x++) {
+			for ( int y = Dimensions[2] ; y <= Dimensions[3]; y++) {
 				if (getNature(x,y) == 0) {
 					return false;
 				}
@@ -237,35 +234,42 @@ public class Plateau
 		else
 			dim_autorisee = 5;
 
+		//on inspecte chaque plateau de 7x7 ou de 5x5 qui contient notre plateau existant
 		for(int x_beg = PossibleDimensions[0]; x_beg <= Dimensions[0]; x_beg++)
 		{
 			for(int y_beg = PossibleDimensions[2]; y_beg <= Dimensions[2]; y_beg++)
 			{
-				int[] OnePossibleDimension = new int[]{x_beg, x_beg + dim_autorisee, y_beg, y_beg + dim_autorisee};
-				boolean possible = true;
-				for(int x = x_beg; x <= x_beg + dim_autorisee; x++)
-				{
-					for(int y = y_beg; y <= y_beg + dim_autorisee; y++)
-					{
-						if(isAvailable(x, y)) //case vide -> on verifie qu'elle n'est pas toute seule
-						{
-							if(count_available(new ArrayList<int[]>(), OnePossibleDimension, x, y) % 2 != 0) //le nombre de case vide n'est pas pair ! -> on ne peut pas remplir la zone
-								possible = false;
-						}
-					}
-				}
-				if(possible) //cette combinaison est possible -> retourne vraie
-					return possible;
+				int[] OnePossibleDimension = new int[]{x_beg, x_beg + (dim_autorisee - 1), y_beg, y_beg + (dim_autorisee - 1)};
+				if(canHarmonyLikeThat(OnePossibleDimension)) //une combinaison est possible -> retourne vrai
+					return true;
 			}
 		} 
 		//aucune combinaison n'est possible -> retourne false
 		return false;
 	}
 
+	public boolean canHarmonyLikeThat(int[] OnePossibleDimension)
+	{
+		//on verifie que chaque case libre est bien par groupe pair
+		ArrayList<int[]> globallyCounted = new ArrayList<int[]>();
+		for(int x = OnePossibleDimension[0]; x <= OnePossibleDimension[1]; x++)
+		{
+			for(int y = OnePossibleDimension[2]; y <= OnePossibleDimension[3]; y++)
+			{
+				if(isAvailable(x, y)) //case vide -> on verifie qu'elle n'est pas toute seule
+				{
+					if(count_available(globallyCounted, OnePossibleDimension, x, y) % 2 != 0) //le nombre de case vide n'est pas pair ! -> on ne peut pas remplir la zone
+						return false;
+				}
+			}
+		}
+		return true;
+	}
+
 	//retourne le nombre de cases vides a proximite (la case initiale doit etre vide)
 	private int count_available(ArrayList<int[]> globallyCounted, int[] OnePossibleDimension, int x, int y) {
 		// hors du plateau POSSIBLE -> on s'arrete la
-		if (x < OnePossibleDimension[0] || y < OnePossibleDimension[2] || x >= OnePossibleDimension[1] || y >= OnePossibleDimension[3])
+		if (x < OnePossibleDimension[0] || y < OnePossibleDimension[2] || x > OnePossibleDimension[1] || y > OnePossibleDimension[3])
 			return 0;
 
 		// pas disponible -> on s'arrete la
@@ -280,7 +284,7 @@ public class Plateau
 		}
 
 		// on ajoute la case a  l'historique des cases comptees
-		globallyCounted.add(currentPos);
+		globallyCounted.add(currentPos.clone());
 
 		// on inspecte les 4 cases voisines
 		return 1
@@ -383,9 +387,9 @@ public class Plateau
 		}
 
 		// on ajoute la case a l'historique des cases comptees
-		globallyCounted.add(currentPos);
+		globallyCounted.add(currentPos.clone());
 		if(currentlyCounted != null)
-			currentlyCounted.add(currentPos);
+			currentlyCounted.add(currentPos.clone());
 
 		// on ajoute 1 au compte et on inspecte les 4 cases voisines
 		return 1
@@ -395,19 +399,14 @@ public class Plateau
 		+ count(globallyCounted, currentlyCounted, nature, x, y + 1);
 	}
 
-	//retourne true si le domino a ete place, false si le placement etait invalide
-	public boolean placer(int x, int y, int x2, int y2, int[] domino) {
+	//place le domino a l'endroit indique (/!\ attention, ne verifie pas que le placement est valide /!\)
+	public void placer(int x, int y, int x2, int y2, int[] domino) {
 		
-		if(placementValide(x, y, x2, y2, domino))
-		{
-			plateau[x][y] = domino[0] * 10 + domino[1];
-			plateau[x2][y2] = domino[2] * 10 + domino[3];
-			return true;
-		}
-		return false;
-
+		plateau[x][y] = domino[0] * 10 + domino[1];
+		plateau[x2][y2] = domino[2] * 10 + domino[3];
 	}
 
+	//rend une case du plateau vide
 	public void remove(int x, int y, int x2, int y2)
 	{
 		plateau[x][y] = VIDE;
@@ -446,10 +445,6 @@ public class Plateau
 		}
 		return false;
 	}
-
-
-
-
 
 	private boolean isAvailable(int x, int y) {
 		return getNature(x, y) == VIDE;

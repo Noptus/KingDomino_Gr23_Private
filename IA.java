@@ -1,38 +1,51 @@
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Collections;
+import java.util.List;
 
 
 public class IA {
 
+	//structure qui represente un move de l'ia, cad un domino place a une certaine position
 	public class Move
 	{
 		public int[] pos;
 		public int[] domino;
 		public boolean impossible;
 
-		public Move(int[] pos, int[] domino)
+		public Move(int[] pos, int[] domino) //le domino peut etre place
 		{
 			this.pos = pos;
 			this.domino = domino;
 			this.impossible = false;
 		}
-		public Move(int[] domino)
+		public Move(int[] domino) //le domino ne peut pas etre place
 		{
 			this.domino = domino;
 			this.impossible = true;
 		}
-	}
-	private ArrayList<Move> next_moves;
 
-	private Parametres p;
+		public Move(Move other) //on cree une copie d'un move existant
+		{
+			if(!other.impossible)
+				this.pos = other.pos.clone();
+			this.domino = other.domino;
+			this.impossible = other.impossible;
+		}
+	}
+	private ArrayList<Move> next_moves; //stocke les prochains moves de l'ia
+
+	//stocke l'etat du jeu pour ne pas avoir a le passer en argument des fonctions
+	private Parametres p; 
 	private Pioche pioche_actuelle;
 	private Pioche pioche_suivante;
 	private int joueur;
+	private int manche;
 
 	private int nb_moves;
 	private boolean derniere_manche;
 
+	//stocke tous les moves possibles
 	ArrayList<ArrayList<Move>> all_moves = new ArrayList<ArrayList<Move>>();
 
 	public IA(Parametres p)
@@ -57,61 +70,74 @@ public class IA {
 		return next_moves;
 	}
 	
-	public void think(Plateau plateau, Pioche pioche_actuelle, Pioche pioche_suivante, int joueur)
+	//fonction principale qui determine les prochains moves de l'ia, a appeler a chaque fois que c'est a elle de jouer (/!\ au debut de chaque tour /!\)
+	public void think(Plateau plateau, Pioche pioche_actuelle, Pioche pioche_suivante, int joueur, int manche)
 	{
-		all_moves.clear();
+		long debut = System.currentTimeMillis();
 
-		System.out.println("plateau 1 :");
-		plateau.print();
-
+		//stocker les infos de jeu
 		this.pioche_actuelle = pioche_actuelle;
 		this.pioche_suivante = pioche_suivante;
 		this.joueur = joueur;
+		this.manche = manche;
 
-		if(pioche_suivante.getSize() == 0)
+		if(pioche_suivante.getSize() == 0) //si la pioche suivante est vide, il s'agit du dernier tour, donc on a deux fois moins de moves a anticiper
 			this.derniere_manche = true;
 		else
 			this.derniere_manche = false;
 
-		if(pioche_actuelle.getDomino(joueur) != pioche_actuelle.getSecondDomino(joueur))
-			this.nb_moves = 3;
+		if(pioche_actuelle.getDomino(joueur) != pioche_actuelle.getSecondDomino(joueur)) //si le joueur a 2 dominos a placer, il s'agit d'un mode 1v1 et donc on a jusqu'a 4 moves a anticiper
+			this.nb_moves = 3; // /!\ 4 -> peut etre tres long a calculer /!\ 
 		else
 			this.nb_moves = 2;
 
-		searchMoves(plateau, new ArrayList<Move>());
+		//ETAPE 1 : on recupere la liste de tous les moves possibles
+		searchMoves(new Plateau(plateau), new ArrayList<Move>()); 
+		
+		long etape1 = System.currentTimeMillis();
+		System.out.println("etape 1 : " + (etape1 - debut) + " ms");
 
-		System.out.println("plateau 2 :");
-		plateau.print();
-
-		ArrayList<Float> gains = new ArrayList<Float>();
+		//ETAPE 2 : on calcule les gains de chaque move
+		List<Float> all_gains = new ArrayList<Float>();
 		for(ArrayList<Move> moves: all_moves)
 		{
-			gains.add(getGain(plateau, moves));
+			//check_moves(new Plateau(plateau), moves);
+			all_gains.add(getGain(plateau, moves));
 		}
 
-		System.out.println("plateau 3 :");
-		plateau.print();
+		long etape2 = System.currentTimeMillis();
+		System.out.println("etape 2 : " + (etape2 - etape1) + " ms");
 
-		float best_gain = Collections.max(gains);
-
-		ArrayList<ArrayList<Move>> all_best_moves = new ArrayList<ArrayList<Move>>();
-		while(gains.indexOf(best_gain) != -1)
+		//ETAPE 3 : on stocke les indices des moves qui ont le meilleur gain (a egalite avec le max)
+		float best_gain = Collections.max(all_gains);
+		ArrayList<Integer> indices = new ArrayList<Integer>();
+		for(int i = 0; i < all_gains.size(); i++)
 		{
-				all_best_moves.add(all_moves.get(gains.indexOf(best_gain)));
-				all_moves.remove(gains.indexOf(best_gain));
-				gains.remove(gains.indexOf(best_gain));
+			if(all_gains.get(i) == best_gain)
+				indices.add(i);
 		}
 
-		Random random = new Random();
-		next_moves =  all_best_moves.get(random.nextInt(all_best_moves.size()));
+		long etape3 = System.currentTimeMillis();
+		System.out.println("etape 3 : " + (etape3 - etape2) + " ms");
 
+		//ETAPE 4 : on en choisit un de maniere random
+		Random random = new Random();
+		next_moves =  all_moves.get(indices.get(random.nextInt(indices.size())));
+
+		long etape4 = System.currentTimeMillis();
+		System.out.println("etape 4 : " + (etape4 - etape3) + " ms");
+
+		//afficher les infos dans la console
 		System.out.println("IA Joueur " + joueur);
-		System.out.println("nombre de moves ignores : " + all_moves.size());
-		System.out.println("nombre de moves conserves : " + all_best_moves.size());
+		System.out.println("nombre de moves total : " + all_moves.size());
+		System.out.println("nombre de moves conserves : " + indices.size());
 		System.out.println("moves selectionnes :");
 		printMoves(next_moves);
 		System.out.println("gains : " + best_gain);
+
+		all_moves.clear();
 	}
+
 
 	public void printMoves(ArrayList<Move> moves)
 	{
@@ -171,27 +197,27 @@ public class IA {
 			}
 			break;
 		}
-	}
-
+		}
 	}
 
 	public void iterateMoves(Plateau plateau, ArrayList<Move> current_moves, int domino[])
 	{
-		ArrayList<Move> moves = getMoves(plateau, domino);
-		for(Move move : moves)
+		ArrayList<Move> moves = getMoves(plateau, domino); //on recupere tous les moves possibles avec ce domino
+		for(Move move : moves) //pour chacun d'eux
 		{
 			ArrayList<Move> current_moves_evolved = new ArrayList<Move>(current_moves);
-			current_moves_evolved.add(move);
+			current_moves_evolved.add(new Move(move)); //on l'ajoute a notre move actuel
+			Plateau plateau_evolved = new Plateau(plateau);
 
 			if(current_moves_evolved.size() == nb_moves / (derniere_manche ? 2 : 1)) //ce move est complet -> on l'ajoute et on arrete la
 			{
-				all_moves.add(current_moves_evolved); 
+				all_moves.add(new ArrayList<Move>(current_moves_evolved)); 
 			}
-			else
+			else //sinon on continue de former le move actuel jusqu'a ce qu'il soit complet
 			{
-				if(!move.impossible)
-					plateau.placer(move.pos[0], move.pos[1], move.pos[2], move.pos[3], move.domino);
-				searchMoves(plateau, current_moves_evolved);
+				if(!move.impossible) //on place le domino
+					plateau_evolved.placer(move.pos[0], move.pos[1], move.pos[2], move.pos[3], move.domino);
+				searchMoves(new Plateau(plateau_evolved), new ArrayList<Move>(current_moves_evolved));
 			}
 		}
 	}
@@ -263,47 +289,41 @@ public class IA {
 
 		//ETAPE 3 : on calcule le score apres les moves et on calcule la difference
 		S = plateau.getScore(false) - S; //on calcule le score apres les moves et on retire le score avant pour calculer la difference
-		
-		/*
-		//ETAPE 4 : on regarde combien de cases identiques sont a proximites des cases posees
-		ArrayList<int[]> globallyCounted = new ArrayList<int[]>();
-		int nb_cases_identiques = 0;
-		for(Move move : moves) //on regarde pour chaque move
+
+		//ETAPE 4 : on regarde si les moves permettent toujours d'avoir les bonus de fin de partie
+		boolean canHarmony = false;
+		if(p.modeHarmonie)
 		{
-			if(move.impossible)
-				continue;
+			if(manche < 3) // /!\ tres long a calculer, donc on assume pour les premieres manches qu'il est toujours possible de le faire /!\
+				canHarmony = true;
+			else
+				canHarmony = plateau.canHarmony();
+		}
+		boolean canEmpire = false;
+		if(p.modeEmpireMilieu)
+			canEmpire = plateau.canEmpire();
 
-			for(int i = 0; i < 3; i += 2) //on regarde pour chaque demi domino (2 iterations)
-			{
-				nb_cases_identiques += plateau.count(globallyCounted, null, plateau.getNature(move.pos[i], move.pos[i+1]), move.pos[i], move.pos[i+1]);
-			}
-		}*/
-
-		//ETAPE 5 : on regarde si les moves permettent toujours d'avoir les bonus de fin de partie
-		boolean canHarmony = plateau.canHarmony();
-		boolean canEmpire = plateau.canEmpire();
-
-		//ETAPE 6 : on calcule le gain
+		//ETAPE 5 : on calcule le gain
 		//permet de determiner le meilleur move  /!\ G >= 0  obligatoirement /!\ 
-		//ajuster cette formule permet de modifier le comportement de l'IA : faire des tests pour ajuster
+		//ajuster cette formule permet de modifier le comportement de l'IA
 		float G = 0;
-		switch(joueur)
+		switch(joueur) //si on veut donner des formules differentes aux IA pour faire des tests
 		{
 			case 1:
-				G = S + (p.modeHarmonie && canHarmony ? 5 : 0) + (p.modeEmpireMilieu && canEmpire ? 10 : 0);
+				G = S + (canHarmony ? 5 : 0) + (canEmpire ? 10 : 0);
 				break;
 			case 2:
-				G = S + (p.modeHarmonie && canHarmony ? 5 : 0) + (p.modeEmpireMilieu && canEmpire ? 10 : 0);
+				G = S + (canHarmony ? 5 : 0) + (canEmpire ? 10 : 0);
 				break;
 			case 3:
-				G = S + (p.modeHarmonie && canHarmony ? 5 : 0) + (p.modeEmpireMilieu && canEmpire ? 10 : 0);
+				G = S + (canHarmony ? 5 : 0) + (canEmpire ? 10 : 0);
 				break;
 			case 4:
-				G = S + (p.modeHarmonie && canHarmony ? 5 : 0) + (p.modeEmpireMilieu && canEmpire ? 10 : 0);
+				G = S + (canHarmony ? 5 : 0) + (canEmpire ? 10 : 0);
 				break;
 		}
 
-		//ETAPE 7 : on supprime les moves places temporairement
+		//ETAPE 6 : on supprime les moves places temporairement
 		for(Move move : moves)
 		{
 			if(move.impossible)
@@ -312,7 +332,31 @@ public class IA {
 			plateau.remove(move.pos[0], move.pos[1], move.pos[2], move.pos[3]);
 		}
 
-		//ETAPE 8 : on retourne le gain
+		//ETAPE 7 : on retourne le gain
 		return G;
+	}
+
+	//fonction de debug qui verifie que le move propose est possible
+	public void check_moves(Plateau plateau, ArrayList<Move> moves)
+	{
+		boolean error = false;
+		for(Move move : moves)
+		{
+			if(move.impossible)
+				continue;
+
+			if(plateau.placementValide(move.pos[0], move.pos[1], move.pos[2], move.pos[3], move.domino))
+				plateau.placer(move.pos[0], move.pos[1], move.pos[2], move.pos[3], move.domino);
+			else
+			{
+				error = true;
+				break;
+			}	
+		}
+		if(error)
+		{
+			System.out.println("move incorrect:");
+			printMoves(moves);
+		}
 	}
 }
