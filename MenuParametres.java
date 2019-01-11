@@ -36,7 +36,7 @@ public class MenuParametres extends JDialog {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (int) screenSize.getWidth() / 100;
 		int y = (int) screenSize.getHeight() / 100;
-		this.setSize(31 * x, 28 * x); // taille de la fentre
+		this.setSize(31 * x, 30 * x); // taille de la fentre
 		this.setLocationRelativeTo(null); // centre au milieu de l'ecrann
 		this.setResizable(false); // pas redimmensionnable
 		this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE); // quand on clique sur la croix, quitte la fenetre
@@ -49,20 +49,18 @@ public class MenuParametres extends JDialog {
 		Font Mfont = new Font("Book Antiqua", Font.PLAIN, 35);
 		Font Lfont = new Font("Book Antiqua", Font.BOLD, 25);
 
-
 		Border border = BorderFactory.createMatteBorder(5, 5, 5, 5, Color.BLACK);
 		Border blueborder = BorderFactory.createMatteBorder(5, 5, 5, 5, Color.BLUE);
 		Border redborder = BorderFactory.createMatteBorder(5, 5, 5, 5, Color.RED);
 		Border greenborder = BorderFactory.createMatteBorder(5, 5, 5, 5, Color.GREEN);
 
-
 		// liste deroutante pour choisir nb de joueurs
 		JPanel panNbJoueurs = new JPanel();
 		panNbJoueurs.setBackground(Color.white);
 		panNbJoueurs.setFont(font);
-		panNbJoueurs.setPreferredSize(new Dimension(14*x, 5*x));
-		panNbJoueurs.setBorder(BorderFactory.createTitledBorder(blueborder, " Joueurs ", TitledBorder.LEFT, TitledBorder.TOP,
-				Lfont, Color.BLUE));
+		panNbJoueurs.setPreferredSize(new Dimension(14 * x, 5 * x));
+		panNbJoueurs.setBorder(BorderFactory.createTitledBorder(blueborder, " Joueurs ", TitledBorder.LEFT,
+				TitledBorder.TOP, Lfont, Color.BLUE));
 		nbJoueurs = new JComboBox();
 		nbJoueurs.setFont(font);
 		nbJoueurs.addItem("0");
@@ -79,9 +77,9 @@ public class MenuParametres extends JDialog {
 		// liste deroulante pour choisir le nb d'IA
 		JPanel panNbIA = new JPanel();
 		panNbIA.setBackground(Color.white);
-		panNbIA.setPreferredSize(new Dimension(14*x, 5*x));
-		panNbIA.setBorder(BorderFactory.createTitledBorder(redborder, " IA ", TitledBorder.LEFT, TitledBorder.TOP, Lfont,
-				Color.RED));
+		panNbIA.setPreferredSize(new Dimension(14 * x, 5 * x));
+		panNbIA.setBorder(BorderFactory.createTitledBorder(redborder, " IA ", TitledBorder.LEFT, TitledBorder.TOP,
+				Lfont, Color.RED));
 		panNbIA.setFont(font);
 		nbIA = new JComboBox();
 		nbIA.setFont(font);
@@ -90,7 +88,7 @@ public class MenuParametres extends JDialog {
 		nbIA.addItem("2");
 		nbIA.addItem("3");
 		nbIA.addItem("4");
-		nbIA.setSelectedIndex(2);
+		nbIA.setSelectedIndex(0);
 		JLabel labNbIA = new JLabel(" Effectif : ");
 		labNbIA.setFont(font);
 		panNbIA.add(labNbIA);
@@ -99,10 +97,10 @@ public class MenuParametres extends JDialog {
 		// caces a cocher pour activer des regles additionnelles
 		JPanel panReglesAdditionnelles = new JPanel();
 		panReglesAdditionnelles.setBackground(Color.white);
-		panReglesAdditionnelles.setPreferredSize(new Dimension(25*x, 7*x));
+		panReglesAdditionnelles.setPreferredSize(new Dimension(25 * x, 7 * x));
 		panReglesAdditionnelles.setFont(font);
-		panReglesAdditionnelles.setBorder(BorderFactory.createTitledBorder(border, " Regles additionnelles ", TitledBorder.CENTER, TitledBorder.TOP, Lfont,
-				Color.BLACK));
+		panReglesAdditionnelles.setBorder(BorderFactory.createTitledBorder(border, " Regles additionnelles ",
+				TitledBorder.CENTER, TitledBorder.TOP, Lfont, Color.BLACK));
 		dynastie = new JCheckBox(" Dynastie ");
 		dynastie.setFont(font);
 		empireMilieu = new JCheckBox(" Empire du milieu ");
@@ -124,14 +122,14 @@ public class MenuParametres extends JDialog {
 		panAudio.setPreferredSize(new Dimension(300, 60));
 		panAudio.setBorder(BorderFactory.createTitledBorder("Audio"));
 		musique = new JCheckBox("musique");
-		//musique.setSelected(true);
+		// musique.setSelected(true);
 		effets = new JCheckBox("effets");
-		//effets.setSelected(true);
+		// effets.setSelected(true);
 		JLabel labAudio = new JLabel("Activer :");
 
-		panAudio.setPreferredSize(new Dimension(25*x, 5*x));
-		panAudio.setBorder(BorderFactory.createTitledBorder(greenborder, " Audio ", TitledBorder.CENTER, TitledBorder.TOP, Lfont,
-				Color.GREEN));
+		panAudio.setPreferredSize(new Dimension(25 * x, 5 * x));
+		panAudio.setBorder(BorderFactory.createTitledBorder(greenborder, " Audio ", TitledBorder.CENTER,
+				TitledBorder.TOP, Lfont, Color.GREEN));
 		musique = new JCheckBox(" Musique ");
 		musique.setSelected(true);
 		musique.setFont(font);
@@ -154,8 +152,15 @@ public class MenuParametres extends JDialog {
 
 		// creation du bouton pour lancer la partie
 		JButton butJouer = new JButton("Nouvelle partie");
+		butJouer.setBorderPainted(false);
+		butJouer.setContentAreaFilled(false);
+		butJouer.setFocusPainted(false);
+		butJouer.setForeground(Color.BLACK);
+		butJouer.setIcon(new ImageIcon("images//Bouton2.png"));
+		butJouer.setHorizontalTextPosition(JButton.CENTER);
+		butJouer.setVerticalTextPosition(JButton.CENTER);
 		butJouer.setFont(Mfont);
-		
+
 		// ajout d'une action associee au bouton : on verifie les valeurs et on quitte
 		// le menu
 		butJouer.addActionListener(new ActionListener() {
@@ -182,7 +187,7 @@ public class MenuParametres extends JDialog {
 	// partie ou false s'il a quitte le menu
 	public boolean display() {
 		this.setVisible(true); // afficher la fenetre
-		return jouer; // quand on quitte la fenetre, on retourne la valeur du boolÃƒÂ©en jouer
+		return jouer; // quand on quitte la fenetre, on retourne la valeur du boolÃƒÆ’Ã‚Â©en jouer
 	}
 
 	// methodes pour recuperer les valeurs entrees par l'utilisateur
