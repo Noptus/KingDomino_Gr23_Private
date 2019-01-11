@@ -58,7 +58,6 @@ public class FinDePartie extends JFrame {
 		if (this.modeEmpireMilieu)
 			Regles = Regles + "Empire du Milieu<br>";
 
-
 		long durationInMillis = this.Time;
 		long minute = (durationInMillis / (1000 * 60)) % 60;
 		long seconds = (durationInMillis - (1000 * 60) * minute) / 1000;
@@ -104,14 +103,17 @@ public class FinDePartie extends JFrame {
 		int third = 0;
 		int fourth = 0;
 
+		first = findMaxIndex(score);
+		System.out.println(nom[first] + " est premier !");
+		
 		if (NB == 2) {
 
 			first = findMaxIndex(score);
 			if (first == 0) {
 				second = 1;
 			}
-			addPodium(this.nbTotal, ScoreSafe[second], c, pane, nom[second], 0, couleur[second], Max);
-			addPodium(this.nbTotal, ScoreSafe[first], c, pane, nom[first], 1, couleur[first], Max);
+			addPodium(this.nbTotal, ScoreSafe[second], c, pane, nom[second], 0, couleur[second], Max,false);
+			addPodium(this.nbTotal, ScoreSafe[first], c, pane, nom[first], 1, couleur[first], Max, true);
 
 		}
 
@@ -123,9 +125,9 @@ public class FinDePartie extends JFrame {
 			score[second] = 0;
 			third = findMaxIndex(score);
 
-			addPodium(this.nbTotal, ScoreSafe[first], c, pane, nom[first], 1, couleur[first], Max);
-			addPodium(this.nbTotal, ScoreSafe[second], c, pane, nom[second], 0, couleur[second], Max);
-			addPodium(this.nbTotal, ScoreSafe[third], c, pane, nom[third], 2, couleur[third], Max);
+			addPodium(this.nbTotal, ScoreSafe[first], c, pane, nom[first], 1, couleur[first], Max, true);
+			addPodium(this.nbTotal, ScoreSafe[second], c, pane, nom[second], 0, couleur[second], Max,false);
+			addPodium(this.nbTotal, ScoreSafe[third], c, pane, nom[third], 2, couleur[third], Max,false);
 
 		}
 
@@ -139,10 +141,10 @@ public class FinDePartie extends JFrame {
 			score[third] = 0;
 			fourth = findMaxIndex(score);
 
-			addPodium(this.nbTotal, ScoreSafe[first], c, pane, nom[first], 0, couleur[first], Max);
-			addPodium(this.nbTotal, ScoreSafe[second], c, pane, nom[second], 1, couleur[second], Max);
-			addPodium(this.nbTotal, ScoreSafe[third], c, pane, nom[third], 2, couleur[third], Max);
-			addPodium(this.nbTotal, ScoreSafe[fourth], c, pane, nom[fourth], 3, couleur[fourth], Max);
+			addPodium(this.nbTotal, ScoreSafe[first], c, pane, nom[first], 0, couleur[first], Max, true);
+			addPodium(this.nbTotal, ScoreSafe[second], c, pane, nom[second], 1, couleur[second], Max,false);
+			addPodium(this.nbTotal, ScoreSafe[third], c, pane, nom[third], 2, couleur[third], Max,false);
+			addPodium(this.nbTotal, ScoreSafe[fourth], c, pane, nom[fourth], 3, couleur[fourth], Max,false);
 
 		}
 
@@ -168,7 +170,7 @@ public class FinDePartie extends JFrame {
 	}
 
 	private void addPodium(int N, int score, GridBagConstraints c, Container pane, String nom, int i, int couleur,
-			int max) {
+			int max, boolean premier) {
 
 		c.fill = GridBagConstraints.BELOW_BASELINE;
 		c.gridheight = 4;
@@ -176,7 +178,12 @@ public class FinDePartie extends JFrame {
 
 		c.gridx = i + 1;
 		c.gridy = 0;
-		String text = "<html> <center>" + nom + "<br>" + score + " points</center>";
+		
+		String text2 = "";
+		if( premier ) {
+			text2 = "<html> Est le King ! <br>";
+		}
+		String text = "<html> <center>" + nom + "<br>" + text2+score + " points</center>";
 
 		Color colorBorder = new Color(0, 0, 0);
 		switch (couleur) {
