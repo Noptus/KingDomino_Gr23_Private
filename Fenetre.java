@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -25,6 +26,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import java.awt.AlphaComposite;
 import java.awt.Composite;
+import java.awt.Dimension;
 
 public class Fenetre extends JFrame {
 
@@ -68,6 +70,7 @@ public class Fenetre extends JFrame {
 		}
 
 		public void paintComponent(Graphics g) {
+			super.paintComponent(g);
 			Graphics2D g2d = (Graphics2D) g;
 			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, temporary ? 0.5f : 1f));
 			g.drawImage(halfDomino, 0, 0, this.getWidth(), this.getHeight(), null);
@@ -122,6 +125,7 @@ public class Fenetre extends JFrame {
 		}
 
 		public void paintComponent(Graphics g) {
+			super.paintComponent(g);
 			Graphics2D g2d = (Graphics2D) g;
 			int thickness = 6;
 			Stroke save = g2d.getStroke(); // on sauvegarde l'ancienne methode de rendu pour ne pas influer sur les
@@ -163,6 +167,7 @@ public class Fenetre extends JFrame {
 		}
 
 		public void paintComponent(Graphics g) {
+			super.paintComponent(g);
 			g.drawImage(texture, 0, 0, this.getWidth(), this.getHeight(), null);
 		}
 	}
@@ -186,7 +191,7 @@ public class Fenetre extends JFrame {
 	private Infos pan_infos;
 	private JPanel pan_legende_pioche;
 
-	private Color couleur = new Color(15, 67, 113);
+	private Color couleur = new Color(75, 63, 60);
 	private Font police = new Font("Book Antiqua", Font.PLAIN, 40);
 
 	private JLabel lab_action;
@@ -226,7 +231,7 @@ public class Fenetre extends JFrame {
 		lab_nom_score = new JLabel[plateaux.length];
 		for(int i = 0; i < lab_nom_score.length; i++)
 		{
-			lab_nom_score[i] = new JLabel();
+			lab_nom_score[i] = new JLabel(noms.get(i) + " : 0 points");
 			lab_nom_score[i].setFont(police);
 			lab_nom_score[i].setForeground(couleur);
 			lab_nom_score[i].setHorizontalAlignment(JLabel.CENTER);
@@ -305,7 +310,8 @@ public class Fenetre extends JFrame {
 		}
 
 		// INFOS
-		pan_infos = new Infos(new GridLayout(4, 1));
+		pan_infos = new Infos(new GridLayout(3, 1));
+		pan_infos.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
 		lab_manche = new JLabel();
 		lab_manche.setFont(police);
 		lab_manche.setForeground(couleur);
@@ -343,11 +349,11 @@ public class Fenetre extends JFrame {
 
 			}
 		});
-		pan_infos.add(but_vue);
 
 		// on ajoute uniquement les infos a la fenetre (le reste sera ajoute ensuite)
 		this.getContentPane().setLayout((new GridBagLayout()));
 		this.getContentPane().add(pan_infos, GBC_infos());
+		this.getContentPane().add(but_vue, GBC_button());
 		this.getContentPane().add(pan_legende_pioche, GBC_legende_pioche());
 		this.getContentPane().add(pan_pioche_manche, GBC_pioche_manche());
 		this.getContentPane().add(pan_pioche_manche_plus_1, GBC_pioche_manche_plus_1());
@@ -510,8 +516,8 @@ public class Fenetre extends JFrame {
 			this.getContentPane().remove(0);
 		}
 		but_vue.setText("Vue d'ensemble");
-		pan_infos.add(but_vue);
 		this.getContentPane().add(pan_infos, GBC_infos());
+		this.getContentPane().add(but_vue, GBC_button());
 		this.getContentPane().add(pan_legende_pioche, GBC_legende_pioche());
 		this.getContentPane().add(pan_pioche_manche, GBC_pioche_manche());
 		this.getContentPane().add(pan_pioche_manche_plus_1, GBC_pioche_manche_plus_1());
@@ -529,7 +535,7 @@ public class Fenetre extends JFrame {
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = 0;
-		c.gridwidth = 2;
+		c.gridwidth = pan_plateau.length;
 		c.gridheight = 1;
 		c.weightx = 1;
 		c.weighty = 0.05;
@@ -538,18 +544,17 @@ public class Fenetre extends JFrame {
 		this.getContentPane().add(but_vue, c);
 
 		for (int i = 0; i < pan_plateau.length; i++) {
-			c.gridx = i % 2;
-			c.gridy = 1 + i / 2 * 2;
+			c.gridx = i;
+			c.gridy = 1;
 			c.gridwidth = 1;
 			c.gridheight = 1;
-			c.weightx = 0.5;
+			c.weightx = 1.0/pan_plateau.length;
 			c.weighty = 0.05;
 			c.fill = GridBagConstraints.BOTH;
 			this.getContentPane().add(lab_nom_score[i], c);
 
-			c.weighty = 0.45;
-			c.gridy += 1;
-			c.insets = new Insets(10, 10, 10, 10);
+			c.weighty = 9.0/16.0 * 1.0/pan_plateau.length;
+			c.gridy = 2;
 			this.getContentPane().add(pan_plateau[i], c);
 		}
 		this.getContentPane().validate();
@@ -573,7 +578,7 @@ public class Fenetre extends JFrame {
 	private GridBagConstraints GBC_legende_pioche() {
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
-		c.gridy = 1;
+		c.gridy = 2;
 		c.gridwidth = 2;
 		c.gridheight = 1;
 		c.weightx = 0.2;
@@ -586,7 +591,7 @@ public class Fenetre extends JFrame {
 	private GridBagConstraints GBC_pioche_manche() {
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
-		c.gridy = 2;
+		c.gridy = 3;
 		c.gridwidth = 1;
 		c.gridheight = 1;
 		c.weightx = 0.2;
@@ -599,7 +604,7 @@ public class Fenetre extends JFrame {
 	private GridBagConstraints GBC_pioche_manche_plus_1() {
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 1;
-		c.gridy = 2;
+		c.gridy = 3;
 		c.gridwidth = 1;
 		c.gridheight = 1;
 		c.weightx = 0.2;
@@ -614,9 +619,22 @@ public class Fenetre extends JFrame {
 		c.gridx = 2;
 		c.gridy = 0;
 		c.gridwidth = 1;
-		c.gridheight = 3;
+		c.gridheight = 4;
 		c.weightx = 0.6;
 		c.weighty = 1;
+		c.fill = GridBagConstraints.BOTH;
+		c.insets = new Insets(10, 10, 10, 10);
+		return c;
+	}
+	
+	private GridBagConstraints GBC_button() {
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 1;
+		c.gridwidth = 2;
+		c.gridheight = 1;
+		c.weightx = 0.4;
+		c.weighty = 0.05;
 		c.fill = GridBagConstraints.BOTH;
 		c.insets = new Insets(10, 10, 10, 10);
 		return c;

@@ -1,17 +1,48 @@
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 
 public class SoundPlayer {
 	
-	//stocker les clips pour pouvoir les fermer plus tard
-	private ArrayList<Clip> clips = new ArrayList<Clip>();
-	private ArrayList<String> sounds = new ArrayList<String>();
+	private HashMap<String, Clip> clips = new HashMap<String, Clip>();
 	
 	private boolean musique = true;
 	private boolean effets = true;
+	
+	public SoundPlayer()
+	{
+		load("applaudissement");
+		load("bad");
+		load("button");
+		load("champ");
+		load("cheval");
+		load("grenouille");
+		load("musique");
+		load("oiseau");
+		load("pioche");
+		load("power_1");
+		load("power_2");
+		load("power_3");
+		load("sorciere");
+		load("vagues");
+		
+	}
+	
+	public void load(String name)
+	{
+		try {
+			Clip clip = AudioSystem.getClip();
+			File file = new File("Son//" + name + ".wav");
+			clip.open(AudioSystem.getAudioInputStream(file));
+			clips.put(name, clip);
+		} catch (Exception e) {
+			e.printStackTrace(); 
+		}
+	}
+	
 	
 	public void playAudio(String sound) {
 		
@@ -19,21 +50,17 @@ public class SoundPlayer {
 		{
 			if(!musique) //desative
 				return;
+			
+			clips.get(sound).loop(1000); //la musique est jouee en boucle
+			clips.get(sound).start();
 		}
 		else //il s'agit d'un effet audio
 		{
 			if(!effets) //desactive
 				return;
-		}
-
-		try {
-			File Clap = new File("Son//" + sound + ".wav");
-			clips.add(AudioSystem.getClip());
-			sounds.add(sound);
-			clips.get(clips.size()-1).open(AudioSystem.getAudioInputStream(Clap));
-			clips.get(clips.size()-1).start();
-		} catch (Exception e) {
-			e.printStackTrace(); 
+			
+			clips.get(sound).setMicrosecondPosition(0); //le son reprend au debut
+			clips.get(sound).start();
 		}
 
 	}
@@ -43,34 +70,18 @@ public class SoundPlayer {
 		this.musique = musique;
 		this.effets = effets;
 		if(musique == false) //on arrete la musique
-			stop("musique");
+			clips.get("musique").stop();
 	}
 	
-	//ferme tous les sons en cours
+
 	public void close()
 	{
-		for(Clip clip : clips)
+		for(Clip clip : clips.values())
 		{
 			clip.stop();
 			clip.close();
 		}
 		clips.clear();
-		sounds.clear();
-	}
-	
-	//arrete de jouer le son en question s'il existe (et autant de fois qu'il existe)
-	public void stop(String sound)
-	{
-		while(sounds.indexOf(sound) != -1)
-		{
-			int index = sounds.indexOf(sound);
-			//on ferme le fichier audio
-			clips.get(index).stop();
-			clips.get(index).close();
-			//On le supprime des deux listes
-			clips.remove(index);
-			sounds.remove(index);
-		}
 	}
 
 	public void playDomino(int[] Domino) {
