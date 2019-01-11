@@ -127,6 +127,10 @@ public class Plateau
 		return Dimensions;
 	}
 	
+	public void placerSingle(int x, int y, int domino) {
+			plateau[x][y] = domino;
+	}
+	
 	// retourne la nature de la case
 	public int getNature(int x, int y) {
 		// la nature de la case correspond aux unites
