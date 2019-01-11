@@ -18,17 +18,14 @@ import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
-import javax.swing.ImageIcon;
 import java.awt.AlphaComposite;
-import java.awt.Composite;
-import java.awt.Dimension;
 
 public class Fenetre extends JFrame {
 
@@ -160,7 +157,7 @@ public class Fenetre extends JFrame {
 		
 		private Image[] textures = new Image[29];
 		private int displayed = 0;
-		private Timer timer = new Timer(50, this);
+		private Timer timer = new Timer(10, this);
 		private long last_frame = System.currentTimeMillis();
 		private int animation = 0;
 		
@@ -171,10 +168,8 @@ public class Fenetre extends JFrame {
 			for(int i = 0; i <= 28; i++)
 			{
 				try {
-					System.out.println(i);
 					textures[i] = ImageIO.read(new File("images//frame_" + String.valueOf(i) + "_delay-0.05s.gif"));
 				} catch (Exception e) {
-					e.printStackTrace();
 				}
 			}
 			timer.start();
@@ -186,41 +181,35 @@ public class Fenetre extends JFrame {
 			g.drawImage(textures[displayed], 0, 0, this.getWidth(), this.getHeight(), null);
 		}
 		
-		//fonction appelee lors lors d'un changement de manche pour animer le parchemin
+		
 		public void actionPerformed(ActionEvent e) {
 			switch(animation)
 			{
 			case 0:
-				lab_manche.setVisible(true);
-				lab_action.setVisible(true);
-				lab_score.setVisible(true);
-				timer.stop();
 				break;
 			case 1:
 				if(displayed == 28)
 					animation = 0;
-				else if(System.currentTimeMillis() - last_frame >= 50)
+				if(System.currentTimeMillis() - last_frame >= 50)
 					displayed += 1;
 				break;
 			case 2:
 				if(displayed == 14)
-					timer.stop();
-				else if(System.currentTimeMillis() - last_frame >= 50)
+					animation = 0;
+				if(System.currentTimeMillis() - last_frame >= 50)
 					displayed += 1;
 				break;
 			case 3:
 				if(displayed == 28)
 					animation = 0;
-				else if(System.currentTimeMillis() - last_frame >= 50)
+				if(System.currentTimeMillis() - last_frame >= 50)
 					displayed += 1;
 				break;
 			}
 			if(System.currentTimeMillis() - last_frame >= 50)
 				last_frame = System.currentTimeMillis();
-			System.out.println(displayed);
 			repaint();
 		  }
-		
 		
 		public void setAnimation(int animation)
 		{
@@ -237,10 +226,6 @@ public class Fenetre extends JFrame {
 				break;
 			}
 			this.animation = animation;
-			lab_manche.setVisible(false);
-			lab_action.setVisible(false);
-			lab_score.setVisible(false);
-			timer.start();
 		}
 	}
 
@@ -276,6 +261,9 @@ public class Fenetre extends JFrame {
 	
 	private boolean vueEnsemble = false;
 	private int actionEnCours = 0;
+	
+	private Timer timer;
+
 	
 	private SoundPlayer s;
 
@@ -411,7 +399,12 @@ public class Fenetre extends JFrame {
 		but_vue = new JButton("Vue d'ensemble");
 		but_vue.setContentAreaFilled(false);
 		but_vue.setFont(police);
-		but_vue.setForeground(couleur);
+		but_vue.setBorderPainted(false);
+		but_vue.setFocusPainted(false);
+		but_vue.setForeground(Color.WHITE);
+		but_vue.setIcon(new ImageIcon("images//Bouton.jpg") );
+		but_vue.setHorizontalTextPosition(JButton.CENTER);
+		but_vue.setVerticalTextPosition(JButton.CENTER);
 		but_vue.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JButton source = (JButton) e.getSource();
@@ -513,12 +506,6 @@ public class Fenetre extends JFrame {
 			pan_infos.setAnimation(1);
 		else
 			pan_infos.setAnimation(3);
-		
-		try {
-			Thread.sleep(1400);
-		} catch (InterruptedException e) {
-			e.printStackTrace(); 
-		}
 	}
 
 	public void updateScore(int score) {
@@ -753,16 +740,4 @@ public class Fenetre extends JFrame {
 			cases[joueur][move.pos[2]][move.pos[3]].reset();
 		}
 	}
-	
-	
-	public void closingAnimation()
-	{
-		pan_infos.setAnimation(2);
-		try {
-			Thread.sleep(700);
-		} catch (InterruptedException e) {
-			e.printStackTrace(); 
-		}
-	}
-	
 }
