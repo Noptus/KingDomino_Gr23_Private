@@ -28,6 +28,8 @@ public class SoundPlayer {
 		load("power_3");
 		load("sorciere");
 		load("vagues");
+		load("Scroll");
+		load("Scroll2");
 		
 	}
 	
