@@ -68,7 +68,7 @@ public class MenuParametres extends JDialog {
 		nbJoueurs.addItem("2");
 		nbJoueurs.addItem("3");
 		nbJoueurs.addItem("4");
-		nbJoueurs.setSelectedIndex(0);
+		nbJoueurs.setSelectedIndex(2);
 		JLabel labNbJoueurs = new JLabel(" Effectif : ");
 		labNbJoueurs.setFont(font);
 		panNbJoueurs.add(labNbJoueurs);
@@ -88,8 +88,8 @@ public class MenuParametres extends JDialog {
 		nbIA.addItem("2");
 		nbIA.addItem("3");
 		nbIA.addItem("4");
-		nbIA.setSelectedIndex(4);
-		JLabel labNbIA = new JLabel("nombre : ");
+		nbIA.setSelectedIndex(2);
+		JLabel labNbIA = new JLabel("Nombre : ");
 		labNbIA.setFont(font);
 		panNbIA.add(labNbIA);
 		panNbIA.add(nbIA);
@@ -99,7 +99,7 @@ public class MenuParametres extends JDialog {
 		panReglesAdditionnelles.setBackground(Color.white);
 		panReglesAdditionnelles.setPreferredSize(new Dimension(25*x, 7*x));
 		panReglesAdditionnelles.setFont(font);
-		panReglesAdditionnelles.setBorder(BorderFactory.createTitledBorder(border, " Regles aditionelles ", TitledBorder.CENTER, TitledBorder.TOP, Lfont,
+		panReglesAdditionnelles.setBorder(BorderFactory.createTitledBorder(border, " Règles aditionelles ", TitledBorder.CENTER, TitledBorder.TOP, Lfont,
 				Color.BLACK));
 		dynastie = new JCheckBox(" Dynastie ");
 		dynastie.setFont(font);
@@ -125,7 +125,7 @@ public class MenuParametres extends JDialog {
 		//musique.setSelected(true);
 		effets = new JCheckBox("effets");
 		//effets.setSelected(true);
-		JLabel labAudio = new JLabel("activer :");
+		JLabel labAudio = new JLabel("Activer :");
 
 		panAudio.setPreferredSize(new Dimension(25*x, 5*x));
 		panAudio.setBorder(BorderFactory.createTitledBorder(border, " Audio ", TitledBorder.CENTER, TitledBorder.TOP, Lfont,
@@ -151,7 +151,7 @@ public class MenuParametres extends JDialog {
 		content.add(panAudio);
 
 		// creation du bouton pour lancer la partie
-		JButton butJouer = new JButton("Lancer la partie");
+		JButton butJouer = new JButton("Nouvelle partie");
 		butJouer.setFont(Mfont);
 		
 		// ajout d'une action associee au bouton : on verifie les valeurs et on quitte
@@ -180,7 +180,7 @@ public class MenuParametres extends JDialog {
 	// partie ou false s'il a quitte le menu
 	public boolean display() {
 		this.setVisible(true); // afficher la fenetre
-		return jouer; // quand on quitte la fenetre, on retourne la valeur du boolÃ©en jouer
+		return jouer; // quand on quitte la fenetre, on retourne la valeur du boolÃƒÂ©en jouer
 	}
 
 	// methodes pour recuperer les valeurs entrees par l'utilisateur
