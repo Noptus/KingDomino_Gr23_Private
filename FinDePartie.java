@@ -1,14 +1,15 @@
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Arrays;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -25,35 +26,16 @@ import java.awt.Color;
 @SuppressWarnings("serial")
 public class FinDePartie extends JFrame {
 
-	private JPanel page;
+	public int NB;
 
-	public void addComponentsToPane(Container pane, int[] score, int[] couleur, String[] nom) {
+	public void addComponentsToPane(Container pane, int[] score, int[] couleur, String[] nom,
+			ArrayList<Integer> couleurs) {
 
-		int[][] infos = new int[3][4];
-		for (int i = 0; i < score.length; i++) {
+		Object[][] infos = new Object[5][5];
+		for (int i = 0; i < NB; i++) {
 			infos[0][i] = score[i];
 			infos[1][i] = couleur[i];
-			// infos[2][i] = nom[i];
-		}
-		// test
-		infos[0][1] = 10;
-
-		System.out.println("start");
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 4; j++) {
-				System.out.println(infos[i][j]);
-			}
-		}
-
-		for (int i = 0; i < infos.length; i++) {
-			Arrays.sort(infos[i]);
-		}
-
-		System.out.println("start 2");
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 4; j++) {
-				System.out.println(infos[i][j]);
-			}
+			infos[2][i] = nom[i];
 		}
 
 		pane.setLayout(new GridBagLayout());
@@ -75,8 +57,7 @@ public class FinDePartie extends JFrame {
 			Regles = Regles + "Grand Duel<br>";
 		if (this.modeEmpireMilieu)
 			Regles = Regles + "Empire du Milieu<br>";
-		if (!(this.modeDynastie && this.modeHarmonie && this.modeGrandDuel && this.modeEmpireMilieu))
-			Regles = Regles + "Aucune<br>";
+
 
 		long durationInMillis = this.Time;
 		long minute = (durationInMillis / (1000 * 60)) % 60;
@@ -92,43 +73,155 @@ public class FinDePartie extends JFrame {
 		briefing.setFont(new Font("Book Antiqua", Font.BOLD, 35));
 		briefing.setLayout(new BorderLayout());
 
-		Border border = BorderFactory.createMatteBorder(20, 20, 20, 20, Color.BLUE);
+		Border border = BorderFactory.createMatteBorder(20, 20, 20, 20, Color.BLACK);
 		Font font = new Font("Book Antiqua", Font.BOLD, 45);
 		Border thatBorder = new TitledBorder(border, " Briefing ", TitledBorder.CENTER, TitledBorder.TOP, font,
-				Color.BLUE);
+				Color.BLACK);
 		briefing.setBorder(thatBorder);
 
-		Border margin = new EmptyBorder(30, 30, 30, 30);
+		Border margin = new EmptyBorder(50, 30, 50, 30);
 		briefing.setBorder(new CompoundBorder(thatBorder, margin));
 
 		briefing.setVerticalAlignment(SwingConstants.CENTER);
 		briefing.setHorizontalAlignment(SwingConstants.CENTER);
 		pane.add(briefing, c);
 
-		addPodium(this.nbTotal, score, c, pane);
+		int Max = 0;
+		for (int i = 0; i < NB; i++) {
+			if (score[i] > Max)
+				Max = score[i];
+		}
+		System.out.println("Nombre de joueurs : " + NB);
+
+		int[] ScoreSafe = new int[4];
+		for (int i = 0; i < score.length; i++) {
+			ScoreSafe[i] = score[i];
+		}
+
+		System.out.println("max index for score :" + findMaxIndex(score));
+		int first = 0;
+		int second = 0;
+		int third = 0;
+		int fourth = 0;
+
+		if (NB == 2) {
+
+			first = findMaxIndex(score);
+			if (first == 0) {
+				second = 1;
+			}
+			addPodium(this.nbTotal, ScoreSafe[second], c, pane, nom[second], 0, couleur[second], Max);
+			addPodium(this.nbTotal, ScoreSafe[first], c, pane, nom[first], 1, couleur[first], Max);
+
+		}
+
+		if (NB == 3) {
+
+			first = findMaxIndex(score);
+			score[first] = 0;
+			second = findMaxIndex(score);
+			score[second] = 0;
+			third = findMaxIndex(score);
+
+			addPodium(this.nbTotal, ScoreSafe[first], c, pane, nom[first], 1, couleur[first], Max);
+			addPodium(this.nbTotal, ScoreSafe[second], c, pane, nom[second], 0, couleur[second], Max);
+			addPodium(this.nbTotal, ScoreSafe[third], c, pane, nom[third], 2, couleur[third], Max);
+
+		}
+
+		if (NB == 4) {
+
+			first = findMaxIndex(score);
+			score[first] = 0;
+			second = findMaxIndex(score);
+			score[second] = 0;
+			third = findMaxIndex(score);
+			score[third] = 0;
+			fourth = findMaxIndex(score);
+
+			addPodium(this.nbTotal, ScoreSafe[first], c, pane, nom[first], 0, couleur[first], Max);
+			addPodium(this.nbTotal, ScoreSafe[second], c, pane, nom[second], 1, couleur[second], Max);
+			addPodium(this.nbTotal, ScoreSafe[third], c, pane, nom[third], 2, couleur[third], Max);
+			addPodium(this.nbTotal, ScoreSafe[fourth], c, pane, nom[fourth], 3, couleur[fourth], Max);
+
+		}
+
+		System.out.println("ScoreSafe");
+		System.out.println(ScoreSafe[first]);
+		System.out.println(ScoreSafe[second]);
+		System.out.println(ScoreSafe[third]);
+
 		addMenuFinal(c, pane);
 
 	}
 
-	private void addPodium(int N, int[] score, GridBagConstraints c, Container pane) {
+	private int findMaxIndex(int[] arr) {
+		int max = arr[0];
+		int maxIdx = 0;
+		for (int i = 1; i < arr.length; i++) {
+			if (arr[i] > max) {
+				max = arr[i];
+				maxIdx = i;
+			}
+		}
+		return maxIdx;
+	}
 
-		c.fill = GridBagConstraints.HORIZONTAL;
+	private void addPodium(int N, int score, GridBagConstraints c, Container pane, String nom, int i, int couleur,
+			int max) {
+
+		c.fill = GridBagConstraints.BELOW_BASELINE;
 		c.gridheight = 4;
 		c.gridwidth = 1;
 
-		for (int i = 0; i < N; i++) {
+		c.gridx = i + 1;
+		c.gridy = 0;
+		String text = "<html> <center>" + nom + "<br>" + score + " points</center>";
 
-			c.gridx = i + 1;
-			c.gridy = 0;
-			String text = "<html> Joueur " + Integer.toString(i + 1) + "<br>Score : " + score[i];
-			addAPodium(text, pane, c, true, Color.GREEN);
-
+		Color colorBorder = new Color(0, 0, 0);
+		switch (couleur) {
+		case 17:
+			colorBorder = Color.BLUE;
+			break;
+		case 27:
+			colorBorder = Color.YELLOW;
+			break;
+		case 37:
+			colorBorder = Color.GREEN;
+			break;
+		case 47:
+			colorBorder = Color.PINK;
+			break;
 		}
 
-		c.gridwidth = 2;
-		c.weightx = 0.4;
-		c.weighty = 0.3;
-		c.fill = GridBagConstraints.BOTH;
+		addAPodium(text, pane, c, true, colorBorder, score, max);
+
+	}
+
+	private static void addAPodium(String text, Container container, GridBagConstraints c, boolean B, Color color,
+			int score, int max) {
+
+		JPanel podiumBas = new JPanel(new GridLayout(2, 2));
+
+		JLabel button = new JLabel(text);
+
+		double M = (double) 250 / max * score * 1.5;
+		int M2 = (int) M;
+		System.out.println("M :" + M2);
+
+		Border border = BorderFactory.createMatteBorder(20, 20, 20, 20, color);
+		button.setBorder(border);
+
+		button.setFont(new Font("Book Antiqua", Font.PLAIN, 40));
+		button.setBackground(color);
+		button.setHorizontalAlignment(SwingConstants.CENTER);
+		button.setVerticalAlignment(SwingConstants.BOTTOM);
+
+		Border margin = new EmptyBorder(30, 30, M2, 30);
+		button.setBorder(new CompoundBorder(border, margin));
+
+		// podiumBas.add(button, 1);
+		container.add(button, c);
 
 	}
 
@@ -139,6 +232,7 @@ public class FinDePartie extends JFrame {
 		c.gridy = 4;
 		JButton Rejouer = new JButton("Rejouer");
 		Rejouer.addActionListener(new ActionListener() {
+
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("replay");
 				rejouer = true;
@@ -170,25 +264,14 @@ public class FinDePartie extends JFrame {
 		pane.add(Quitter, c);
 	}
 
-	private static void addAPodium(String text, Container container, GridBagConstraints c, boolean B, Color color) {
-
-		JLabel button = new JLabel(text);
-		button.setFont(new Font("Book Antiqua", Font.PLAIN, 40));
-		button.setBackground(color);
-		button.setVerticalAlignment(SwingConstants.CENTER);
-		button.setHorizontalAlignment(SwingConstants.CENTER);
-		container.add(button, c);
-
-	}
-
 	// ATTRIBUTS PRIVES
 	private int nbJoueurs, nbIA, nbTotal;
 	private boolean modeDynastie, modeEmpireMilieu, modeHarmonie, modeGrandDuel;
 	private long Time;
-	
+
 	private boolean rejouer;
 	private boolean hasDecided = false;
-	
+
 	JFrame FenetreFinale;
 	JButton Quitter, Recommencer;
 
@@ -205,8 +288,9 @@ public class FinDePartie extends JFrame {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (int) screenSize.getWidth() / 100;
 		int y = (int) screenSize.getHeight() / 100;
+		NB = parametres.nbTotal;
 
-		this.setSize(70 * x, 85 * y);
+		this.setSize(95 * x, 85 * y);
 		this.setLocationRelativeTo(null);
 
 		this.nbJoueurs = parametres.nbJoueurs;
@@ -224,17 +308,21 @@ public class FinDePartie extends JFrame {
 
 			couleur[i] = couleurs.get(i);
 			nom[i] = noms2.get(i);
-
-			System.out.println("   Joueur " + (i + 1) + " :");
-			System.out.println("   couleur = " + score[i]);
-			System.out.println("   score = " + couleur[i]);
-			System.out.println("   nom = " + nom[i]);
+			// score[i] = score.get(i);
+			// System.out.println(" Joueur " + (i + 1) + " :");
+			// System.out.println(" couleur = " + score[i]);
+			// System.out.println(" score = " + couleur[i]);
+			// System.out.println(" nom = " + nom[i]);
 		}
 
 		FenetreFinale = new JFrame();
 		FenetreFinale.setLayout(new GridBagLayout());
 		FenetreFinale.setResizable(false);
-		addComponentsToPane(this, score, couleur, nom);
+		addComponentsToPane(this, score, couleur, nom, couleurs);
+
+	}
+
+	public static void updateGame(Graphics g) {
 
 	}
 
@@ -249,14 +337,12 @@ public class FinDePartie extends JFrame {
 		}
 		return largest;
 	}
-	
-	public boolean souhaiteRejouer()
-	{
+
+	public boolean souhaiteRejouer() {
 		return rejouer;
 	}
-	
-	public boolean hasDecided()
-	{
+
+	public boolean hasDecided() {
 		return hasDecided;
 	}
 
