@@ -15,7 +15,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -60,8 +59,7 @@ public class Fenetre extends JFrame {
 			this.repaint(); // on demande a reafficher le panel mis a jour
 		}
 
-		public void reset()
-		{
+		public void reset() {
 			this.halfDomino = textures.get(0);
 			this.temporary = false;
 			this.setBorderPainted(true);
@@ -153,76 +151,71 @@ public class Fenetre extends JFrame {
 		}
 	}
 
-	class Infos extends JPanel implements ActionListener{
-		
+	class Infos extends JPanel implements ActionListener {
+
 		private Image[] textures = new Image[29];
 		private int displayed = 0;
 		private Timer timer = new Timer(10, this);
 		private long last_frame = System.currentTimeMillis();
 		private int animation = 0;
-		
-		
-		
+
 		public Infos(GridLayout g) {
 			super(g);
-			for(int i = 0; i <= 28; i++)
-			{
+			for (int i = 0; i <= 28; i++) {
 				try {
 					textures[i] = ImageIO.read(new File("images//frame_" + String.valueOf(i) + "_delay-0.05s.gif"));
 				} catch (Exception e) {
 				}
 			}
 			timer.start();
-			
+
 		}
 
 		public void paintComponent(Graphics g) {
 			super.paintComponent(g);
 			g.drawImage(textures[displayed], 0, 0, this.getWidth(), this.getHeight(), null);
 		}
-		
-		
+
 		public void actionPerformed(ActionEvent e) {
-			switch(animation)
-			{
+			switch (animation) {
 			case 0:
 				break;
 			case 1:
-				if(displayed == 28)
+				if (displayed == 28)
 					animation = 0;
-				if(System.currentTimeMillis() - last_frame >= 50)
+				if (System.currentTimeMillis() - last_frame >= 50)
 					displayed += 1;
 				break;
 			case 2:
-				if(displayed == 14)
+				if (displayed == 14)
 					animation = 0;
-				if(System.currentTimeMillis() - last_frame >= 50)
+				if (System.currentTimeMillis() - last_frame >= 50)
 					displayed += 1;
 				break;
 			case 3:
-				if(displayed == 28)
+				if (displayed == 28)
 					animation = 0;
-				if(System.currentTimeMillis() - last_frame >= 50)
+				if (System.currentTimeMillis() - last_frame >= 50)
 					displayed += 1;
 				break;
 			}
-			if(System.currentTimeMillis() - last_frame >= 50)
+			if (System.currentTimeMillis() - last_frame >= 50)
 				last_frame = System.currentTimeMillis();
 			repaint();
-		  }
-		
-		public void setAnimation(int animation)
-		{
-			switch(animation)
-			{
+		}
+
+		public void setAnimation(int animation) {
+			switch (animation) {
 			case 1:
 				displayed = 14;
+				s.playAudio("Scroll");
 				break;
 			case 2:
 				displayed = 0;
 				break;
 			case 3:
 				displayed = 0;
+				s.playAudio("Scroll2");
 				break;
 			}
 			this.animation = animation;
@@ -258,21 +251,20 @@ public class Fenetre extends JFrame {
 	private JLabel[] lab_nom_score;
 
 	private JButton but_vue;
-	
+
 	private boolean vueEnsemble = false;
 	private int actionEnCours = 0;
-	
+
 	private Timer timer;
 
-	
 	private SoundPlayer s;
 
 	// CONSTRUCTEUR
-	public Fenetre(Plateau[] plateaux, Pioche pioche_initiale, ArrayList<Integer> couleurs, ArrayList<String> noms, SoundPlayer s) {
-		
+	public Fenetre(Plateau[] plateaux, Pioche pioche_initiale, ArrayList<Integer> couleurs, ArrayList<String> noms,
+			SoundPlayer s) {
+
 		this.s = s;
 		this.noms = noms;
-	
 
 		for (int i = 0; i <= 48; i++) {
 			try {
@@ -288,16 +280,15 @@ public class Fenetre extends JFrame {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH); // affichage plein ecran du jeu, mais redimmensionnable par la
 														// suite
-		//initialise le label des noms et scores des joueurs pour la vue d'ensemble
+		// initialise le label des noms et scores des joueurs pour la vue d'ensemble
 		lab_nom_score = new JLabel[plateaux.length];
-		for(int i = 0; i < lab_nom_score.length; i++)
-		{
+		for (int i = 0; i < lab_nom_score.length; i++) {
 			lab_nom_score[i] = new JLabel(noms.get(i) + " : 0 points");
 			lab_nom_score[i].setFont(police);
 			lab_nom_score[i].setForeground(couleur);
 			lab_nom_score[i].setHorizontalAlignment(JLabel.CENTER);
 		}
-		
+
 		// plateaux de tous les joueurs
 		pan_plateau = new JPanel[plateaux.length];
 		cases = new Case[plateaux.length][plateaux[0].sizeX()][plateaux[0].sizeY()];
@@ -345,13 +336,13 @@ public class Fenetre extends JFrame {
 		// legendes des pioches
 		pan_legende_pioche = new JPanel(new GridLayout(1, 2));
 		pan_legende_pioche.setBackground(background_couleur);
-		JLabel lab_pioche_manche = new JLabel("Manche actuelle :");
+		JLabel lab_pioche_manche = new JLabel("Manche actuelle");
 		lab_pioche_manche.setFont(police);
 		lab_pioche_manche.setForeground(couleur);
 		lab_pioche_manche.setHorizontalAlignment(JLabel.CENTER);
 		pan_legende_pioche.add(lab_pioche_manche);
 
-		JLabel lab_pioche_manche_plus_1 = new JLabel("Manche suivante :");
+		JLabel lab_pioche_manche_plus_1 = new JLabel("Manche suivante");
 		lab_pioche_manche_plus_1.setFont(police);
 		lab_pioche_manche_plus_1.setForeground(couleur);
 		lab_pioche_manche_plus_1.setHorizontalAlignment(JLabel.CENTER);
@@ -401,8 +392,8 @@ public class Fenetre extends JFrame {
 		but_vue.setFont(police);
 		but_vue.setBorderPainted(false);
 		but_vue.setFocusPainted(false);
-		but_vue.setForeground(Color.WHITE);
-		but_vue.setIcon(new ImageIcon("images//Bouton.jpg") );
+		but_vue.setForeground(Color.BLACK);
+		but_vue.setIcon(new ImageIcon("images//Bouton.png"));
 		but_vue.setHorizontalTextPosition(JButton.CENTER);
 		but_vue.setVerticalTextPosition(JButton.CENTER);
 		but_vue.addActionListener(new ActionListener() {
@@ -416,7 +407,6 @@ public class Fenetre extends JFrame {
 					vueEnsemble = false;
 					displayVueJoueur();
 				}
-					
 
 			}
 		});
@@ -486,11 +476,10 @@ public class Fenetre extends JFrame {
 	public void setJoueur(int joueur) {
 		if (joueur != this.joueur) // si c'est toujours le meme joueur, rien a faire
 		{
-			if(vueEnsemble == false)
-			{
+			if (vueEnsemble == false) {
 				// on supprime le plateau de l'affichage
 				this.getContentPane().remove(pan_plateau[this.joueur]);
-	
+
 				// on ajoute le bon plateau a l'affichage
 				this.getContentPane().add(pan_plateau[joueur], GBC_plateau());
 				this.getContentPane().validate();
@@ -502,7 +491,7 @@ public class Fenetre extends JFrame {
 
 	public void updateManche(int manche) {
 		lab_manche.setText("Manche " + manche);
-		if(manche == 1)
+		if (manche == 1)
 			pan_infos.setAnimation(1);
 		else
 			pan_infos.setAnimation(3);
@@ -511,7 +500,7 @@ public class Fenetre extends JFrame {
 	public void updateScore(int score) {
 		lab_score.setText("Score : " + score);
 		lab_nom_score[joueur].setText(noms.get(joueur) + " : " + score + " points");
-		
+
 	}
 
 	public void updateAction(int action) {
@@ -520,8 +509,7 @@ public class Fenetre extends JFrame {
 			lab_action.setText(noms.get(joueur) + " place son domino");
 		else if (action == Partie.CHOISIR_DOMINO) {
 			lab_action.setText(noms.get(joueur) + " choisit son domino");
-		}
-		else if (action == Partie.IMPOSSIBLE_PLACER_DOMINO) {
+		} else if (action == Partie.IMPOSSIBLE_PLACER_DOMINO) {
 			JOptionPane message = new JOptionPane();
 			// affiche un message d'erreur pour avertir l'utilisateur
 			message.showMessageDialog(null, "le domino ne peut pas etre place sur le plateau", "action impossible",
@@ -530,11 +518,9 @@ public class Fenetre extends JFrame {
 	}
 
 	public void updatePioche(Pioche pioche_manche_plus_1) {
-		
-		
+
 		// on supprime les 2 pioches de l'affichage
-		if(vueEnsemble == false)
-		{
+		if (vueEnsemble == false) {
 			this.getContentPane().remove(pan_pioche_manche);
 			this.getContentPane().remove(pan_pioche_manche_plus_1);
 		}
@@ -549,7 +535,7 @@ public class Fenetre extends JFrame {
 		}
 
 		// on l'ajoute a l'affichage
-		if(vueEnsemble == false)
+		if (vueEnsemble == false)
 			this.getContentPane().add(pan_pioche_manche, GBC_pioche_manche());
 
 		// on cree la pioche de la manche plus 1
@@ -579,8 +565,7 @@ public class Fenetre extends JFrame {
 		}
 
 		// on l'ajoute a l'affichage
-		if(vueEnsemble == false)
-		{
+		if (vueEnsemble == false) {
 			this.getContentPane().add(pan_pioche_manche_plus_1, GBC_pioche_manche_plus_1());
 			this.getContentPane().validate();
 			this.getContentPane().repaint();
@@ -625,12 +610,12 @@ public class Fenetre extends JFrame {
 			c.gridy = 1;
 			c.gridwidth = 1;
 			c.gridheight = 1;
-			c.weightx = 1.0/pan_plateau.length;
+			c.weightx = 1.0 / pan_plateau.length;
 			c.weighty = 0.05;
 			c.fill = GridBagConstraints.BOTH;
 			this.getContentPane().add(lab_nom_score[i], c);
 
-			c.weighty = 9.0/16.0 * 1.0/pan_plateau.length;
+			c.weighty = 9.0 / 16.0 * 1.0 / pan_plateau.length;
 			c.gridy = 2;
 			this.getContentPane().add(pan_plateau[i], c);
 		}
@@ -703,7 +688,7 @@ public class Fenetre extends JFrame {
 		c.insets = new Insets(10, 10, 10, 10);
 		return c;
 	}
-	
+
 	private GridBagConstraints GBC_button() {
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
@@ -717,11 +702,9 @@ public class Fenetre extends JFrame {
 		return c;
 	}
 
-	public void showMoves(ArrayList<IA.Move> moves)
-	{
-		for(IA.Move move : moves)
-		{
-			if(move.impossible)
+	public void showMoves(ArrayList<IA.Move> moves) {
+		for (IA.Move move : moves) {
+			if (move.impossible)
 				continue;
 
 			cases[joueur][move.pos[0]][move.pos[1]].set(textures.get(move.domino[0] * 10 + move.domino[1]), true);
@@ -729,11 +712,9 @@ public class Fenetre extends JFrame {
 		}
 	}
 
-	public void hideMoves(ArrayList<IA.Move> moves)
-	{
-		for(IA.Move move : moves)
-		{
-			if(move.impossible)
+	public void hideMoves(ArrayList<IA.Move> moves) {
+		for (IA.Move move : moves) {
+			if (move.impossible)
 				continue;
 
 			cases[joueur][move.pos[0]][move.pos[1]].reset();
