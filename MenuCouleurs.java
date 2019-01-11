@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Random;
+
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -37,7 +39,8 @@ public class MenuCouleurs extends JDialog {
 
 	// stocke les fonds d'ecran pour mettre a jour l'image (quand la couleur change)
 	private ArrayList<BackgroundPanel> backgroundColors = new ArrayList<BackgroundPanel>();
-
+	private ArrayList<JPanel> Borders = new ArrayList<JPanel>();
+	
 	// stocke les textures des chateaux pour les afficher a cote de la couleur
 	// choisie par le joueur
 	private HashMap<String, Image> chateaux = new HashMap<String, Image>();
@@ -74,7 +77,7 @@ public class MenuCouleurs extends JDialog {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (int) screenSize.getWidth() / 100;
 		int y = (int) screenSize.getHeight() / 100;
-		this.setSize(31*x, 32*x);
+		this.setSize(31 * x, 32 * x);
 		this.setLocationRelativeTo(null);
 		this.setResizable(false);
 		this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -83,11 +86,11 @@ public class MenuCouleurs extends JDialog {
 		correspondanceCouleurs.put("Jaune", 27);
 		correspondanceCouleurs.put("Rose", 37);
 		correspondanceCouleurs.put("Vert", 47);
-		
+
 		Font font = new Font("Book Antiqua", Font.PLAIN, 20);
 		Font Mfont = new Font("Book Antiqua", Font.PLAIN, 35);
 		Font Lfont = new Font("Book Antiqua", Font.BOLD, 25);
-		
+
 		// on charge les textures des chateaux
 		for (String couleur : correspondanceCouleurs.keySet()) {
 			try {
@@ -103,7 +106,14 @@ public class MenuCouleurs extends JDialog {
 		// on cree un contenneur qui contiendra la liste de tous les joueurs
 		JPanel content = new JPanel();
 		content.setBackground(Color.white);
-
+		
+		ArrayList<String> Names = new ArrayList<String>();
+		Names.add("Wang");
+		Names.add("Messaoudi");
+		Names.add("Donen");
+		Names.add("Renna");
+		Names.add("Al Hammal");
+		
 		for (int i = 0; i < nbJoueurs + nbIA; i++) // pour chaque joueur/IA
 		{
 			// on creee la liste deroulante avec le choix des couleurs
@@ -122,10 +132,29 @@ public class MenuCouleurs extends JDialog {
 				public void actionPerformed(ActionEvent e) {
 					for (int i = 0; i < couleurs.size(); i++) {
 						if (e.getSource() == couleurs.get(i)) // on cherche quelle liste a ete modifiee, et a quelle
-																// image elle correspond
+															  // image elle correspond
 						{
 							backgroundColors.get(i)
 									.setBackgroundImage(chateaux.get(couleurs.get(i).getSelectedItem().toString()));
+							
+							Color c = null;
+							System.out.println(i +" - "+ couleurs.get(i).getSelectedItem().toString());
+							switch( couleurs.get(i).getSelectedItem().toString() ) {
+							case "Bleu" : c = Color.BLUE; break;
+							case "Rose" : c = Color.PINK; break;
+							case "Vert" : c = Color.GREEN; break;
+							case "Jaune" : c = Color.YELLOW; break;
+							}
+							Border border = BorderFactory.createMatteBorder(5, 5, 5, 5, c);
+							String text;
+							if (i < nbJoueurs)
+								text = "Joueur " + (i + 1);
+							else {
+								text = "IA " + (i + 1 - nbJoueurs);
+							}
+							TitledBorder tb = new TitledBorder(border, " " + text + " ", TitledBorder.LEFT, TitledBorder.TOP, Lfont, c);
+							Borders.get(i).setBorder(tb);
+
 						}
 					}
 				}
@@ -133,7 +162,7 @@ public class MenuCouleurs extends JDialog {
 
 			// on cree l'image correspondante a la couleur
 			backgroundColors.add(new BackgroundPanel(chateaux.get(couleurs.get(i).getSelectedItem().toString())));
-			backgroundColors.get(i).setPreferredSize(new Dimension(5*x, 5*x));
+			backgroundColors.get(i).setPreferredSize(new Dimension(5 * x, 5 * x));
 
 			// on cree la legende
 			JLabel labCouleur = new JLabel(" Couleur ");
@@ -141,20 +170,26 @@ public class MenuCouleurs extends JDialog {
 			// on cree le conteneur de ces 3 elements
 			JPanel panCouleur = new JPanel();
 			panCouleur.setBackground(Color.white);
-			panCouleur.setPreferredSize(new Dimension(14*x, 13*x));
+			panCouleur.setPreferredSize(new Dimension(14 * x, 13 * x));
+
+			
 
 			String text;
 			if (i < nbJoueurs)
 				text = "Joueur " + (i + 1);
-			else
-				text = "IA " + (i + 1 - nbJoueurs);
+			else {
+				Random rand = new Random();
+				int n = rand.nextInt( Names.size() );
+				text = Names.get(n);
+				Names.remove(n);
+			}
 
 			JLabel labNom = new JLabel(" Nom ");
 			labNom.setFont(Lfont);
 			JTextField jtf = new JTextField(text);
 			jtf.setFont(font);
 			noms.add(jtf);
-			noms.get(i).setPreferredSize(new Dimension(7*x, 2*x));
+			noms.get(i).setPreferredSize(new Dimension(7 * x, 2 * x));
 
 			// on ajoute tous les elements au conteneur
 			panCouleur.add(labNom);
@@ -162,11 +197,27 @@ public class MenuCouleurs extends JDialog {
 			panCouleur.add(labCouleur);
 			panCouleur.add(couleurs.get(i));
 			panCouleur.add(backgroundColors.get(i));
-			Border border = BorderFactory.createMatteBorder(5, 5, 5, 5, Color.BLACK);
 
-			TitledBorder tb = new TitledBorder(border, " "+text+" ", TitledBorder.LEFT, TitledBorder.TOP,
-					Lfont, Color.BLACK);
+
+			Color c = null;
+			System.out.println(i +" - "+ couleurs.get(i).getSelectedItem().toString());
+			switch( couleurs.get(i).getSelectedItem().toString() ) {
+			case "Bleu" : c = Color.BLUE; break;
+			case "Rose" : c = Color.PINK; break;
+			case "Vert" : c = Color.GREEN; break;
+			case "Jaune" : c = Color.YELLOW; break;
+			}
+			
+			String text2 = null;
+			if (i < nbJoueurs)
+				text2 = "Joueur " + (i + 1);
+			else {
+				text2 = "IA " + (i + 1 - nbJoueurs);
+			} 
+			Border border = BorderFactory.createMatteBorder(5, 5, 5, 5, c);
+			TitledBorder tb = new TitledBorder(border, " " + text2 + " ", TitledBorder.LEFT, TitledBorder.TOP, Lfont, c);
 			panCouleur.setBorder(tb);
+			Borders.add(panCouleur);
 
 			// ajout au conteneur qui contient tous les joueurs
 			content.add(panCouleur);
