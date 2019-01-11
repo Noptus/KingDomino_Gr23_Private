@@ -89,7 +89,7 @@ public class MenuParametres extends JDialog {
 		nbIA.addItem("3");
 		nbIA.addItem("4");
 		nbIA.setSelectedIndex(2);
-		JLabel labNbIA = new JLabel("Nombre : ");
+		JLabel labNbIA = new JLabel(" Effectif : ");
 		labNbIA.setFont(font);
 		panNbIA.add(labNbIA);
 		panNbIA.add(nbIA);
