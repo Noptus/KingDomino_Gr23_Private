@@ -87,7 +87,7 @@ public class IA {
 			this.derniere_manche = false;
 
 		if(pioche_actuelle.getDomino(joueur) != pioche_actuelle.getSecondDomino(joueur)) //si le joueur a 2 dominos a placer, il s'agit d'un mode 1v1 et donc on a jusqu'a 4 moves a anticiper
-			this.nb_moves = 4; // /!\ 4 -> peut etre tres long a calculer /!\ 
+			this.nb_moves = 3; // /!\ 4 -> peut etre tres long a calculer /!\ 
 		else
 			this.nb_moves = 2;
 

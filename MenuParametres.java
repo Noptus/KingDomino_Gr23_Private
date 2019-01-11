@@ -53,6 +53,8 @@ public class MenuParametres extends JDialog {
 		Border border = BorderFactory.createMatteBorder(5, 5, 5, 5, Color.BLACK);
 		Border blueborder = BorderFactory.createMatteBorder(5, 5, 5, 5, Color.BLUE);
 		Border redborder = BorderFactory.createMatteBorder(5, 5, 5, 5, Color.RED);
+		Border greenborder = BorderFactory.createMatteBorder(5, 5, 5, 5, Color.GREEN);
+
 
 		// liste deroutante pour choisir nb de joueurs
 		JPanel panNbJoueurs = new JPanel();
@@ -99,7 +101,7 @@ public class MenuParametres extends JDialog {
 		panReglesAdditionnelles.setBackground(Color.white);
 		panReglesAdditionnelles.setPreferredSize(new Dimension(25*x, 7*x));
 		panReglesAdditionnelles.setFont(font);
-		panReglesAdditionnelles.setBorder(BorderFactory.createTitledBorder(border, " Règles aditionelles ", TitledBorder.CENTER, TitledBorder.TOP, Lfont,
+		panReglesAdditionnelles.setBorder(BorderFactory.createTitledBorder(border, " Regles additionnelles ", TitledBorder.CENTER, TitledBorder.TOP, Lfont,
 				Color.BLACK));
 		dynastie = new JCheckBox(" Dynastie ");
 		dynastie.setFont(font);
@@ -128,8 +130,8 @@ public class MenuParametres extends JDialog {
 		JLabel labAudio = new JLabel("Activer :");
 
 		panAudio.setPreferredSize(new Dimension(25*x, 5*x));
-		panAudio.setBorder(BorderFactory.createTitledBorder(border, " Audio ", TitledBorder.CENTER, TitledBorder.TOP, Lfont,
-				Color.BLACK));
+		panAudio.setBorder(BorderFactory.createTitledBorder(greenborder, " Audio ", TitledBorder.CENTER, TitledBorder.TOP, Lfont,
+				Color.GREEN));
 		musique = new JCheckBox(" Musique ");
 		musique.setSelected(true);
 		musique.setFont(font);

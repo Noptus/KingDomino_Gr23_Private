@@ -24,6 +24,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.Timer;
+import javax.swing.ImageIcon;
 import java.awt.AlphaComposite;
 import java.awt.Composite;
 import java.awt.Dimension;
@@ -154,21 +156,82 @@ public class Fenetre extends JFrame {
 		}
 	}
 
-	class Infos extends JPanel {
-		private Image texture;
-
+	class Infos extends JPanel implements ActionListener{
+		
+		private Image[] textures = new Image[29];
+		private int displayed = 0;
+		private Timer timer = new Timer(10, this);
+		private long last_frame = System.currentTimeMillis();
+		private int animation = 0;
+		
+		
+		
 		public Infos(GridLayout g) {
 			super(g);
-			try {
-				texture = ImageIO.read(new File("images//ingame.png"));
-			} catch (IOException e) {
-				e.printStackTrace();
+			for(int i = 0; i <= 28; i++)
+			{
+				try {
+					System.out.println(i);
+					textures[i] = ImageIO.read(new File("images//frame_" + String.valueOf(i) + "_delay-0.05s.gif"));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
+			timer.start();
+			
 		}
 
 		public void paintComponent(Graphics g) {
 			super.paintComponent(g);
-			g.drawImage(texture, 0, 0, this.getWidth(), this.getHeight(), null);
+			g.drawImage(textures[displayed], 0, 0, this.getWidth(), this.getHeight(), null);
+		}
+		
+		
+		public void actionPerformed(ActionEvent e) {
+			switch(animation)
+			{
+			case 0:
+				break;
+			case 1:
+				if(displayed == 28)
+					animation = 0;
+				if(System.currentTimeMillis() - last_frame >= 50)
+					displayed += 1;
+				break;
+			case 2:
+				if(displayed == 14)
+					animation = 0;
+				if(System.currentTimeMillis() - last_frame >= 50)
+					displayed += 1;
+				break;
+			case 3:
+				if(displayed == 28)
+					animation = 0;
+				if(System.currentTimeMillis() - last_frame >= 50)
+					displayed += 1;
+				break;
+			}
+			if(System.currentTimeMillis() - last_frame >= 50)
+				last_frame = System.currentTimeMillis();
+			System.out.println(displayed);
+			repaint();
+		  }
+		
+		public void setAnimation(int animation)
+		{
+			switch(animation)
+			{
+			case 1:
+				displayed = 14;
+				break;
+			case 2:
+				displayed = 0;
+				break;
+			case 3:
+				displayed = 0;
+				break;
+			}
+			this.animation = animation;
 		}
 	}
 
@@ -192,6 +255,7 @@ public class Fenetre extends JFrame {
 	private JPanel pan_legende_pioche;
 
 	private Color couleur = new Color(75, 63, 60);
+	private Color background_couleur = new Color(255, 197, 110);
 	private Font police = new Font("Book Antiqua", Font.PLAIN, 40);
 
 	private JLabel lab_action;
@@ -203,6 +267,9 @@ public class Fenetre extends JFrame {
 	
 	private boolean vueEnsemble = false;
 	private int actionEnCours = 0;
+	
+	private Timer timer;
+
 	
 	private SoundPlayer s;
 
@@ -278,10 +345,12 @@ public class Fenetre extends JFrame {
 					pan_plateau[i].add(cases[i][x][y]);
 				}
 			}
+			pan_plateau[i].setBackground(background_couleur);
 		}
 
 		// legendes des pioches
 		pan_legende_pioche = new JPanel(new GridLayout(1, 2));
+		pan_legende_pioche.setBackground(background_couleur);
 		JLabel lab_pioche_manche = new JLabel("Manche actuelle :");
 		lab_pioche_manche.setFont(police);
 		lab_pioche_manche.setForeground(couleur);
@@ -296,10 +365,12 @@ public class Fenetre extends JFrame {
 
 		// meme s'il est vide, il faut l'initialiser
 		pan_pioche_manche = new JPanel();
+		pan_pioche_manche.setBackground(background_couleur);
 
 		// PIOCHE INTIALE (qu'on definit comme etant celle de la manche plus 1 car elle
 		// sera intervertit lors de l'update des pioche)
 		pan_pioche_manche_plus_1 = new JPanel();
+		pan_pioche_manche_plus_1.setBackground(background_couleur);
 		pan_pioche_manche_plus_1.setLayout(new GridLayout(pioche_initiale.getSize(), 1, 20, 20));
 
 		domino_manche_plus_1 = new Domino[pioche_initiale.getSize()];
@@ -311,6 +382,7 @@ public class Fenetre extends JFrame {
 
 		// INFOS
 		pan_infos = new Infos(new GridLayout(3, 1));
+		pan_infos.setBackground(background_couleur);
 		pan_infos.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
 		lab_manche = new JLabel();
 		lab_manche.setFont(police);
@@ -358,6 +430,7 @@ public class Fenetre extends JFrame {
 		this.getContentPane().add(pan_pioche_manche, GBC_pioche_manche());
 		this.getContentPane().add(pan_pioche_manche_plus_1, GBC_pioche_manche_plus_1());
 		this.getContentPane().add(pan_plateau[joueur], GBC_plateau());
+		this.getContentPane().setBackground(background_couleur);
 	}
 
 	public boolean hasPlacedDomino() {
@@ -430,6 +503,10 @@ public class Fenetre extends JFrame {
 
 	public void updateManche(int manche) {
 		lab_manche.setText("Manche " + manche);
+		if(manche == 1)
+			pan_infos.setAnimation(1);
+		else
+			pan_infos.setAnimation(3);
 	}
 
 	public void updateScore(int score) {
@@ -478,6 +555,7 @@ public class Fenetre extends JFrame {
 
 		// on cree la pioche de la manche plus 1
 		pan_pioche_manche_plus_1 = new JPanel();
+		pan_pioche_manche_plus_1.setBackground(background_couleur);
 		pan_pioche_manche_plus_1.setLayout(new GridLayout(pioche_manche_plus_1.getSize(), 1, 20, 20));
 
 		domino_manche_plus_1 = new Domino[pioche_manche_plus_1.getSize()];
