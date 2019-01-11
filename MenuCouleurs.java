@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
-
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -34,13 +34,17 @@ public class MenuCouleurs extends JDialog {
 	private ArrayList<JComboBox> couleurs = new ArrayList<JComboBox>();
 
 	private ArrayList<JTextField> noms = new ArrayList<JTextField>();
+	private Color V = new Color(58, 140, 56);
+	private Color J = new Color(243, 193, 17);
+	private Color R = new Color(231, 140, 155);
+	private Color B = new Color(1, 119, 160);
 
 	private boolean jouer = false;
 
 	// stocke les fonds d'ecran pour mettre a jour l'image (quand la couleur change)
 	private ArrayList<BackgroundPanel> backgroundColors = new ArrayList<BackgroundPanel>();
 	private ArrayList<JPanel> Borders = new ArrayList<JPanel>();
-	
+
 	// stocke les textures des chateaux pour les afficher a cote de la couleur
 	// choisie par le joueur
 	private HashMap<String, Image> chateaux = new HashMap<String, Image>();
@@ -77,7 +81,7 @@ public class MenuCouleurs extends JDialog {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (int) screenSize.getWidth() / 100;
 		int y = (int) screenSize.getHeight() / 100;
-		this.setSize(31 * x, 32 * x);
+		this.setSize(31 * x, 33 * x);
 		this.setLocationRelativeTo(null);
 		this.setResizable(false);
 		this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -106,14 +110,14 @@ public class MenuCouleurs extends JDialog {
 		// on cree un contenneur qui contiendra la liste de tous les joueurs
 		JPanel content = new JPanel();
 		content.setBackground(Color.white);
-		
+
 		ArrayList<String> Names = new ArrayList<String>();
 		Names.add("Wang");
 		Names.add("Messaoudi");
 		Names.add("Donen");
 		Names.add("Renna");
 		Names.add("Al Hammal");
-		
+
 		for (int i = 0; i < nbJoueurs + nbIA; i++) // pour chaque joueur/IA
 		{
 			// on creee la liste deroulante avec le choix des couleurs
@@ -132,18 +136,26 @@ public class MenuCouleurs extends JDialog {
 				public void actionPerformed(ActionEvent e) {
 					for (int i = 0; i < couleurs.size(); i++) {
 						if (e.getSource() == couleurs.get(i)) // on cherche quelle liste a ete modifiee, et a quelle
-															  // image elle correspond
+																// image elle correspond
 						{
 							backgroundColors.get(i)
 									.setBackgroundImage(chateaux.get(couleurs.get(i).getSelectedItem().toString()));
-							
+
 							Color c = null;
-							System.out.println(i +" - "+ couleurs.get(i).getSelectedItem().toString());
-							switch( couleurs.get(i).getSelectedItem().toString() ) {
-							case "Bleu" : c = Color.BLUE; break;
-							case "Rose" : c = Color.PINK; break;
-							case "Vert" : c = Color.GREEN; break;
-							case "Jaune" : c = Color.YELLOW; break;
+							System.out.println(i + " - " + couleurs.get(i).getSelectedItem().toString());
+							switch (couleurs.get(i).getSelectedItem().toString()) {
+							case "Bleu":
+								c = B;
+								break;
+							case "Rose":
+								c = R;
+								break;
+							case "Vert":
+								c = V;
+								break;
+							case "Jaune":
+								c = J;
+								break;
 							}
 							Border border = BorderFactory.createMatteBorder(5, 5, 5, 5, c);
 							String text;
@@ -152,7 +164,8 @@ public class MenuCouleurs extends JDialog {
 							else {
 								text = "IA " + (i + 1 - nbJoueurs);
 							}
-							TitledBorder tb = new TitledBorder(border, " " + text + " ", TitledBorder.LEFT, TitledBorder.TOP, Lfont, c);
+							TitledBorder tb = new TitledBorder(border, " " + text + " ", TitledBorder.LEFT,
+									TitledBorder.TOP, Lfont, c);
 							Borders.get(i).setBorder(tb);
 
 						}
@@ -172,14 +185,12 @@ public class MenuCouleurs extends JDialog {
 			panCouleur.setBackground(Color.white);
 			panCouleur.setPreferredSize(new Dimension(14 * x, 13 * x));
 
-			
-
 			String text;
 			if (i < nbJoueurs)
 				text = "Joueur " + (i + 1);
 			else {
 				Random rand = new Random();
-				int n = rand.nextInt( Names.size() );
+				int n = rand.nextInt(Names.size());
 				text = Names.get(n);
 				Names.remove(n);
 			}
@@ -198,24 +209,32 @@ public class MenuCouleurs extends JDialog {
 			panCouleur.add(couleurs.get(i));
 			panCouleur.add(backgroundColors.get(i));
 
-
 			Color c = null;
-			System.out.println(i +" - "+ couleurs.get(i).getSelectedItem().toString());
-			switch( couleurs.get(i).getSelectedItem().toString() ) {
-			case "Bleu" : c = Color.BLUE; break;
-			case "Rose" : c = Color.PINK; break;
-			case "Vert" : c = Color.GREEN; break;
-			case "Jaune" : c = Color.YELLOW; break;
+			System.out.println(i + " - " + couleurs.get(i).getSelectedItem().toString());
+			switch (couleurs.get(i).getSelectedItem().toString()) {
+			case "Bleu":
+				c = B;
+				break;
+			case "Rose":
+				c = R;
+				break;
+			case "Vert":
+				c = V;
+				break;
+			case "Jaune":
+				c = J;
+				break;
 			}
-			
+
 			String text2 = null;
 			if (i < nbJoueurs)
 				text2 = "Joueur " + (i + 1);
 			else {
 				text2 = "IA " + (i + 1 - nbJoueurs);
-			} 
+			}
 			Border border = BorderFactory.createMatteBorder(5, 5, 5, 5, c);
-			TitledBorder tb = new TitledBorder(border, " " + text2 + " ", TitledBorder.LEFT, TitledBorder.TOP, Lfont, c);
+			TitledBorder tb = new TitledBorder(border, " " + text2 + " ", TitledBorder.LEFT, TitledBorder.TOP, Lfont,
+					c);
 			panCouleur.setBorder(tb);
 			Borders.add(panCouleur);
 
@@ -225,6 +244,13 @@ public class MenuCouleurs extends JDialog {
 
 		// ajout du bouton pour lancer la partie
 		JButton butJouer = new JButton("Lancer la partie");
+		butJouer.setBorderPainted(false);
+		butJouer.setContentAreaFilled(false);
+		butJouer.setFocusPainted(false);
+		butJouer.setForeground(Color.BLACK);
+		butJouer.setIcon(new ImageIcon("images//Bouton2.png"));
+		butJouer.setHorizontalTextPosition(JButton.CENTER);
+		butJouer.setVerticalTextPosition(JButton.CENTER);
 		butJouer.setFont(Mfont);
 		// ajout d'une action associee au bouton : on verifie les valeurs et on quitte
 		// le menu
