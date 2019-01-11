@@ -4,17 +4,16 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
@@ -105,14 +104,14 @@ public class FinDePartie extends JFrame {
 
 		first = findMaxIndex(score);
 		System.out.println(nom[first] + " est premier !");
-		
+
 		if (NB == 2) {
 
 			first = findMaxIndex(score);
 			if (first == 0) {
 				second = 1;
 			}
-			addPodium(this.nbTotal, ScoreSafe[second], c, pane, nom[second], 0, couleur[second], Max,false);
+			addPodium(this.nbTotal, ScoreSafe[second], c, pane, nom[second], 0, couleur[second], Max, false);
 			addPodium(this.nbTotal, ScoreSafe[first], c, pane, nom[first], 1, couleur[first], Max, true);
 
 		}
@@ -126,8 +125,8 @@ public class FinDePartie extends JFrame {
 			third = findMaxIndex(score);
 
 			addPodium(this.nbTotal, ScoreSafe[first], c, pane, nom[first], 1, couleur[first], Max, true);
-			addPodium(this.nbTotal, ScoreSafe[second], c, pane, nom[second], 0, couleur[second], Max,false);
-			addPodium(this.nbTotal, ScoreSafe[third], c, pane, nom[third], 2, couleur[third], Max,false);
+			addPodium(this.nbTotal, ScoreSafe[second], c, pane, nom[second], 0, couleur[second], Max, false);
+			addPodium(this.nbTotal, ScoreSafe[third], c, pane, nom[third], 2, couleur[third], Max, false);
 
 		}
 
@@ -142,9 +141,9 @@ public class FinDePartie extends JFrame {
 			fourth = findMaxIndex(score);
 
 			addPodium(this.nbTotal, ScoreSafe[first], c, pane, nom[first], 0, couleur[first], Max, true);
-			addPodium(this.nbTotal, ScoreSafe[second], c, pane, nom[second], 1, couleur[second], Max,false);
-			addPodium(this.nbTotal, ScoreSafe[third], c, pane, nom[third], 2, couleur[third], Max,false);
-			addPodium(this.nbTotal, ScoreSafe[fourth], c, pane, nom[fourth], 3, couleur[fourth], Max,false);
+			addPodium(this.nbTotal, ScoreSafe[second], c, pane, nom[second], 1, couleur[second], Max, false);
+			addPodium(this.nbTotal, ScoreSafe[third], c, pane, nom[third], 2, couleur[third], Max, false);
+			addPodium(this.nbTotal, ScoreSafe[fourth], c, pane, nom[fourth], 3, couleur[fourth], Max, false);
 
 		}
 
@@ -178,12 +177,12 @@ public class FinDePartie extends JFrame {
 
 		c.gridx = i + 1;
 		c.gridy = 0;
-		
+
 		String text2 = "";
-		if( premier ) {
+		if (premier) {
 			text2 = "<html> Est le King ! <br>";
 		}
-		String text = "<html> <center>" + nom + "<br>" + text2+score + " points</center>";
+		String text = "<html> <center>" + nom + "<br>" + text2 + score + " points</center>";
 
 		Color colorBorder = new Color(0, 0, 0);
 		switch (couleur) {
@@ -207,8 +206,6 @@ public class FinDePartie extends JFrame {
 
 	private static void addAPodium(String text, Container container, GridBagConstraints c, boolean B, Color color,
 			int score, int max) {
-
-		JPanel podiumBas = new JPanel(new GridLayout(2, 2));
 
 		JLabel button = new JLabel(text);
 
@@ -248,6 +245,11 @@ public class FinDePartie extends JFrame {
 		});
 		Rejouer.setBorderPainted(false);
 		Rejouer.setFocusPainted(false);
+		Rejouer.setContentAreaFilled(false);
+		Rejouer.setForeground(Color.BLACK);
+		Rejouer.setIcon(new ImageIcon("images//BoutonV.png"));
+		Rejouer.setHorizontalTextPosition(JButton.CENTER);
+		Rejouer.setVerticalTextPosition(JButton.CENTER);
 		Rejouer.setFont(new Font("Book Antiqua", Font.PLAIN, 35));
 		Rejouer.setBackground(new Color(127, 255, 0));
 		pane.add(Rejouer, c);
@@ -266,6 +268,11 @@ public class FinDePartie extends JFrame {
 		});
 		Quitter.setBorderPainted(false);
 		Quitter.setFocusPainted(false);
+		Quitter.setContentAreaFilled(false);
+		Quitter.setForeground(Color.BLACK);
+		Quitter.setIcon(new ImageIcon("images//BoutonR.png"));
+		Quitter.setHorizontalTextPosition(JButton.CENTER);
+		Quitter.setVerticalTextPosition(JButton.CENTER);
 		Quitter.setFont(new Font("Book Antiqua", Font.PLAIN, 35));
 		Quitter.setBackground(new Color(255, 99, 71));
 		pane.add(Quitter, c);
