@@ -160,7 +160,7 @@ public class Fenetre extends JFrame {
 		
 		private Image[] textures = new Image[29];
 		private int displayed = 0;
-		private Timer timer = new Timer(10, this);
+		private Timer timer = new Timer(50, this);
 		private long last_frame = System.currentTimeMillis();
 		private int animation = 0;
 		
@@ -186,28 +186,32 @@ public class Fenetre extends JFrame {
 			g.drawImage(textures[displayed], 0, 0, this.getWidth(), this.getHeight(), null);
 		}
 		
-		
+		//fonction appelee lors lors d'un changement de manche pour animer le parchemin
 		public void actionPerformed(ActionEvent e) {
 			switch(animation)
 			{
 			case 0:
+				lab_manche.setVisible(true);
+				lab_action.setVisible(true);
+				lab_score.setVisible(true);
+				timer.stop();
 				break;
 			case 1:
 				if(displayed == 28)
 					animation = 0;
-				if(System.currentTimeMillis() - last_frame >= 50)
+				else if(System.currentTimeMillis() - last_frame >= 50)
 					displayed += 1;
 				break;
 			case 2:
 				if(displayed == 14)
-					animation = 0;
-				if(System.currentTimeMillis() - last_frame >= 50)
+					timer.stop();
+				else if(System.currentTimeMillis() - last_frame >= 50)
 					displayed += 1;
 				break;
 			case 3:
 				if(displayed == 28)
 					animation = 0;
-				if(System.currentTimeMillis() - last_frame >= 50)
+				else if(System.currentTimeMillis() - last_frame >= 50)
 					displayed += 1;
 				break;
 			}
@@ -216,6 +220,7 @@ public class Fenetre extends JFrame {
 			System.out.println(displayed);
 			repaint();
 		  }
+		
 		
 		public void setAnimation(int animation)
 		{
@@ -232,6 +237,10 @@ public class Fenetre extends JFrame {
 				break;
 			}
 			this.animation = animation;
+			lab_manche.setVisible(false);
+			lab_action.setVisible(false);
+			lab_score.setVisible(false);
+			timer.start();
 		}
 	}
 
@@ -267,9 +276,6 @@ public class Fenetre extends JFrame {
 	
 	private boolean vueEnsemble = false;
 	private int actionEnCours = 0;
-	
-	private Timer timer;
-
 	
 	private SoundPlayer s;
 
@@ -507,6 +513,12 @@ public class Fenetre extends JFrame {
 			pan_infos.setAnimation(1);
 		else
 			pan_infos.setAnimation(3);
+		
+		try {
+			Thread.sleep(1400);
+		} catch (InterruptedException e) {
+			e.printStackTrace(); 
+		}
 	}
 
 	public void updateScore(int score) {
@@ -741,4 +753,16 @@ public class Fenetre extends JFrame {
 			cases[joueur][move.pos[2]][move.pos[3]].reset();
 		}
 	}
+	
+	
+	public void closingAnimation()
+	{
+		pan_infos.setAnimation(2);
+		try {
+			Thread.sleep(700);
+		} catch (InterruptedException e) {
+			e.printStackTrace(); 
+		}
+	}
+	
 }

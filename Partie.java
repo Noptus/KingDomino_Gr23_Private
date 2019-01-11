@@ -100,10 +100,6 @@ public class Partie {
 				if(joueur > p.nbJoueurs)
 				{
 					chevre.think(plateaux[joueur-1], domino_manche, domino_manche_plus_1, joueur, manche);
-					/*fenetre.showMoves(chevre.getMoves());
-					Scanner sc = new Scanner(System.in);
-					sc.nextLine();
-					fenetre.hideMoves(chevre.getMoves());*/
 				}
 
 				// tester si possible de le placer
@@ -213,15 +209,14 @@ public class Partie {
 			System.out.println(noms.get(i) + " a termine avec un score de : " + plateaux[i].getScore(true));
 		}
 
-		//on attend a la fin de la partie pour analyser les plateaux des ia
-		/*Scanner sc = new Scanner(System.in);
-		sc.nextLine();*/
 		try {
 			Thread.sleep(1);
 		} catch (InterruptedException e) {
 			e.printStackTrace(); 
 		}
 
+		fenetre.closingAnimation();
+		
 		fenetre.setVisible(false);
 		fenetre.dispose();
 	}

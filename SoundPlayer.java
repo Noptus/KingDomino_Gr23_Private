@@ -71,6 +71,8 @@ public class SoundPlayer {
 		this.effets = effets;
 		if(musique == false) //on arrete la musique
 			clips.get("musique").stop();
+		else
+			clips.get("musique").start();
 	}
 	
 
