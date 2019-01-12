@@ -155,7 +155,7 @@ public class Fenetre extends JFrame {
 
 		private Image[] textures = new Image[29];
 		private int displayed = 0;
-		private Timer timer = new Timer(10, this);
+		private Timer timer = new Timer(50, this);
 		private long last_frame = System.currentTimeMillis();
 		private int animation = 0;
 
@@ -167,7 +167,6 @@ public class Fenetre extends JFrame {
 				} catch (Exception e) {
 				}
 			}
-			timer.start();
 
 		}
 
@@ -179,23 +178,24 @@ public class Fenetre extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			switch (animation) {
 			case 0:
+				timer.stop();
 				break;
 			case 1:
 				if (displayed == 28)
 					animation = 0;
-				if (System.currentTimeMillis() - last_frame >= 50)
+				else if (System.currentTimeMillis() - last_frame >= 50)
 					displayed += 1;
 				break;
 			case 2:
 				if (displayed == 14)
 					animation = 0;
-				if (System.currentTimeMillis() - last_frame >= 50)
+				else if (System.currentTimeMillis() - last_frame >= 50)
 					displayed += 1;
 				break;
 			case 3:
 				if (displayed == 28)
 					animation = 0;
-				if (System.currentTimeMillis() - last_frame >= 50)
+				else if (System.currentTimeMillis() - last_frame >= 50)
 					displayed += 1;
 				break;
 			}
@@ -219,6 +219,7 @@ public class Fenetre extends JFrame {
 				break;
 			}
 			this.animation = animation;
+			timer.start();
 		}
 	}
 
