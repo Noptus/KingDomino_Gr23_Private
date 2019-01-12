@@ -16,15 +16,16 @@ public class Dominos {
 	public static final int FORET = 4;
 	public static final int LAC = 5;
 	public static final int CHAMP = 6;
-	public static final String Fichier = "dominos.csv";
-	public static BufferedReader br = null;
-	public static String line = "";
-	public static final String cvsSplitBy = ",";
+	
+	private static final String Fichier = "dominos.csv";
+	private static BufferedReader br = null;
+	private static String line = "";
+	private static final String cvsSplitBy = ",";
 
 	// ATTRIBUTS (PRIVES, ACCESSIBLES UNIQUEMENT DEPUIS CETTE CLASSE)
 
 	// liste d'entiers qui stocke tous nos dominos
-	public List<int[]> dominos = new ArrayList<>();
+	private List<int[]> dominos = new ArrayList<>();
 
 	// Retourne le nb de dominos au hasard et les supprime de la liste
 	public int[][] GetAndDelete_Dominos(int nb) {
