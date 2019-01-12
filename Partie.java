@@ -214,8 +214,6 @@ public class Partie {
 		} catch (InterruptedException e) {
 			e.printStackTrace(); 
 		}
-
-		fenetre.closingAnimation();
 		
 		fenetre.setVisible(false);
 		fenetre.dispose();
