@@ -248,7 +248,9 @@ public class MenuCouleurs extends JDialog {
 		butJouer.setContentAreaFilled(false);
 		butJouer.setFocusPainted(false);
 		butJouer.setForeground(Color.BLACK);
-		butJouer.setIcon(new ImageIcon("images//Bouton2.png"));
+		butJouer.setRolloverIcon(new ImageIcon("images//Bouton2.png"));
+		butJouer.setIcon(new ImageIcon("images//Bouton.png"));
+		butJouer.setPressedIcon(new ImageIcon("images//Bouton3.png"));
 		butJouer.setHorizontalTextPosition(JButton.CENTER);
 		butJouer.setVerticalTextPosition(JButton.CENTER);
 		butJouer.setFont(Mfont);
