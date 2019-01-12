@@ -1,8 +1,5 @@
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Scanner;
 
 public class Partie {
 
@@ -21,11 +18,11 @@ public class Partie {
 
 	private Pioche domino_manche;
 	private Pioche domino_manche_plus_1;
-	
+
 	private IA chevre;
-	
+
 	private long startTime;
-	
+
 	private SoundPlayer s;
 
 	// CONSTRUCTEUR
@@ -50,7 +47,7 @@ public class Partie {
 		}
 
 		fenetre = null;
-		
+
 		chevre = new IA(p);
 	}
 
@@ -96,30 +93,33 @@ public class Partie {
 				fenetre.setHighlight(domino_manche.getDomino(joueur));
 				fenetre.updateAction(PLACER_DOMINO);
 				fenetre.updateScore(plateaux[joueur - 1].getScore(false));
-				//l'ia prend ses decisions
-				if(joueur > p.nbJoueurs)
-				{
-					chevre.think(plateaux[joueur-1], domino_manche, domino_manche_plus_1, joueur, manche);
+				// l'ia prend ses decisions
+				if (joueur > p.nbJoueurs) {
+					chevre.think(plateaux[joueur - 1], domino_manche, domino_manche_plus_1, joueur, manche);
+					/*
+					 * fenetre.showMoves(chevre.getMoves()); Scanner sc = new Scanner(System.in);
+					 * sc.nextLine(); fenetre.hideMoves(chevre.getMoves());
+					 */
 				}
 
 				// tester si possible de le placer
 				if (!plateaux[joueur - 1].isPossible(domino_manche.getDomino(joueur))) {
 					s.playAudio("sorciere");
-					if(joueur <= p.nbJoueurs) //le message ne s'affiche que pour les joueurs
+					if (joueur <= p.nbJoueurs) // le message ne s'affiche que pour les joueurs
 						fenetre.updateAction(IMPOSSIBLE_PLACER_DOMINO);
 				} else {
 					int positions[] = new int[2];
-					if(joueur <= p.nbJoueurs) //c'est un jouueur qui joue
+					if (joueur <= p.nbJoueurs) // c'est un jouueur qui joue
 					{
 						// le joueur place son domino sur son terrain
-						int T = 0; //nombre de tentatives de placement
-						
-						//tant que le joueur n'a pas reussi a placer son domino
+						int T = 0; // nombre de tentatives de placement
+
+						// tant que le joueur n'a pas reussi a placer son domino
 						do {
-							if (T != 0) { //le joueur a mal place son domino
+							if (T != 0) { // le joueur a mal place son domino
 								s.playAudio("bad");
 							}
-								
+
 							// on attend que l'utilisateur ait place son domino
 							while (fenetre.hasPlacedDomino() == false) {
 								// /!\ on verifie toutes les 10 ms, autrement ca ne fonctionne pas
@@ -129,27 +129,28 @@ public class Partie {
 									e.printStackTrace();
 								}
 							}
-	
+
 							// on recupere les cases sur lesquelles il a clique
 							positions = fenetre.getPositions();
 							T = T + 1;
-	
+
 						} // verifie que le placement est valide, sinon on lui redemande a nouveau
-						while (plateaux[joueur - 1].placementValide(positions[0], positions[1], positions[2], positions[3],domino_manche.getDomino(joueur)) == false);
-					}
-					else //c'est une ia
+						while (plateaux[joueur - 1].placementValide(positions[0], positions[1], positions[2],
+								positions[3], domino_manche.getDomino(joueur)) == false);
+					} else // c'est une ia
 					{
 						positions = chevre.getPos();
-						//on ralentit l'IA sinon elle joue trop rapidement
+						// on ralentit l'IA sinon elle joue trop rapidement
 						try {
 							Thread.sleep(1);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
 					}
-					
-					//on place le domino
-					plateaux[joueur - 1].placer(positions[0], positions[1], positions[2], positions[3], domino_manche.getDomino(joueur));	
+
+					// on place le domino
+					plateaux[joueur - 1].placer(positions[0], positions[1], positions[2], positions[3],
+							domino_manche.getDomino(joueur));
 
 					// on met a jour les textures du plateau
 					fenetre.setDomino(positions, domino_manche.getDomino(joueur));
@@ -166,9 +167,8 @@ public class Partie {
 					// le joueur choisit son domino dans la pioche du tour suivant
 					fenetre.updateAction(CHOISIR_DOMINO);
 
-					
 					int[] domino = new int[5];
-					if(joueur <= p.nbJoueurs)//c'est un joueur qui joue
+					if (joueur <= p.nbJoueurs)// c'est un joueur qui joue
 					{
 						while (fenetre.hasSelectedDomino() == false) {
 							// /!\ on verifie toutes les 10 ms, autrement ca ne fonctionne pas
@@ -178,22 +178,21 @@ public class Partie {
 								e.printStackTrace();
 							}
 						}
-	
+
 						domino = fenetre.getDomino();
-					}
-					else //c'est une ia
+					} else // c'est une ia
 					{
 						domino = chevre.getDomino();
-						//on ralentit l'IA sinon elle joue trop rapidement
+						// on ralentit l'IA sinon elle joue trop rapidement
 						try {
 							Thread.sleep(1);
 						} catch (InterruptedException e) {
-							e.printStackTrace(); 
+							e.printStackTrace();
 						}
 					}
 					domino_manche_plus_1.choisir(domino, joueur);
-					
-					//on met a jour l'affichage
+
+					// on met a jour l'affichage
 					fenetre.setCrossed(domino);
 					fenetre.setCouleur(domino, couleurs.get(joueur - 1));
 				}
@@ -207,37 +206,40 @@ public class Partie {
 		// on affiche les scores de fin de partie
 		for (int i = 0; i < p.nbTotal; i++) {
 			System.out.println(noms.get(i) + " a termine avec un score de : " + plateaux[i].getScore(true));
+			System.out.println(noms.get(i) + " a " + plateaux[i].getTotalCrowns() + " couronnes");
 		}
 
 		try {
 			Thread.sleep(1);
 		} catch (InterruptedException e) {
-			e.printStackTrace(); 
+			e.printStackTrace();
 		}
 
-		fenetre.closingAnimation();
-		
 		fenetre.setVisible(false);
 		fenetre.dispose();
 	}
 
 	// METHODES PUBLIQUE
-	public int[] getScores()
-	{
+	public int[] getScores() {
 		int[] scores = new int[p.nbTotal];
-		for(int i = 0; i < p.nbTotal; i++)
-		{
+		for (int i = 0; i < p.nbTotal; i++) {
 			scores[i] = plateaux[i].getScore(true);
 		}
 		return scores;
 	}
-	
-	public long getElapsedTime()
-	{
+
+	public int[] getCrowns() {
+		int[] crowns = new int[p.nbTotal];
+		for (int i = 0; i < p.nbTotal; i++) {
+			crowns[i] = plateaux[i].getTotalCrowns();
+		}
+		return crowns;
+	}
+
+	public long getElapsedTime() {
 		return System.currentTimeMillis() - startTime;
 	}
-	
-	
+
 	// METHODES PRIVEES, QUI SERVENT UNIQUEMENT A D'AUTRES METHODES DE CETTE CLASSE
 
 	// Methode pour savoir qui commence
@@ -252,7 +254,6 @@ public class Partie {
 			}
 			Collections.shuffle(orderInit);
 			// shuffleList(orderInit);
-
 
 			return orderInit;
 
