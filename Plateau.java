@@ -131,9 +131,9 @@ public class Plateau {
 
 	public int getTotalCrowns() {
 		int Crowns = 0;
-
-		for (int i = 0; i < 9; i++) {
-			for (int j = 0; j < 9; j++) {
+		int[] Dimensions = getDimensions();
+		for (int i = Dimensions[0]; i < Dimensions[1]; i++) {
+			for (int j = Dimensions[2]; j < Dimensions[3]; j++) {
 				if( getCouronne(i,j) > 0) {
 					Crowns = Crowns + getCouronne(i,j);
 				}

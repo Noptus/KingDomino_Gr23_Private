@@ -33,7 +33,7 @@
 				else
 					nb_parties = 1;
 				
-				int[] scoreCouronnes = null;
+				int[] couronnes_cumule = new int[menuParametres.getNbJoueurs() + menuParametres.getNbIA()];
 				Parametres p = menuParametres.getParametres();
 				for(int i = 0; i < nb_parties; i++)
 				{
@@ -44,20 +44,21 @@
 					// on joue la partie
 					partie.jouer();
 					
-					//on recupere le score et le temps ecoule
+					//on recupere le score, le nb de couronnes et le temps ecoule
 					int[] score = partie.getScores();
+					int[] couronnes = partie.getCrowns();
 					for(int j = 0; j < score.length; j++)
 					{
 						score_cumule[j] += score[j];
+						couronnes_cumule[j] += couronnes[j];
 					}
-					scoreCouronnes = partie.getCrowns();
 					
 					temps_cumule += partie.getElapsedTime();
 				}
 				
 				s.playAudio("applaudissement");
 				//on affiche l'ecran de fin de partie
-				FinDePartie f = new FinDePartie(menuParametres.getParametres(), menuCouleurs.getCouleurs(), score_cumule, temps_cumule, menuCouleurs.getNoms(), scoreCouronnes);
+				FinDePartie f = new FinDePartie(menuParametres.getParametres(), menuCouleurs.getCouleurs(), score_cumule, temps_cumule, menuCouleurs.getNoms(), couronnes_cumule);
 				f.setVisible(true);
 				while (f.hasDecided() == false) {
 					try {
