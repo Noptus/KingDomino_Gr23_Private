@@ -393,7 +393,9 @@ public class Fenetre extends JFrame {
 		but_vue.setBorderPainted(false);
 		but_vue.setFocusPainted(false);
 		but_vue.setForeground(Color.BLACK);
+		but_vue.setRolloverIcon(new ImageIcon("images//Bouton2.png"));
 		but_vue.setIcon(new ImageIcon("images//Bouton.png"));
+		but_vue.setPressedIcon(new ImageIcon("images//Bouton3.png"));
 		but_vue.setHorizontalTextPosition(JButton.CENTER);
 		but_vue.setVerticalTextPosition(JButton.CENTER);
 		but_vue.addActionListener(new ActionListener() {
