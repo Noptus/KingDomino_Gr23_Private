@@ -29,11 +29,13 @@ import java.awt.AlphaComposite;
 public class Fenetre extends JFrame {
 
 	// CLASSE INTERNE qui represente une case de notre damier
-	class Case extends JButton {
+	class Case extends JButton implements ActionListener{
 		private Image halfDomino;
 		private int x;
 		private int y;
 		boolean temporary = false;
+		private long time;
+		private Timer timer = new Timer(10, this);
 
 		public Case(Image texture, int x, int y) {
 			this.halfDomino = texture;
@@ -56,6 +58,8 @@ public class Fenetre extends JFrame {
 			this.halfDomino = texture;
 			this.temporary = temporary;
 			this.setBorderPainted(false);
+			time = System.currentTimeMillis();
+			timer.start();
 			this.repaint(); // on demande a reafficher le panel mis a jour
 		}
 
@@ -70,7 +74,20 @@ public class Fenetre extends JFrame {
 			super.paintComponent(g);
 			Graphics2D g2d = (Graphics2D) g;
 			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, temporary ? 0.5f : 1f));
-			g.drawImage(halfDomino, 0, 0, this.getWidth(), this.getHeight(), null);
+			if(System.currentTimeMillis() - time >= 200)
+				g.drawImage(halfDomino, 0, 0, this.getWidth(), this.getHeight(), null);
+			else
+			{
+				float percent = (System.currentTimeMillis() - time)/200.0f;
+				g.drawImage(halfDomino, Math.round(this.getWidth()/2 * (1 - percent)), Math.round(this.getHeight()/2 * (1 - percent)), Math.round(this.getWidth() * percent), Math.round(this.getHeight() * percent), null);
+			}
+		}
+		
+		public void actionPerformed(ActionEvent e)
+		{
+			if(System.currentTimeMillis() - time >= 200)
+				timer.stop();
+			this.repaint();
 		}
 	}
 
@@ -114,6 +131,7 @@ public class Fenetre extends JFrame {
 		public void setHighlight(boolean highlight) // insique si le domino doit etre encadre en rouge (domino a jouer)
 		{
 			this.highlight = highlight;
+			repaint();
 		}
 
 		public void setCrossed(boolean crossed)// insique si le domino doit etre barre en rouge (domino deja choisie)
@@ -178,6 +196,9 @@ public class Fenetre extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			switch (animation) {
 			case 0:
+				lab_manche.setVisible(true);
+				lab_action.setVisible(true);
+				lab_score.setVisible(true);
 				timer.stop();
 				break;
 			case 1:
@@ -219,6 +240,9 @@ public class Fenetre extends JFrame {
 				break;
 			}
 			this.animation = animation;
+			lab_manche.setVisible(false);
+			lab_action.setVisible(false);
+			lab_score.setVisible(false);
 			timer.start();
 		}
 	}

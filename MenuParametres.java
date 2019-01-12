@@ -46,7 +46,7 @@ public class MenuParametres extends JDialog {
 		// logo du jeu
 		JLabel labImage = new JLabel(new ImageIcon("images//kingdomino.png"));
 		Font font = new Font("Book Antiqua", Font.PLAIN, 20);
-		Font Mfont = new Font("Book Antiqua", Font.PLAIN, 35);
+		Font Mfont = new Font("Book Antiqua", Font.PLAIN, 25);
 		Font Lfont = new Font("Book Antiqua", Font.BOLD, 25);
 
 		Border border = BorderFactory.createMatteBorder(5, 5, 5, 5, Color.BLACK);

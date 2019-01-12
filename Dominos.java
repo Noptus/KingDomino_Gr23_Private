@@ -16,11 +16,6 @@ public class Dominos {
 	public static final int FORET = 4;
 	public static final int LAC = 5;
 	public static final int CHAMP = 6;
-	
-	private static final String Fichier = "dominos.csv";
-	private static BufferedReader br = null;
-	private static String line = "";
-	private static final String cvsSplitBy = ",";
 
 	// ATTRIBUTS (PRIVES, ACCESSIBLES UNIQUEMENT DEPUIS CETTE CLASSE)
 
@@ -46,10 +41,12 @@ public class Dominos {
 	// CONSTRUCTEUR (prend nb en argument, ce qui correspond au nb de dominos a
 	// jouer pour cette partie)
 	public Dominos(int nb) {
-
+		final String Fichier = "dominos.csv";
+		String line = "";
+		final String cvsSplitBy = ",";
 		try {
 
-			br = new BufferedReader(new FileReader(Fichier));
+			BufferedReader br = new BufferedReader(new FileReader(Fichier));
 			while ((line = br.readLine()) != null) {
 
 				String[] Elements = line.split(cvsSplitBy);

@@ -92,7 +92,7 @@ public class MenuCouleurs extends JDialog {
 		correspondanceCouleurs.put("Vert", 47);
 
 		Font font = new Font("Book Antiqua", Font.PLAIN, 20);
-		Font Mfont = new Font("Book Antiqua", Font.PLAIN, 35);
+		Font Mfont = new Font("Book Antiqua", Font.PLAIN, 25);
 		Font Lfont = new Font("Book Antiqua", Font.BOLD, 25);
 
 		// on charge les textures des chateaux

@@ -12,7 +12,8 @@
 	import javax.swing.BorderFactory;
 	import javax.swing.ImageIcon;
 	import javax.swing.JButton;
-	import javax.swing.JFrame;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
 	import javax.swing.JLabel;
 	import javax.swing.SwingConstants;
 	import javax.swing.border.Border;
@@ -248,10 +249,12 @@
 			Rejouer.setFocusPainted(false);
 			Rejouer.setContentAreaFilled(false);
 			Rejouer.setForeground(Color.BLACK);
-			Rejouer.setIcon(new ImageIcon("images//BoutonV.png"));
+			Rejouer.setRolloverIcon(new ImageIcon("images//Bouton2.png"));
+			Rejouer.setIcon(new ImageIcon("images//Bouton.png"));
+			Rejouer.setPressedIcon(new ImageIcon("images//Bouton3.png"));
 			Rejouer.setHorizontalTextPosition(JButton.CENTER);
 			Rejouer.setVerticalTextPosition(JButton.CENTER);
-			Rejouer.setFont(new Font("Book Antiqua", Font.PLAIN, 35));
+			Rejouer.setFont(new Font("Book Antiqua", Font.PLAIN, 25));
 			Rejouer.setBackground(new Color(127, 255, 0));
 			pane.add(Rejouer, c);
 	
@@ -271,10 +274,12 @@
 			Quitter.setFocusPainted(false);
 			Quitter.setContentAreaFilled(false);
 			Quitter.setForeground(Color.BLACK);
-			Quitter.setIcon(new ImageIcon("images//BoutonR.png"));
+			Quitter.setRolloverIcon(new ImageIcon("images//Bouton2.png"));
+			Quitter.setIcon(new ImageIcon("images//Bouton.png"));
+			Quitter.setPressedIcon(new ImageIcon("images//Bouton3.png"));
 			Quitter.setHorizontalTextPosition(JButton.CENTER);
 			Quitter.setVerticalTextPosition(JButton.CENTER);
-			Quitter.setFont(new Font("Book Antiqua", Font.PLAIN, 35));
+			Quitter.setFont(new Font("Book Antiqua", Font.PLAIN, 25));
 			Quitter.setBackground(new Color(255, 99, 71));
 			pane.add(Quitter, c);
 		}
@@ -296,8 +301,8 @@
 	
 			this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 			this.setTitle("Game is finished !");
-			this.setVisible(true);
 			this.setResizable(false);
+			this.setDefaultCloseOperation(JDialog.EXIT_ON_CLOSE); // quand on clique sur la croix, quitte la fenetre
 			this.Time = Time;
 	
 			Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
