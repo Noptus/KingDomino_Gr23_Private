@@ -392,7 +392,7 @@ public class Fenetre extends JFrame {
 		but_vue.setFont(police);
 		but_vue.setBorderPainted(false);
 		but_vue.setFocusPainted(false);
-		but_vue.setForeground(Color.BLACK);
+		but_vue.setForeground(new Color(75, 63, 60));
 		but_vue.setRolloverIcon(new ImageIcon("images//Bouton2.png"));
 		but_vue.setIcon(new ImageIcon("images//Bouton.png"));
 		but_vue.setPressedIcon(new ImageIcon("images//Bouton3.png"));
